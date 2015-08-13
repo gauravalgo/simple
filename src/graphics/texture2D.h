@@ -19,28 +19,26 @@ namespace simple {
     uint mID;
 
     // Layer of the texture
-    uint mLayer;
+    int mLayer;
 
     // Width
-    uint mWidth;
+    int mWidth;
 
     // Height
-    uint mHeight;
+    int mHeight;
 
   public:
 
     // Constructor
     texture2D();
 
-    // Constructor
-    texture2D(uint width, uint height, uint internalFormat, uint format, uint type);
-
     // Destructor
     ~texture2D();
 
     // Create the texture
-    void create(uint width, uint height, uint internalFormat, uint format, uint type,
-		void* data = NULL);
+    void create(int width, int height,
+        void* data = NULL);
+    void create(const string &fileName);
 
     // Destroy the texture
     void destroy();

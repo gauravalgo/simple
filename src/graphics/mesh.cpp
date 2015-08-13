@@ -35,13 +35,21 @@ void mesh::create(shader& a_shader,float vertices[], int sizeV, short indices[],
 
     m_position_attribute = glGetAttribLocation(a_shader.getProgram(), "position");
     glEnableVertexAttribArray(m_position_attribute);
-    glVertexAttribPointer(m_position_attribute, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), 0);
+    glVertexAttribPointer(m_position_attribute, 2, GL_FLOAT, GL_FALSE, 7*sizeof(float), 0);
 
     m_color_attribute = glGetAttribLocation(a_shader.getProgram(), "color");
     glEnableVertexAttribArray(m_color_attribute);
-    glVertexAttribPointer(m_color_attribute, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(2*sizeof(float)));
+    glVertexAttribPointer(m_color_attribute, 3, GL_FLOAT, GL_FALSE, 7*sizeof(float), (void*)(2*sizeof(float)));
+
+    GLint texAttrib = glGetAttribLocation(a_shader.getProgram(), "texcoords");
+    glEnableVertexAttribArray(texAttrib);
+    glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE,
+                           7*sizeof(float), (void*)(5*sizeof(float)));
+    m_vertices = vertices;
 
     glBufferData(GL_ARRAY_BUFFER, sizeV, vertices, GL_STATIC_DRAW);
+
+    m_indices = indices;
 
     uint ebo;
     glGenBuffers(1, &ebo);
@@ -51,7 +59,8 @@ void mesh::create(shader& a_shader,float vertices[], int sizeV, short indices[],
 
 void mesh::draw()
 {
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0);
+    //TODO check if this actually works
+    glDrawElements(GL_TRIANGLES, LENGTH(m_indices) * sizeof(short), GL_UNSIGNED_SHORT, 0);
     //glDrawArrays(GL_TRIANGLES,0,6);
 }
 
