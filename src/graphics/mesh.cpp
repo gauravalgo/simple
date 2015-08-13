@@ -1,6 +1,10 @@
 #include "mesh.h"
-
+#include <iostream>
+#include <stdio.h>
+#include <string.h>
 #include "../graphics/definitions.h"
+#include <vector>
+#include <iostream>
 
 using namespace simple;
 
@@ -17,37 +21,17 @@ mesh::~mesh()
     glDisableVertexAttribArray(m_color_attribute);
 }
 
-/*
-void mesh::bind(shader* a_shader)
-{
-    m_shader = a_shader;
-}
-*/
-
 void mesh::unbind()
 {
     glDisableVertexAttribArray(m_position_attribute);
     glDisableVertexAttribArray(m_color_attribute);
 }
 
-void mesh::create(shader& a_shader, float vertices[], short indices[])
+void mesh::create(shader& a_shader,float vertices[], int sizeV, short indices[], short sizeI)
 {
     uint vbo;
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-    float data[] = {
-      -0.08f,  0.08f, 1.0f, 0.33f, 0.4f, // Top-left
-      0.08f,  0.08f, 0.0f, 0.44f, 0.5f, // Top-right
-      0.08f, -0.08f, 0.0f, 1.33f, 1.0f, // Bottom-right
-      -0.08f, -0.08f, 1.0f, 0.0f, 1.0f  // Bottom-left
-    };
-
-    short elements[] =
-      { 0, 1, 2,
-        2, 3, 0
-      };
-
 
     m_position_attribute = glGetAttribLocation(a_shader.getProgram(), "position");
     glEnableVertexAttribArray(m_position_attribute);
@@ -57,12 +41,12 @@ void mesh::create(shader& a_shader, float vertices[], short indices[])
     glEnableVertexAttribArray(m_color_attribute);
     glVertexAttribPointer(m_color_attribute, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(2*sizeof(float)));
 
-    glBufferData(GL_ARRAY_BUFFER, (sizeof(data)), data, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeV, vertices, GL_STATIC_DRAW);
 
     uint ebo;
     glGenBuffers(1, &ebo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeI, indices, GL_STATIC_DRAW);
 }
 
 void mesh::draw()

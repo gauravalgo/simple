@@ -8,6 +8,7 @@
 #include "graphics/mesh.h"
 
 #include <GL/glew.h>
+#include <vector>
 
 using namespace simple;
 
@@ -50,11 +51,11 @@ int main()
   shader s;
   s.create(vert,frag);
 
-  float data[] = {
-    -0.5f,  0.5f, 1.0f, 0.33f, 0.4f, // Top-left
-    0.5f,  0.5f, 0.0f, 0.44f, 0.5f, // Top-right
-    0.5f, -0.5f, 0.0f, 1.33f, 1.0f, // Bottom-right
-    -0.5f, -0.5f, 1.0f, 0.0f, 1.0f  // Bottom-left
+  float v[] = {
+    -0.05f,  0.05f, 1.0f, 0.33f, 0.4f, // Top-left
+    0.05f,  0.05f, 0.0f, 0.44f, 0.5f, // Top-right
+    0.05f, -0.05f, 0.0f, 1.33f, 1.0f, // Bottom-right
+    -0.05f, -0.05f, 1.0f, 0.0f, 1.0f  // Bottom-left
   };
 
   short elements[] =
@@ -63,7 +64,7 @@ int main()
     };
 
   mesh* m_mesh = new mesh();
-  m_mesh->create(s, data, elements);
+  m_mesh->create(s, v, sizeof(v), elements, sizeof(elements));
 
   float deltaTime;
   int lastFrameTime = 0, currentFrameTime = 0;
@@ -72,8 +73,8 @@ int main()
 
   int fpsMill = 1000/60;
 
-  while(window.getRunning())
-    {
+  while(window.getRunning()){
+
       lastFrameTime = currentFrameTime;
       currentFrameTime = window.getTicks();
 
@@ -99,6 +100,7 @@ int main()
   m_mesh->unbind();
 
   window.quit();
+
   SAFE_DELETE(m_mesh);
   return 0;
 }

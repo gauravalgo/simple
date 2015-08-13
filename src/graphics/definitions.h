@@ -12,7 +12,8 @@ namespace simple {
 #define VERSION "0.0.1"
 #define DEBBUG 1
 
-#define LOG(m) std::cout << m << std::endl;
+#define LOG(m) cout << m << endl
+#define LENGTH(v) (sizeof(v)/sizeof(*v))
 
 #define SAFE_DELETE(p) { if(p) { delete   (p); (p)=NULL; } }
 #define SAFE_DELETE_ARRAY(p) { if(p) { delete[] (p); (p)=NULL; } }
