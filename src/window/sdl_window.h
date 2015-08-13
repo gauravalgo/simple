@@ -12,7 +12,8 @@ public:
     sdl_window();
     ~sdl_window();
 private:
-    bool running;
+    bool m_running;
+    float m_delta_time;
     SDL_Window* m_window;
     SDL_GLContext m_glContext;
 public:
@@ -22,9 +23,14 @@ public:
     void setWindowTitle(const char* title);
     void update();
     void quit();
+    void printFPS();
+    void delay(float value);
 public:
-    void setRunning(bool value){running = value;}
-    bool getRunning(){return running;}
+    void setRunning(bool value){m_running = value;}
+    bool getRunning(){return m_running;}
+    double getTicks();
+    void setDeltaTime(float value){m_delta_time = value;}
+    float getDeltaTime(){return m_delta_time;}
 };
 }
 #endif
