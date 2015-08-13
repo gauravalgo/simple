@@ -15,7 +15,10 @@ running(true)
 
 sdl_window::~sdl_window()
 {
-
+    SDL_GL_DeleteContext(m_glContext);
+    SDL_DestroyWindow(m_window);
+    SDL_Quit();
+    running = false;
 }
 
 void sdl_window::makeWindow(const char *title, int x, int y, int width, int height)
@@ -48,6 +51,7 @@ void sdl_window::makeWindow(const char *title, int x, int y, int width, int heig
     if(res != GLEW_OK){
          std::cerr << "Glew failed to initialize! You're doomed ^.^" << std::endl;
     }
+
 }
 
 void sdl_window::setPosition(int x, int y)

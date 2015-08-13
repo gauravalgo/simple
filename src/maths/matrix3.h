@@ -4,7 +4,7 @@
 // Libraries
 #include <cassert>
 #include <limits>
-#include "Vector3.h"
+#include "../maths/vector3.h"
 
 namespace simple {
 
@@ -36,7 +36,7 @@ namespace simple {
     }
 
     // Constructor
-    matrix3(const Vector3& a1, const Vector3& a2, const Vector3& a3) {
+    matrix3(const vector3& a1, const vector3& a2, const vector3& a3) {
       m[0][0] = a1.x; m[0][1] = a2.x; m[0][2] = a3.x;
       m[1][0] = a1.y; m[1][1] = a2.y; m[1][2] = a3.y;
       m[2][0] = a1.z; m[2][1] = a2.z; m[2][2] = a3.z;
@@ -70,9 +70,9 @@ namespace simple {
     }
 
     // Return a column
-    Vector3 getColumn(int i) const {
+    vector3 getColumn(int i) const {
       assert(i>= 0 && i<3);
-      return Vector3(m[0][i], m[1][i], m[2][i]);
+      return vector3(m[0][i], m[1][i], m[2][i]);
     }
 
     // Return the transpose matrix
@@ -201,8 +201,8 @@ namespace simple {
     }
 
     // Overloaded operator for multiplication with a vector
-    Vector3 operator*(const Vector3& vector) {
-      return Vector3(m[0][0]*vector.x + m[0][1]*vector.y + m[0][2]*vector.z,
+    vector3 operator*(const vector3& vector) {
+      return vector3(m[0][0]*vector.x + m[0][1]*vector.y + m[0][2]*vector.z,
 		     m[1][0]*vector.x + m[1][1]*vector.y + m[1][2]*vector.z,
 		     m[2][0]*vector.x + m[2][1]*vector.y + m[2][2]*vector.z);
     }
