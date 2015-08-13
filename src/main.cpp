@@ -36,6 +36,11 @@ const char* vert =
 int main()
 {
 
+  if(DEBBUG)
+   LOG("Simple - version " << VERSION << " - Debbug messages are enabled!");
+  if(!DEBBUG)
+   LOG("Simple - version " << VERSION << " - Debbug messages are disabled!");
+
   sdl_window window;
 
   window.makeWindow("Simple", -1, -1, 800, 680);
@@ -81,7 +86,7 @@ int main()
 
       window.printFPS();
 
-      for(int i = 0; i < 2;i++)
+      for(int i = 0; i < 15000;i++)
         m_mesh->draw();
 
       window.update();

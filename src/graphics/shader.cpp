@@ -93,7 +93,8 @@ void shader::create(const char* vertexShaderFilename,
 
     mProgramObjectID = program;
 
-    std::cout<<"Shader compiled and ready to be used!" << std::endl;
+    if (DEBBUG)
+     std::cout<<"Shader compiled and ready to be used!" << std::endl;
 }
 
 
