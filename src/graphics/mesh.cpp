@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Copyright 2015 See AUTHORS file.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
+
 #include "mesh.h"
 #include <iostream>
 #include <stdio.h>
@@ -21,12 +37,6 @@ mesh::~mesh()
     glDisableVertexAttribArray(m_color_attribute);
 }
 
-void mesh::unbind()
-{
-    glDisableVertexAttribArray(m_position_attribute);
-    glDisableVertexAttribArray(m_color_attribute);
-}
-
 void mesh::create(shader& a_shader,float vertices[], int sizeV, short indices[], short sizeI)
 {
     uint vbo;
@@ -41,9 +51,9 @@ void mesh::create(shader& a_shader,float vertices[], int sizeV, short indices[],
     glEnableVertexAttribArray(m_color_attribute);
     glVertexAttribPointer(m_color_attribute, 3, GL_FLOAT, GL_FALSE, 7*sizeof(float), (void*)(2*sizeof(float)));
 
-    GLint texAttrib = glGetAttribLocation(a_shader.getProgram(), "texcoords");
-    glEnableVertexAttribArray(texAttrib);
-    glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE,
+    m_tex_attribute = glGetAttribLocation(a_shader.getProgram(), "texcoords");
+    glEnableVertexAttribArray(m_tex_attribute);
+    glVertexAttribPointer(m_tex_attribute, 2, GL_FLOAT, GL_FALSE,
                            7*sizeof(float), (void*)(5*sizeof(float)));
     m_vertices = vertices;
 
@@ -57,11 +67,10 @@ void mesh::create(shader& a_shader,float vertices[], int sizeV, short indices[],
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeI, indices, GL_STATIC_DRAW);
 }
 
-void mesh::draw()
+void mesh::draw(int count)
 {
-    //TODO check if this actually works
-    glDrawElements(GL_TRIANGLES, LENGTH(m_indices) * sizeof(short), GL_UNSIGNED_SHORT, 0);
-    //glDrawArrays(GL_TRIANGLES,0,6);
+    glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_SHORT, 0);
+    //glDrawArrays(GL_TRIANGLES, 0, count);
 }
 
 

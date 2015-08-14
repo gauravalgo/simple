@@ -206,6 +206,8 @@ namespace simple {
 		     m[0][3], m[1][3], m[2][3], m[3][3]);
     }
 
+   void setToOrtho(float left, float right, float bottom, float top, float near, float far);
+
     // Return the inversed matrix
     matrix4 getInverse() const {
       int indxc[4], indxr[4];
