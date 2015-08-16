@@ -328,9 +328,9 @@ namespace simple {
       return (m[0][0] + m[1][1] + m[2][2] + m[3][3]);
     }
 
-   mat4 translate(const vec3& v);
-   mat4 scale (const vec3& v);
-   static mat4 rotationMatrix(mat4 mat, const vec3& axis, float angle);
+    mat4 translate(const vec3& v);
+    mat4 scale (const vec3& v);
+    static mat4 rotationMatrix(mat4 mat, const vec3& axis, float angle);
 
     static mat4 setOrtho(float left, float right, float bottom, float top, float near, float far);
   };
@@ -340,11 +340,11 @@ namespace simple {
 
     float x_orth = 2 / (right - left);
     float y_orth = 2 / (top - bottom);
-    float z_orth = -2 / (far - near);
+    float z_orth = -2 / (near - far);
 
-    float tx = -(right + left) / (right - left);
-    float ty = -(top + bottom) / (top - bottom);
-    float tz = -(far + near) / (far - near);
+    float tx = (right + left) / (left - right);
+    float ty = (top + bottom) / (bottom - top);
+    float tz = (far + near) / (far - near);
 
     float m[4][4];
     m[0][0] = x_orth;
@@ -374,50 +374,50 @@ namespace simple {
 
   // Return a 4x4 translation matrix
   inline mat4 mat4::translate(const vec3& v) {
-      m[3][0] = v.x;
-      m[3][1] = v.y;
-      m[3][2] = v.z;
-      m[3][3] = 1;
+    m[3][0] = v.x;
+    m[3][1] = v.y;
+    m[3][2] = v.z;
+    m[3][3] = 1;
 
     return *this;
   }
 
   inline mat4 mat4::scale(const vec3& v) {
-      m[0][0] = v.x;
-      m[1][1] = v.y;
-      m[2][2] = v.z;
-      m[3][3] = 1;
+    m[0][0] = v.x;
+    m[1][1] = v.y;
+    m[2][2] = v.z;
+    m[3][3] = 1;
 
-     return *this;
+    return *this;
   }
 
   // Return a 4x4 rotation matrix
   inline mat4 mat4::rotationMatrix(mat4 mat,const vec3& axis, float angle) {
 
-      float cosA = cos(RADIANS(angle));
-         float sinA = sin(RADIANS(angle));
-         mat4 rotationMatrix;
-         rotationMatrix.setToIdentity();
+    float cosA = cos(RADIANS(angle));
+    float sinA = sin(RADIANS(angle));
+    mat4 rotationMatrix;
+    rotationMatrix.setToIdentity();
 
-         rotationMatrix.m[0][0] = cosA + (1-cosA) * axis.x * axis.x;
-         rotationMatrix.m[0][1] = (1-cosA) * axis.x * axis.y - axis.z * sinA;
-         rotationMatrix.m[0][2] = (1-cosA) * axis.x * axis.z + axis.y * sinA;
-         rotationMatrix.m[0][3] = mat.m[0][3];
+    rotationMatrix.m[0][0] = cosA + (1-cosA) * axis.x * axis.x;
+    rotationMatrix.m[0][1] = (1-cosA) * axis.x * axis.y - axis.z * sinA;
+    rotationMatrix.m[0][2] = (1-cosA) * axis.x * axis.z + axis.y * sinA;
+    rotationMatrix.m[0][3] = mat.m[0][3];
 
-         rotationMatrix.m[1][0] = (1-cosA) * axis.x * axis.y + axis.z * sinA;
-         rotationMatrix.m[1][1] = cosA + (1-cosA) * axis.y * axis.y;
-         rotationMatrix.m[1][2] = (1-cosA) * axis.y * axis.z - axis.x * sinA;
-         rotationMatrix.m[1][3] = mat.m[1][3];
+    rotationMatrix.m[1][0] = (1-cosA) * axis.x * axis.y + axis.z * sinA;
+    rotationMatrix.m[1][1] = cosA + (1-cosA) * axis.y * axis.y;
+    rotationMatrix.m[1][2] = (1-cosA) * axis.y * axis.z - axis.x * sinA;
+    rotationMatrix.m[1][3] = mat.m[1][3];
 
-         rotationMatrix.m[2][0] = (1-cosA) * axis.x * axis.z - axis.y * sinA;
-         rotationMatrix.m[2][1] = (1-cosA) * axis.y * axis.z + axis.x * sinA;
-         rotationMatrix.m[2][2] = cosA + (1-cosA) * axis.z * axis.z;
-         rotationMatrix.m[2][3] = mat.m[2][3];
+    rotationMatrix.m[2][0] = (1-cosA) * axis.x * axis.z - axis.y * sinA;
+    rotationMatrix.m[2][1] = (1-cosA) * axis.y * axis.z + axis.x * sinA;
+    rotationMatrix.m[2][2] = cosA + (1-cosA) * axis.z * axis.z;
+    rotationMatrix.m[2][3] = mat.m[2][3];
 
-         rotationMatrix.m[3][0] = mat.m[3][0];
-         rotationMatrix.m[3][1] = mat.m[3][1];
-         rotationMatrix.m[3][2] = mat.m[3][2];
-         rotationMatrix.m[3][3] = 1.f;
+    rotationMatrix.m[3][0] = mat.m[3][0];
+    rotationMatrix.m[3][1] = mat.m[3][1];
+    rotationMatrix.m[3][2] = mat.m[3][2];
+    rotationMatrix.m[3][3] = 1.f;
     return rotationMatrix;
   }
 

@@ -51,6 +51,8 @@ void texture2D::create(int width, int height, void* data)  {
   mWidth = width;
   mHeight = height;
 
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
   glGenTextures(1, &mID);
   assert(mID != 0);
   glBindTexture(GL_TEXTURE_2D, mID);
@@ -73,6 +75,8 @@ void texture2D::create(const std::string& fileName)  {
 
   if(pixels == NULL)
       LOG("Error: Could not load image - " << fileName);
+
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   // Create the OpenGL texture
   glGenTextures(1, &mID);

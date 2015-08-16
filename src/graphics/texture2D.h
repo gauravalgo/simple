@@ -84,6 +84,8 @@ namespace simple {
   // Bind the texture
   inline void texture2D::bind() const {
     assert(mID != 0);
+    glEnable(GL_BLEND);
+
     glEnable(GL_TEXTURE_2D);
     glActiveTexture(GL_TEXTURE0 + mLayer);
     glBindTexture(GL_TEXTURE_2D, mID);
@@ -94,6 +96,7 @@ namespace simple {
     assert(mID != 0);
     glActiveTexture(GL_TEXTURE0 + mLayer);
     glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
   }
 

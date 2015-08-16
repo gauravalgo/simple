@@ -16,18 +16,18 @@ src/*.cpp
 )
 
 ## Set version and info
-SET(simple_major_version 0)
-SET(simple_minor_version 1)
-SET(simple_patch_version 0)
+set(simple_major_version 0)
+set(simple_minor_version 1)
+set(simple_patch_version 0)
 
-SET(simple_package "simple")
-SET(simple_creator "Muresan Vlad")
-SET(simple_version "${simple_major_version}.${simple_minor_version}.${simple_patch_version}")
-SET(simple_copyright "Copyright (c) 2015, ${simple_creator}.")
+set(simple_package "simple")
+set(simple_creator "Muresan Vlad")
+set(simple_version "${simple_major_version}.${simple_minor_version}.${simple_patch_version}")
+set(simple_copyright "Copyright (c) 2015, ${simple_creator}.")
 
-MESSAGE(STATUS "${simple_package} ${simple_version}")
+message(STATUS "${simple_package} ${simple_version}")
 
-#GLFW & GLEW & STB_IMAGE & GLM
+#GLFW & GLEW & STB_IMAGE 
 add_subdirectory(deps/glfw)
 include_directories(deps/glew/include)
 include_directories(deps/glfw/include)
@@ -42,21 +42,20 @@ add_executable(
 
 #SDL2
 #Autofind?
-INCLUDE(FindPkgConfig)
-PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
-INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS})
-
-#add_subdirectory(deps/sdl2)
-#INCLUDE_DIRECTORIES(deps/sdl2/include)
+#INCLUDE(FindPkgConfig)
+#PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
+#INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS})
+add_subdirectory(deps/sdl2)
+include_directories(deps/sdl2/include)
 
 if(APPLE)
-  target_link_libraries(simple ${GLM} ${SDL2_LIBRARIES} glfw
+  target_link_libraries(simple ${SDL2_LIBRARIES} glfw
     ${GLFW_LIBRARIES})
 endif()
 
 if(UNIX)
   target_link_libraries(simple dl glfw
-    ${GLFW_LIBRARIES} ${GLM} ${SDL2_LIBRARIES})
+    ${GLFW_LIBRARIES} ${SDL2_LIBRARIES})
 endif()
 
 if(MINGW)

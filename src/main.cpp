@@ -35,9 +35,9 @@ int main()
 {
 
   if(DEBBUG)
-   LOG("Simple - version " << VERSION << " - Debbug messages are enabled!");
+    LOG("Simple - version " << VERSION << " - Debbug messages are enabled!");
   if(!DEBBUG)
-   LOG("Simple - version " << VERSION << " - Debbug messages are disabled!");
+    LOG("Simple - version " << VERSION << " - Debbug messages are disabled!");
 
   sdl_window window;
 
@@ -49,11 +49,11 @@ int main()
   s.create(simple::texture_vertex,simple::texture_fragment);
 
   float v[] = {
-  //  Position      Color             Texcoords
-      -14,  14, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, // Top-left
-       14,  14, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, // Top-right
-       14, -14, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, // Bottom-right
-      -14, -14, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f  // Bottom-left
+    //  Position      Color             Texcoords
+    -14,  14, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, // Top-left
+    14,  14, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, // Top-right
+    14, -14, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, // Bottom-right
+    -14, -14, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f  // Bottom-left
   };
 
 
@@ -79,9 +79,10 @@ int main()
   int fpsMill = 1000/60;
 
 
+
   mat4 proj;
   proj.setToIdentity();
-  proj = mat4::setOrtho(0, 800, 600, 0, 0, 10);
+  proj = mat4::setOrtho(0, 800, 600, 0, 0, 100);
 
   uint uniProj = glGetUniformLocation(s.getProgram(), "proj");
   glUniformMatrix4fv(uniProj, 1, GL_FALSE, proj.dataBlock());
@@ -90,40 +91,41 @@ int main()
   model.setToIdentity();
   model.scale(vec3(2,2,1));
   model.translate(vec3(100.0f,100.0f,0));
-  model = mat4::rotationMatrix(model,vec3(0,0,-1), -140);
-
-
+  model = mat4::rotationMatrix(model,vec3(0,0,-1), -180);
+  
   uint uniModel = glGetUniformLocation(s.getProgram(), "model");
   glUniformMatrix4fv(uniModel, 1, GL_FALSE, model.dataBlock());
 
   while(window.getRunning()){
 
-      lastFrameTime = currentFrameTime;
-      currentFrameTime = window.getTicks();
+    lastFrameTime = currentFrameTime;
+    currentFrameTime = window.getTicks();
 
-      deltaTime = (float) (currentFrameTime - lastFrameTime) / 1000.0f;
+    deltaTime = (float) (currentFrameTime - lastFrameTime) / 1000.0f;
 
-      window.setDeltaTime(deltaTime);
+    window.setDeltaTime(deltaTime);
 
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-      glClearColor(0.4f,0.2f,0.4f,1);
-      glViewport(0,0,800,600);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(0.4f,0.2f,0.4f,1);
+    glViewport(0,0,800,600);
 
-      window.printFPS();
+    window.printFPS();
 
-      m_texture->bind();
+    m_texture->bind();
 
-      s.bind();
-      m_mesh->draw(6);
-      s.unbind();
+    s.bind();
+    m_mesh->draw(6);
+    s.unbind();
 
-      window.update();
+    m_texture->unbind();
 
-      int currentSpeed = window.getTicks() - currentFrameTime;
-      if(fpsMill > currentSpeed) {
-         window.delay(fpsMill - currentSpeed);
-       }
+    window.update();
+
+    int currentSpeed = window.getTicks() - currentFrameTime;
+    if(fpsMill > currentSpeed) {
+      window.delay(fpsMill - currentSpeed);
     }
+  }
   m_texture->destroy();
 
   window.quit();
