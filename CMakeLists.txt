@@ -13,9 +13,6 @@ src/window/*.cpp
 src/window/*.h
 src/*.h
 src/*.cpp
-src/maths/glm/*.hpp
-src/maths/glm/gtc/*.hpp
-src/maths/glm/gtx/*.hpp
 )
 
 ## Set version and info
@@ -30,6 +27,12 @@ SET(simple_copyright "Copyright (c) 2015, ${simple_creator}.")
 
 MESSAGE(STATUS "${simple_package} ${simple_version}")
 
+#GLFW & GLEW & STB_IMAGE & GLM
+add_subdirectory(deps/glfw)
+include_directories(deps/glew/include)
+include_directories(deps/glfw/include)
+include_directories(deps/stb_image)
+
 add_executable(
   simple
   ${SOURCE_FILES}
@@ -37,31 +40,23 @@ add_executable(
   deps/stb_image/stb_image.c
 )
 
-#GLFW & GLEW & STB_IMAGE & GLM
-add_subdirectory(deps/glfw)
-add_subdirectory(deps/glm)
-include_directories(deps/glew/include)
-include_directories(deps/glfw/include)
-include_directories(deps/stb_image)
-include_directories(deps/glm)
-
 #SDL2
 #Autofind?
-#INCLUDE(FindPkgConfig)
-#PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
-#INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS})
+INCLUDE(FindPkgConfig)
+PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
+INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS})
 
-add_subdirectory(deps/sdl2)
-INCLUDE_DIRECTORIES(deps/sdl2/include)
+#add_subdirectory(deps/sdl2)
+#INCLUDE_DIRECTORIES(deps/sdl2/include)
 
 if(APPLE)
-  target_link_libraries(simple ${SDL2_LIBRARIES} glfw
+  target_link_libraries(simple ${GLM} ${SDL2_LIBRARIES} glfw
     ${GLFW_LIBRARIES})
 endif()
 
 if(UNIX)
   target_link_libraries(simple dl glfw
-    ${GLFW_LIBRARIES} ${SDL2_LIBRARIES})
+    ${GLFW_LIBRARIES} ${GLM} ${SDL2_LIBRARIES})
 endif()
 
 if(MINGW)

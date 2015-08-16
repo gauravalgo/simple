@@ -122,7 +122,7 @@ void shader::bind()
 
 void shader::unbind()
 {
-    //glUseProgram(0);
+    glUseProgram(0);
 }
 
 

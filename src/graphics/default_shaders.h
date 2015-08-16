@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Copyright 2015 See AUTHORS file.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
+
 #ifndef _DEFAULT_SHADERS_H
 #define _DEFAULT_SHADERS_H
 
@@ -23,14 +39,13 @@ const char* texture_vertex =
   "out vec3 Color;"
   "out vec2 Texcoords;"
 
-  "uniform mat4 model;"
-  "uniform mat4 view;"
-  "uniform mat4 proj;"
+  "uniform mat4 proj = mat4(1);"
+  "uniform mat4 model = mat4(1);"
 
   "void main(void) {"
   "Color = color;"
   "Texcoords = texcoords;"
-  "gl_Position = proj *  view * model * vec4(position.xy, 0.0f, 1.0f);"
+  "gl_Position = proj * model * vec4(position, 0, 1);"
   "}";
 
 }

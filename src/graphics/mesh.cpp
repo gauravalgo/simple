@@ -37,7 +37,7 @@ mesh::~mesh()
     glDisableVertexAttribArray(m_color_attribute);
 }
 
-void mesh::create(shader& a_shader,float vertices[], int sizeV, short indices[], short sizeI)
+void mesh::create(shader& a_shader,float vertices[], int sizeV, unsigned short indices[], short sizeI)
 {
     uint vbo;
     glGenBuffers(1, &vbo);
@@ -53,8 +53,7 @@ void mesh::create(shader& a_shader,float vertices[], int sizeV, short indices[],
 
     m_tex_attribute = glGetAttribLocation(a_shader.getProgram(), "texcoords");
     glEnableVertexAttribArray(m_tex_attribute);
-    glVertexAttribPointer(m_tex_attribute, 2, GL_FLOAT, GL_FALSE,
-                           7*sizeof(float), (void*)(5*sizeof(float)));
+    glVertexAttribPointer(m_tex_attribute, 2, GL_FLOAT, GL_FALSE, 7*sizeof(float), (void*)(5*sizeof(float)));
     m_vertices = vertices;
 
     glBufferData(GL_ARRAY_BUFFER, sizeV, vertices, GL_STATIC_DRAW);
@@ -65,6 +64,7 @@ void mesh::create(shader& a_shader,float vertices[], int sizeV, short indices[],
     glGenBuffers(1, &ebo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeI, indices, GL_STATIC_DRAW);
+
 }
 
 void mesh::draw(int count)

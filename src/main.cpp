@@ -18,26 +18,18 @@
 
 #include "window/sdl_window.h"
 #include "graphics/shader.h"
-#include "graphics/object3D.h"
-#include "maths/vector3.h"
+#include "maths/vec3.h"
 #include "graphics/definitions.h"
 #include "graphics/mesh.h"
 #include "graphics/texture2D.h"
 #include "graphics/default_shaders.h"
-#include "graphics/camera.h"
 
 #include <GL/glew.h>
 #include <vector>
 
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
+#include "maths/mat4.h"
 
 using namespace simple;
-
-/*
- * I dont like using GLM.TODO make your own math functions to work!
- */
 
 int main()
 {
@@ -58,14 +50,14 @@ int main()
 
   float v[] = {
   //  Position      Color             Texcoords
-      -0.05f,  0.05f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, // Top-left
-       0.05f,  0.05f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, // Top-right
-       0.05f, -0.05f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, // Bottom-right
-      -0.05f, -0.05f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f  // Bottom-left
+      -14,  14, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, // Top-left
+       14,  14, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, // Top-right
+       14, -14, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, // Bottom-right
+      -14, -14, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f  // Bottom-left
   };
 
 
-  short elements[] =
+  unsigned short elements[] =
     { 0, 1, 2,
       2, 3, 0
     };
@@ -73,13 +65,11 @@ int main()
   mesh* m_mesh = new mesh();
   m_mesh->create(s, v, sizeof(v), elements, sizeof(elements));
 
+
   texture2D* m_texture = new texture2D();
-  float pixels[] = {
-      0.0f, 0.0f, 0.0f,   1.0f, 1.0f, 1.0f,
-      1.0f, 1.0f, 1.0f,   0.0f, 0.0f, 0.0f
-  };
+
   //m_texture->create(2,2,pixels);
-  m_texture->create("./res/test.png");
+  m_texture->create("./res/test2.png");
 
   float deltaTime;
   int lastFrameTime = 0, currentFrameTime = 0;
@@ -89,34 +79,22 @@ int main()
   int fpsMill = 1000/60;
 
 
-  glm::mat4 view = glm::lookAt(
-      glm::vec3(1.2f, 1.2f, 1.2f),
-      glm::vec3(0.0f, 0.0f, 0.0f),
-      glm::vec3(0.0f, 0.0f, 1.0f)
-  );
-
-  uint uniView = glGetUniformLocation(s.getProgram(), "view");
-  glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(view));
-
-  glm::mat4 trans;
-  trans = glm::rotate(trans, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
-
-  glm::mat4 proj = glm::perspective(glm::radians(40.0f), 800.0f / 600.0f, 1.0f, 10.0f);
+  mat4 proj;
+  proj.setToIdentity();
+  proj = mat4::setOrtho(0, 800, 600, 0, 0, 10);
 
   uint uniProj = glGetUniformLocation(s.getProgram(), "proj");
-  glUniformMatrix4fv(uniProj, 1, GL_FALSE, glm::value_ptr(proj));
+  glUniformMatrix4fv(uniProj, 1, GL_FALSE, proj.dataBlock());
 
-  //trans = glm::translate(trans, glm::vec3(100.0f, 100.0f, 0.0f));
+  mat4 model;
+  model.setToIdentity();
+  model.scale(vec3(2,2,1));
+  model.translate(vec3(100.0f,100.0f,0));
+  model = mat4::rotationMatrix(model,vec3(0,0,-1), -140);
 
-  trans = glm::translate(trans, glm::vec3(0.5f * 14, 0.5f * 14, 0.0f));
-  trans = glm::rotate(trans, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
-  trans = glm::translate(trans, glm::vec3(-0.5f * 14, -0.5f * 14, 0.0f));
 
-  trans = glm::scale(trans, glm::vec3(1, 1, 1.0f));
-
-  uint uniTrans = glGetUniformLocation(s.getProgram(), "model");
-  glUniformMatrix4fv(uniTrans, 1, GL_FALSE, glm::value_ptr(trans));
-
+  uint uniModel = glGetUniformLocation(s.getProgram(), "model");
+  glUniformMatrix4fv(uniModel, 1, GL_FALSE, model.dataBlock());
 
   while(window.getRunning()){
 
@@ -129,10 +107,10 @@ int main()
 
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       glClearColor(0.4f,0.2f,0.4f,1);
+      glViewport(0,0,800,600);
 
       window.printFPS();
 
-    //  for(int i = 0; i < 10;i++)
       m_texture->bind();
 
       s.bind();

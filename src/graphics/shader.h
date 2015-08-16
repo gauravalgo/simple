@@ -21,11 +21,6 @@
 #include <iostream>
 #include <GL/glew.h>
 
-#include "../maths/vector2.h"
-#include "../maths/vector3.h"
-#include "../maths/vector4.h"
-#include "../maths/matrix4.h"
-
 namespace simple
 {
   class shader

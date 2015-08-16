@@ -118,6 +118,10 @@ void sdl_window::update()
 {
   SDL_GL_SwapWindow(m_window);
 
+  GLenum error = glGetError();
+  if(error != GL_NO_ERROR)
+      std::cout << "OpenGL error: " << error << std::endl;
+
   SDL_Event e;
   while(SDL_PollEvent(&e)){
     if(e.type == SDL_QUIT)

@@ -5,59 +5,51 @@
 #include <math.h>
 #include <assert.h>
 #include <iostream>
-#include "vector3.h"
-#include "vector4.h"
+#include "vec3.h"
+#include "vec4.h"
+
+#include "../graphics/definitions.h"
+#include <cmath>
 
 namespace simple {
 
-  class matrix4 {
+  class mat4 {
 
   public:
-
-    // -------------------- Attributes -------------------- //
-
-    // Elements of the matrix
     float m[4][4];
 
-    // -------------------- Methods -------------------- //
-
-    // Constructor
-    matrix4(float m_00=0, float m_01=0, float m_02=0, float m_03=0,
-	    float m_10=0, float m_11=0, float m_12=0, float m_13=0,
-	    float m_20=0, float m_21=0, float m_22=0, float m_23=0,
-	    float m_30=0, float m_31=0, float m_32=0, float m_33=0) {
+    mat4(float m_00=0, float m_01=0, float m_02=0, float m_03=0,
+	 float m_10=0, float m_11=0, float m_12=0, float m_13=0,
+	 float m_20=0, float m_21=0, float m_22=0, float m_23=0,
+	 float m_30=0, float m_31=0, float m_32=0, float m_33=0) {
       m[0][0] = m_00; m[0][1] = m_01; m[0][2] = m_02;  m[0][3] = m_03;
       m[1][0] = m_10; m[1][1] = m_11; m[1][2] = m_12;  m[1][3] = m_13;
       m[2][0] = m_20; m[2][1] = m_21; m[2][2] = m_22;  m[2][3] = m_23;
       m[3][0] = m_30; m[3][1] = m_31; m[3][2] = m_32;  m[3][3] = m_33;
     }
 
-    // Constructor
-    matrix4(float n[4][4]) {
+    mat4(float n[4][4]) {
       m[0][0]=n[0][0]; m[0][1]=n[0][1]; m[0][2]=n[0][2]; m[0][3]=n[0][3];
       m[1][0]=n[1][0]; m[1][1]=n[1][1]; m[1][2]=n[1][2]; m[1][3]=n[1][3];
       m[2][0]=n[2][0]; m[2][1]=n[2][1]; m[2][2]=n[2][2]; m[2][3]=n[2][3];
       m[3][0]=n[3][0]; m[3][1]=n[3][1]; m[3][2]=n[3][2]; m[3][3]=n[3][3];
     }
 
-    // Constructor
-    matrix4(const vector3& a1, const vector3& a2, const vector3& a3) {
+    mat4(const vec3& a1, const vec3& a2, const vec3& a3) {
       m[0][0] = a1.x; m[0][1] = a2.x; m[0][2] = a3.x;  m[0][3] = 0.f;
       m[1][0] = a1.y; m[1][1] = a2.y; m[1][2] = a3.y;  m[1][3] = 0.f;
       m[2][0] = a1.z; m[2][1] = a2.z; m[2][2] = a3.z;  m[2][3] = 0.f;
       m[3][0] = 0.f;  m[3][1] = 0.f;  m[3][2] = 0.f;   m[3][3] = 1.f;
     }
 
-    // Constructor
-    matrix4(const vector4& a1, const vector4& a2, const vector4& a3) {
+    mat4(const vec4& a1, const vec4& a2, const vec4& a3) {
       m[0][0] = a1.x; m[0][1] = a2.x; m[0][2] = a3.x;  m[0][3] = 0.f;
       m[1][0] = a1.y; m[1][1] = a2.y; m[1][2] = a3.y;  m[1][3] = 0.f;
       m[2][0] = a1.z; m[2][1] = a2.z; m[2][2] = a3.z;  m[2][3] = 0.f;
       m[3][0] = a1.w; m[3][1] = a2.w; m[3][2] = a3.w;  m[3][3] = 1.f;
     }
 
-    // Constructor
-    matrix4(const matrix4& matrix) {
+    mat4(const mat4& matrix) {
 
       setAllValues(matrix.m[0][0], matrix.m[0][1], matrix.m[0][2], matrix.m[0][3],
 		   matrix.m[1][0], matrix.m[1][1], matrix.m[1][2], matrix.m[1][3],
@@ -66,15 +58,15 @@ namespace simple {
     }
 
     // + operator
-    matrix4 operator+(const matrix4 &n) const {
-      return matrix4(m[0][0]+n.m[0][0], m[0][1]+n.m[0][1], m[0][2]+n.m[0][2], m[0][3]+n.m[0][3],
-		     m[1][0]+n.m[1][0], m[1][1]+n.m[1][1], m[1][2]+n.m[1][2], m[1][3]+n.m[1][3],
-		     m[2][0]+n.m[2][0], m[2][1]+n.m[2][1], m[2][2]+n.m[2][2], m[2][3]+n.m[2][3],
-		     m[3][0]+n.m[3][0], m[3][1]+n.m[3][1], m[3][2]+n.m[3][2], m[3][3]+n.m[3][3]);
+    mat4 operator+(const mat4 &n) const {
+      return mat4(m[0][0]+n.m[0][0], m[0][1]+n.m[0][1], m[0][2]+n.m[0][2], m[0][3]+n.m[0][3],
+		  m[1][0]+n.m[1][0], m[1][1]+n.m[1][1], m[1][2]+n.m[1][2], m[1][3]+n.m[1][3],
+		  m[2][0]+n.m[2][0], m[2][1]+n.m[2][1], m[2][2]+n.m[2][2], m[2][3]+n.m[2][3],
+		  m[3][0]+n.m[3][0], m[3][1]+n.m[3][1], m[3][2]+n.m[3][2], m[3][3]+n.m[3][3]);
     }
 
     // += operator
-    matrix4& operator+=(const matrix4 &n) {
+    mat4& operator+=(const mat4 &n) {
       m[0][0]+=n.m[0][0]; m[0][1]+=n.m[0][1]; m[0][2]+=n.m[0][2]; m[0][3]+=n.m[0][3];
       m[1][0]+=n.m[1][0]; m[1][1]+=n.m[1][1]; m[1][2]+=n.m[1][2]; m[1][3]+=n.m[1][3];
       m[2][0]+=n.m[2][0]; m[2][1]+=n.m[2][1]; m[2][2]+=n.m[2][2]; m[2][3]+=n.m[2][3];
@@ -83,15 +75,15 @@ namespace simple {
     }
 
     // - operator
-    matrix4 operator-(const matrix4 &n) const {
-      return matrix4(m[0][0]-n.m[0][0], m[0][1]-n.m[0][1], m[0][2]-n.m[0][2], m[0][3]-n.m[0][3],
-		     m[1][0]-n.m[1][0], m[1][1]-n.m[1][1], m[1][2]-n.m[1][2], m[1][3]-n.m[1][3],
-		     m[2][0]-n.m[2][0], m[2][1]-n.m[2][1], m[2][2]-n.m[2][2], m[2][3]-n.m[2][3],
-		     m[3][0]-n.m[3][0], m[3][1]-n.m[3][1], m[3][2]-n.m[3][2], m[3][3]-n.m[3][3]);
+    mat4 operator-(const mat4 &n) const {
+      return mat4(m[0][0]-n.m[0][0], m[0][1]-n.m[0][1], m[0][2]-n.m[0][2], m[0][3]-n.m[0][3],
+		  m[1][0]-n.m[1][0], m[1][1]-n.m[1][1], m[1][2]-n.m[1][2], m[1][3]-n.m[1][3],
+		  m[2][0]-n.m[2][0], m[2][1]-n.m[2][1], m[2][2]-n.m[2][2], m[2][3]-n.m[2][3],
+		  m[3][0]-n.m[3][0], m[3][1]-n.m[3][1], m[3][2]-n.m[3][2], m[3][3]-n.m[3][3]);
     }
 
     // -= operator
-    matrix4& operator-=(const matrix4 &n) {
+    mat4& operator-=(const mat4 &n) {
       m[0][0]-=n.m[0][0]; m[0][1]-=n.m[0][1]; m[0][2]-=n.m[0][2]; m[0][3]-=n.m[0][3];
       m[1][0]-=n.m[1][0]; m[1][1]-=n.m[1][1]; m[1][2]-=n.m[1][2]; m[1][3]-=n.m[1][3];
       m[2][0]-=n.m[2][0]; m[2][1]-=n.m[2][1]; m[2][2]-=n.m[2][2]; m[2][3]-=n.m[2][3];
@@ -100,7 +92,7 @@ namespace simple {
     }
 
     // = operator
-    matrix4& operator=(const matrix4& matrix) {
+    mat4& operator=(const mat4& matrix) {
       if (&matrix != this) {
 	setAllValues(matrix.m[0][0], matrix.m[0][1], matrix.m[0][2], matrix.m[0][3],
 		     matrix.m[1][0], matrix.m[1][1], matrix.m[1][2], matrix.m[1][3],
@@ -111,7 +103,7 @@ namespace simple {
     }
 
     // == operator
-    bool operator==(const matrix4 &n) const {
+    bool operator==(const mat4 &n) const {
       return m[0][0]==n.m[0][0] && m[0][1]==n.m[0][1] && m[0][2]==n.m[0][2] && m[0][3]==n.m[0][3] &&
       m[1][0]==n.m[1][0] && m[1][1]==n.m[1][1] && m[1][2]==n.m[1][2] && m[1][3]==n.m[1][3] &&
       m[2][0]==n.m[2][0] && m[2][1]==n.m[2][1] && m[2][2]==n.m[2][2] && m[2][3]==n.m[2][3] &&
@@ -119,8 +111,8 @@ namespace simple {
     }
 
     // * operator
-    matrix4 operator*(const matrix4 &n) const {
-      matrix4 o;
+    mat4 operator*(const mat4 &n) const {
+      mat4 o;
       for(int i = 0; i  < 4; i++) {
 	for(int j = 0; j < 4; j++) {
 	  float v = 0;
@@ -134,20 +126,20 @@ namespace simple {
     }
 
     // * operator
-    vector3 operator*(const vector3 &v) const {
-      vector3 u =vector3(m[0][0]*v.x + m[0][1]*v.y + m[0][2]*v.z + m[0][3],
-			 m[1][0]*v.x + m[1][1]*v.y + m[1][2]*v.z + m[1][3],
-			 m[2][0]*v.x + m[2][1]*v.y + m[2][2]*v.z + m[2][3]);
+    vec3 operator*(const vec3 &v) const {
+      vec3 u =vec3(m[0][0]*v.x + m[0][1]*v.y + m[0][2]*v.z + m[0][3],
+		   m[1][0]*v.x + m[1][1]*v.y + m[1][2]*v.z + m[1][3],
+		   m[2][0]*v.x + m[2][1]*v.y + m[2][2]*v.z + m[2][3]);
       float w = m[3][0]*v.x + m[3][1]*v.y + m[3][2]*v.z + m[3][3];
       return u/w;
     }
 
     // * operator
-    vector4 operator*(const vector4 &v) const {
-      vector4 u = vector4(m[0][0]*v.x + m[0][1]*v.y + m[0][2]*v.z + v.w*m[0][3],
-			  m[1][0]*v.x + m[1][1]*v.y + m[1][2]*v.z + v.w*m[1][3],
-			  m[2][0]*v.x + m[2][1]*v.y + m[2][2]*v.z + v.w*m[2][3],
-			  m[3][0]*v.x + m[3][1]*v.y + m[3][2]*v.z + v.w*m[3][3]);
+    vec4 operator*(const vec4 &v) const {
+      vec4 u = vec4(m[0][0]*v.x + m[0][1]*v.y + m[0][2]*v.z + v.w*m[0][3],
+		    m[1][0]*v.x + m[1][1]*v.y + m[1][2]*v.z + v.w*m[1][3],
+		    m[2][0]*v.x + m[2][1]*v.y + m[2][2]*v.z + v.w*m[2][3],
+		    m[3][0]*v.x + m[3][1]*v.y + m[3][2]*v.z + v.w*m[3][3]);
       if(u.w != 0)
 	return u/u.w;
       else
@@ -155,15 +147,15 @@ namespace simple {
     }
 
     // * operator
-    matrix4 operator*(float f) const {
-      return matrix4(m[0][0]*f, m[0][1]*f, m[0][2]*f,  m[0][3]*f,
-		     m[1][0]*f, m[1][1]*f, m[1][2]*f,  m[1][3]*f,
-		     m[2][0]*f, m[2][1]*f, m[2][2]*f,  m[2][3]*f,
-		     m[3][0]*f, m[3][1]*f, m[3][2]*f,  m[3][3]*f);
+    mat4 operator*(float f) const {
+      return mat4(m[0][0]*f, m[0][1]*f, m[0][2]*f,  m[0][3]*f,
+		  m[1][0]*f, m[1][1]*f, m[1][2]*f,  m[1][3]*f,
+		  m[2][0]*f, m[2][1]*f, m[2][2]*f,  m[2][3]*f,
+		  m[3][0]*f, m[3][1]*f, m[3][2]*f,  m[3][3]*f);
     }
 
     // * operator
-    matrix4 &operator*=(float f) {
+    mat4 &operator*=(float f) {
       m[0][0]*=f; m[0][1]*=f; m[0][2]*=f;  m[0][3]*=f;
       m[1][0]*=f; m[1][1]*=f; m[1][2]*=f;  m[1][3]*=f;
       m[2][0]*=f; m[2][1]*=f; m[2][2]*=f;  m[2][3]*=f;
@@ -172,16 +164,16 @@ namespace simple {
     }
 
     // / operator
-    matrix4 operator/(float f) const {
+    mat4 operator/(float f) const {
       assert(f!=0);
-      return matrix4(m[0][0]/f, m[0][1]/f, m[0][2]/f,  m[0][3]/f,
-		     m[1][0]/f, m[1][1]/f, m[1][2]/f,  m[1][3]/f,
-		     m[2][0]/f, m[2][1]/f, m[2][2]/f,  m[2][3]/f,
-		     m[3][0]/f, m[3][1]/f, m[3][2]/f,  m[3][3]/f);
+      return mat4(m[0][0]/f, m[0][1]/f, m[0][2]/f,  m[0][3]/f,
+		  m[1][0]/f, m[1][1]/f, m[1][2]/f,  m[1][3]/f,
+		  m[2][0]/f, m[2][1]/f, m[2][2]/f,  m[2][3]/f,
+		  m[3][0]/f, m[3][1]/f, m[3][2]/f,  m[3][3]/f);
     }
 
     // /= operator
-    matrix4 &operator/=(float f) {
+    mat4 &operator/=(float f) {
       assert(f!=0);
       m[0][0]/=f; m[0][1]/=f; m[0][2]/=f;  m[0][3]/=f;
       m[1][0]/=f; m[1][1]/=f; m[1][2]/=f;  m[1][3]/=f;
@@ -191,25 +183,23 @@ namespace simple {
     }
 
     // - operator
-    matrix4 operator-() const {
-      return matrix4(-m[0][0], -m[0][1], -m[0][2],  -m[0][3],
-		     -m[1][0], -m[1][1], -m[1][2],  -m[1][3],
-		     -m[2][0], -m[2][1], -m[2][2],  -m[2][3],
-		     -m[3][0], -m[3][1], -m[3][2],  -m[3][3]);
+    mat4 operator-() const {
+      return mat4(-m[0][0], -m[0][1], -m[0][2],  -m[0][3],
+		  -m[1][0], -m[1][1], -m[1][2],  -m[1][3],
+		  -m[2][0], -m[2][1], -m[2][2],  -m[2][3],
+		  -m[3][0], -m[3][1], -m[3][2],  -m[3][3]);
     }
 
     // Return the transpose matrix
-    matrix4 getTranspose() const {
-      return matrix4(m[0][0], m[1][0], m[2][0], m[3][0],
-		     m[0][1], m[1][1], m[2][1], m[3][1],
-		     m[0][2], m[1][2], m[2][2], m[3][2],
-		     m[0][3], m[1][3], m[2][3], m[3][3]);
+    mat4 getTranspose() const {
+      return mat4(m[0][0], m[1][0], m[2][0], m[3][0],
+		  m[0][1], m[1][1], m[2][1], m[3][1],
+		  m[0][2], m[1][2], m[2][2], m[3][2],
+		  m[0][3], m[1][3], m[2][3], m[3][3]);
     }
 
-   void setToOrtho(float left, float right, float bottom, float top, float near, float far);
-
     // Return the inversed matrix
-    matrix4 getInverse() const {
+    mat4 getInverse() const {
       int indxc[4], indxr[4];
       int ipiv[4] = { 0, 0, 0, 0 };
       float minv[4][4];
@@ -283,7 +273,7 @@ namespace simple {
 	  }
 	}
       }
-      return matrix4(minv);
+      return mat4(minv);
     }
 
     // Method to set all the values in the matrix
@@ -298,7 +288,7 @@ namespace simple {
     }
 
     // Set the matrix to the identity matrix
-    matrix4 setToIdentity() {
+    mat4 setToIdentity() {
       m[0][0] = 1.f; m[0][1] = 0.f; m[0][2] = 0.f;  m[0][3] = 0.f;
       m[1][0] = 0.f; m[1][1] = 1.f; m[1][2] = 0.f;  m[1][3] = 0.f;
       m[2][0] = 0.f; m[2][1] = 0.f; m[2][2] = 1.f;  m[2][3] = 0.f;
@@ -338,57 +328,99 @@ namespace simple {
       return (m[0][0] + m[1][1] + m[2][2] + m[3][3]);
     }
 
-    // Return a 4x4 translation matrix
-    static matrix4 translationMatrix(const vector3& v);
+   mat4 translate(const vec3& v);
+   mat4 scale (const vec3& v);
+   static mat4 rotationMatrix(mat4 mat, const vec3& axis, float angle);
 
-    // Return a 4x4 rotation matrix
-    static matrix4 rotationMatrix(const vector3& axis, float angle);
+    static mat4 setOrtho(float left, float right, float bottom, float top, float near, float far);
   };
 
+  inline mat4 mat4::setOrtho(float left, float right, float bottom, float top, float near, float far)
+  {
+
+    float x_orth = 2 / (right - left);
+    float y_orth = 2 / (top - bottom);
+    float z_orth = -2 / (far - near);
+
+    float tx = -(right + left) / (right - left);
+    float ty = -(top + bottom) / (top - bottom);
+    float tz = -(far + near) / (far - near);
+
+    float m[4][4];
+    m[0][0] = x_orth;
+    m[1][0] = 0;
+    m[2][0] = 0;
+    m[3][0] = tx;
+    m[0][1] = 0;
+    m[1][1] = y_orth;
+    m[2][1] = 0;
+    m[3][1] = ty;
+    m[0][2] = 0;
+    m[1][2] = 0;
+    m[2][2] = z_orth;
+    m[3][2] = tz;
+    m[0][3] = 0;
+    m[1][3] = 0;
+    m[2][3] = 0;
+    m[3][3] = 1.0f;
+
+    return mat4(m);
+  }
+
   // * operator
-  inline matrix4 operator*(float f, const matrix4 & m) {
+  inline mat4 operator*(float f, const mat4 & m) {
     return (m * f);
   }
 
   // Return a 4x4 translation matrix
-  inline matrix4 matrix4::translationMatrix(const vector3& v) {
-    return matrix4(1, 0, 0, v.x,
-                   0, 1, 0, v.y,
-                   0, 0, 1, v.z,
-                   0, 0, 0, 1);
+  inline mat4 mat4::translate(const vec3& v) {
+      m[3][0] = v.x;
+      m[3][1] = v.y;
+      m[3][2] = v.z;
+      m[3][3] = 1;
+
+    return *this;
+  }
+
+  inline mat4 mat4::scale(const vec3& v) {
+      m[0][0] = v.x;
+      m[1][1] = v.y;
+      m[2][2] = v.z;
+      m[3][3] = 1;
+
+     return *this;
   }
 
   // Return a 4x4 rotation matrix
-  inline matrix4 matrix4::rotationMatrix(const vector3& axis, float angle) {
+  inline mat4 mat4::rotationMatrix(mat4 mat,const vec3& axis, float angle) {
 
-    float cosA = cos(angle);
-    float sinA = sin(angle);
-    matrix4 rotationMatrix;
-    rotationMatrix.setToIdentity();
+      float cosA = cos(RADIANS(angle));
+         float sinA = sin(RADIANS(angle));
+         mat4 rotationMatrix;
+         rotationMatrix.setToIdentity();
 
-    rotationMatrix.m[0][0] = cosA + (1-cosA) * axis.x * axis.x;
-    rotationMatrix.m[0][1] = (1-cosA) * axis.x * axis.y - axis.z * sinA;
-    rotationMatrix.m[0][2] = (1-cosA) * axis.x * axis.z + axis.y * sinA;
-    rotationMatrix.m[0][3] = 0.f;
+         rotationMatrix.m[0][0] = cosA + (1-cosA) * axis.x * axis.x;
+         rotationMatrix.m[0][1] = (1-cosA) * axis.x * axis.y - axis.z * sinA;
+         rotationMatrix.m[0][2] = (1-cosA) * axis.x * axis.z + axis.y * sinA;
+         rotationMatrix.m[0][3] = mat.m[0][3];
 
-    rotationMatrix.m[1][0] = (1-cosA) * axis.x * axis.y + axis.z * sinA;
-    rotationMatrix.m[1][1] = cosA + (1-cosA) * axis.y * axis.y;
-    rotationMatrix.m[1][2] = (1-cosA) * axis.y * axis.z - axis.x * sinA;
-    rotationMatrix.m[1][3] = 0.f;
+         rotationMatrix.m[1][0] = (1-cosA) * axis.x * axis.y + axis.z * sinA;
+         rotationMatrix.m[1][1] = cosA + (1-cosA) * axis.y * axis.y;
+         rotationMatrix.m[1][2] = (1-cosA) * axis.y * axis.z - axis.x * sinA;
+         rotationMatrix.m[1][3] = mat.m[1][3];
 
-    rotationMatrix.m[2][0] = (1-cosA) * axis.x * axis.z - axis.y * sinA;
-    rotationMatrix.m[2][1] = (1-cosA) * axis.y * axis.z + axis.x * sinA;
-    rotationMatrix.m[2][2] = cosA + (1-cosA) * axis.z * axis.z;
-    rotationMatrix.m[2][3] = 0.f;
+         rotationMatrix.m[2][0] = (1-cosA) * axis.x * axis.z - axis.y * sinA;
+         rotationMatrix.m[2][1] = (1-cosA) * axis.y * axis.z + axis.x * sinA;
+         rotationMatrix.m[2][2] = cosA + (1-cosA) * axis.z * axis.z;
+         rotationMatrix.m[2][3] = mat.m[2][3];
 
-    rotationMatrix.m[3][0] = 0.f;
-    rotationMatrix.m[3][1] = 0.f;
-    rotationMatrix.m[3][2] = 0.f;
-    rotationMatrix.m[3][3] = 1.f;
-
+         rotationMatrix.m[3][0] = mat.m[3][0];
+         rotationMatrix.m[3][1] = mat.m[3][1];
+         rotationMatrix.m[3][2] = mat.m[3][2];
+         rotationMatrix.m[3][3] = 1.f;
     return rotationMatrix;
   }
 
 }
 
-#endif 
+#endif

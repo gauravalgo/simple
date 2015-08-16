@@ -38,8 +38,8 @@ int m_tex_attribute;
 shader* m_shader;
 public:
 float* m_vertices;
-short* m_indices;
-    void create(shader &a_shader, float vertices[], int sizeV, short indices[], short sizeI);
+unsigned short* m_indices;
+    void create(shader &a_shader, float vertices[], int sizeV,unsigned short indices[], short sizeI);
     void draw(int count);
 };
 }

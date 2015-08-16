@@ -32,7 +32,7 @@ namespace simple {
 
 #define PI (atan(1) * 4)
 #define RADIANS(deg)  ((deg) * PI / 180)
-#define DEGREES (rad)  ((rad) * 180 / PI)
+#define DEGREES(rad)  ((rad) * 180 / PI)
 
 #define LOG(m) cout << m << endl
 #define LENGTH(v) (sizeof(v)/sizeof(*v))

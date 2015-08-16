@@ -7,44 +7,42 @@
 
 namespace simple {
 
-  class vector2 {
+  class vec2 {
 
   public:
 
     float x, y;
 
-    // -------------------- Methods -------------------- //
+    // Constructor
+  vec2(float x=0, float y=0) : x(x), y(y) {}
 
     // Constructor
-  vector2(float x=0, float y=0) : x(x), y(y) {}
-
-    // Constructor
-  vector2(const vector2& vector) : x(vector.x), y(vector.y) {}
+  vec2(const vec2& vector) : x(vector.x), y(vector.y) {}
 
     // + operator
-    vector2 operator+(const vector2 &v) const {
-      return vector2(x + v.x, y + v.y);
+    vec2 operator+(const vec2 &v) const {
+      return vec2(x + v.x, y + v.y);
     }
 
     // += operator
-    vector2& operator+=(const vector2 &v) {
+    vec2& operator+=(const vec2 &v) {
       x += v.x; y += v.y;
       return *this;
     }
 
     // - operator
-    vector2 operator-(const vector2 &v) const {
-      return vector2(x - v.x, y - v.y);
+    vec2 operator-(const vec2 &v) const {
+      return vec2(x - v.x, y - v.y);
     }
 
     // -= operator
-    vector2& operator-=(const vector2 &v) {
+    vec2& operator-=(const vec2 &v) {
       x -= v.x; y -= v.y;
       return *this;
     }
 
     // = operator
-    vector2& operator=(const vector2& vector) {
+    vec2& operator=(const vec2& vector) {
       if (&vector != this) {
 	x = vector.x;
 	y = vector.y;
@@ -53,30 +51,30 @@ namespace simple {
     }
 
     // == operator
-    bool operator==(const vector2 &v) const {
+    bool operator==(const vec2 &v) const {
       return x == v.x && y == v.y;
     }
 
     // * operator
-    vector2 operator*(float f) const {
-      return vector2(f*x, f*y);
+    vec2 operator*(float f) const {
+      return vec2(f*x, f*y);
     }
 
     // *= operator
-    vector2 &operator*=(float f) {
+    vec2 &operator*=(float f) {
       x *= f; y *= f;
       return *this;
     }
 
     // / operator
-    vector2 operator/(float f) const {
+    vec2 operator/(float f) const {
       assert(f!=0);
       float inv = 1.f / f;
-      return vector2(x * inv, y * inv);
+      return vec2(x * inv, y * inv);
     }
 
     // /= operator
-    vector2 &operator/=(float f) {
+    vec2 &operator/=(float f) {
       assert(f!=0);
       float inv = 1.f / f;
       x *= inv; y *= inv;
@@ -84,8 +82,8 @@ namespace simple {
     }
 
     // - operator
-    vector2 operator-() const {
-      return vector2(-x, -y);
+    vec2 operator-() const {
+      return vec2(-x, -y);
     }
 
     // [] operator
@@ -99,7 +97,7 @@ namespace simple {
     }
 
     // Normalize the vector and return it
-    vector2 normalize() {
+    vec2 normalize() {
       float l = length();
       assert(l > 0);
       x /= l;
@@ -108,7 +106,7 @@ namespace simple {
     }
 
     // Clamp the vector values between 0 and 1
-    vector2 clamp01() {
+    vec2 clamp01() {
       if (x>1.f) x=1.f;
       else if (x<0.f) x=0.f;
       if (y>1.f) y=1.f;
