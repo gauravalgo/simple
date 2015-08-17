@@ -18,7 +18,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
-#include "../graphics/definitions.h"
+#include "../utils/definitions.h"
 #include <vector>
 #include <iostream>
 

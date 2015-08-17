@@ -18,7 +18,7 @@
 #include <cassert>
 #include <fstream>
 #include <iostream>
-#include "definitions.h"
+#include "../utils/definitions.h"
 
 using namespace simple;
 using namespace std;

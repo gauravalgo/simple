@@ -6,11 +6,17 @@ FILE(
 GLOB SOURCE_FILES
 src/maths/*.h
 src/maths/*.cpp
+
 src/graphics/*.cpp
 src/graphics/*.c
 src/graphics/*.h
+
 src/window/*.cpp
 src/window/*.h
+
+src/utils/*.cpp
+src/utils/*.h
+
 src/*.h
 src/*.cpp
 )
@@ -46,19 +52,26 @@ add_executable(
 #PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
 #INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS})
 add_subdirectory(deps/sdl2)
+set(SDL2_INCLUDE_DIR deps/sdl2/include)
 include_directories(deps/sdl2/include)
+
+#freetype
+add_subdirectory(deps/freetype)
+set(FREETYPE_INCLUDE_DIR deps/freetype/include)
+set(FREETYPE_LIBRARIES freetype)
+include_directories(deps/freetype/include)
 
 if(APPLE)
   target_link_libraries(simple ${SDL2_LIBRARIES} glfw
-    ${GLFW_LIBRARIES})
+    ${GLFW_LIBRARIES} ${FREETYPE_LIBRARIES})
 endif()
 
 if(UNIX)
   target_link_libraries(simple dl glfw
-    ${GLFW_LIBRARIES} ${SDL2_LIBRARIES})
+    ${GLFW_LIBRARIES} ${FREETYPE_LIBRARIES} ${SDL2_LIBRARIES})
 endif()
 
 if(MINGW)
   target_link_libraries(simple ws2_32.lib glfw
-    ${GLFW_LIBRARIES} ${SDL2_LIBRARIES})
+    ${GLFW_LIBRARIES} ${FREETYPE_LIBRARIES} ${SDL2_LIBRARIES})
 endif()

@@ -22,7 +22,7 @@
 
 #include <stb_image.h>
 
-#include "../graphics/definitions.h"
+#include "../utils/definitions.h"
 
 // Namespaces
 using namespace simple;

@@ -20,7 +20,7 @@
 // Libraries
 #include <string>
 #include <cassert>
-#include "definitions.h"
+#include "../utils/definitions.h"
 #include <GL/glew.h>
 
 using namespace std;
