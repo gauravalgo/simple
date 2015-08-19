@@ -26,20 +26,20 @@
 
 // Namespaces
 using namespace simple;
+using namespace simple::graphics;
 
 texture2D::texture2D() : mID(0), mLayer(0), mWidth(0), mHeight(0) {
-
 }
 
 texture2D::~texture2D() {
- glDeleteTextures(1,&mID);
- if (mID != 0) {
-   glDeleteTextures(1, &mID);
-   mID = 0;
-   mLayer = 0;
-   mWidth = 0;
-   mHeight = 0;
- }
+  glDeleteTextures(1,&mID);
+  if (mID != 0) {
+    glDeleteTextures(1, &mID);
+    mID = 0;
+    mLayer = 0;
+    mWidth = 0;
+    mHeight = 0;
+  }
 }
 
 // Create the texture from an array of pixels
@@ -74,7 +74,7 @@ void texture2D::create(const std::string& fileName)  {
   unsigned char* pixels = stbi_load((fileName).c_str(),&mWidth,&mHeight,&numComponents,4);
 
   if(pixels == NULL)
-      LOG("Error: Could not load image - " << fileName);
+    LOG("Error: Could not load image - " << fileName);
 
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

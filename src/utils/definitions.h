@@ -23,11 +23,12 @@
 using namespace std;
 
 namespace simple {
-
+  
   typedef unsigned int uint;
-  const float PI = 3.141592654f;
-
-#define VERSION "0.1.0"
+  typedef unsigned int ushort;
+  typedef unsigned char uchar;
+  
+#define VERSION "0.1.2"
 #define DEBBUG 1
 
 #define PI (atan(1) * 4)

@@ -16,7 +16,6 @@
 
 #include <iostream>
 
-#include "window/sdl_window.h"
 #include "graphics/shader.h"
 #include "maths/vec3.h"
 #include "utils/definitions.h"
@@ -25,8 +24,12 @@
 #include "graphics/default_shaders.h"
 #include "utils/file.h"
 #include "graphics/font.h"
+#include "graphics/batch2d.h"
 
-#include <GL/glew.h>
+#include <stdlib.h> 
+
+#include <GLFW/glfw3.h>
+#include "window/glfw_window.h"
 
 
 using std::string;
@@ -34,23 +37,63 @@ using std::string;
 #include "maths/mat4.h"
 
 using namespace simple;
+using namespace simple::graphics;
+using namespace simple::maths;
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
 FT_Library ft;
 
+mat4 proj;
+
+batch2d* batch;
+texture2D* texture;
+shader* m_shader;
+mesh* m;
+uint uniProj;
+glfw_window window;
+
+float deltaTime;
+int lastFrameTime = 0, currentFrameTime = 0;
+int fpsMill = 1000/60;
+void update()
+{
+    //update stuff
+    lastFrameTime = currentFrameTime;
+    currentFrameTime = window.getTicks();
+
+    deltaTime = (float) (currentFrameTime - lastFrameTime) ; // 1000.0f;
+
+    window.setDeltaTime(deltaTime);
+
+    window.printFPS();
+    window.update();
+}
+
+void render()
+{
+    m_shader->bind();
+    texture->bind();
+
+    batch->begin();
+    for(int i = 0; i < 100;i++)
+      batch->draw(texture,rand()%window.getWidth(),rand()%window.getHeight());
+    batch->end();
+
+    texture->unbind();
+    m_shader->unbind();
+}
+
 int main()
 {
 
-  //  if(DEBBUG)
-  //  LOG("Simple - version " << VERSION << " - Debbug messages are enabled!");
-  //if(!DEBBUG)
-  // LOG("Simple - version " << VERSION << " - Debbug messages are disabled!");
+  if(DEBBUG)
+    LOG("Simple - version " << VERSION << " - Debbug messages are enabled!");
+  if(!DEBBUG)
+    LOG("Simple - version " << VERSION << " - Debbug messages are disabled!");
 
-  sdl_window window;
-
-  window.makeWindow("Simple", -1, -1, 800, 600);
+  window.create("Replacing SDL with GLFW and Batches", 640, 480);
 
   if(FT_Init_FreeType(&ft)){
     LOG("Error: Could not init freetype lib!");
@@ -59,109 +102,41 @@ int main()
   
   glEnable(GL_DEPTH);
 
-  shader s;
-  s.create(simple::texture_vertex,simple::texture_fragment);
+  m_shader = new shader();
+  m_shader->create(texture_vertex,texture_fragment);
+  m_shader->bind();
 
-  shader s_f;
-  s_f.create(font_vertex,font_fragment);
+  m = new mesh();
 
-  simple::font m_font;
-  m_font.begin();
-  m_font.load(ft,s_f,"res/font.ttf");
-  m_font.setFontSize(18);
-  m_font.setColor(s_f,.2f,.8,.5,1);
-  
-  float v[] = {
-    //  Position      Color             Texcoords
-    -14,  14, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, // Top-left
-    14,  14, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, // Top-right
-    14, -14, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, // Bottom-right
-    -14, -14, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f  // Bottom-left
-  };
+  proj.setToIdentity();
+  proj = proj.setOrtho(0, window.getWidth(), window.getHeight(), 0, 0, 100);
 
+  uniProj = glGetUniformLocation(m_shader->getProgram(), "proj");
+  glUniformMatrix4fv(uniProj, 1, GL_FALSE, proj.dataBlock());
 
-  unsigned short elements[] =
-    { 0, 1, 2,
-      2, 3, 0
-    };
-
-  //mesh* m_mesh = new mesh();
-  //m_mesh->create(s, v, sizeof(v), elements, sizeof(elements));
-
-
-  texture2D* m_texture = new texture2D();
-
-  //m_texture->create(2,2,pixels);
-  m_texture->create("./res/test2.png");
-
-  float deltaTime;
-  int lastFrameTime = 0, currentFrameTime = 0;
+  batch = new batch2d();
+  batch->setShader(m_shader);
+  batch->create();
+  texture = new texture2D();
+  texture->create("res/test1.png");
 
   currentFrameTime = window.getTicks();
 
-  int fpsMill = 1000/60;
-
-  mat4 proj;
-  proj.setToIdentity();
-  proj = mat4::setOrtho(0, 800, 600, 0, 0, 100);
-
-  //uint uniProj = glGetUniformLocation(s.getProgram(), "proj");
-  //glUniformMatrix4fv(uniProj, 1, GL_FALSE, proj.dataBlock());
-
-  mat4 model;
-  model.setToIdentity();
-  model.scale(vec3(2,2,1));
-  model.translate(vec3(100.0f,100.0f,0));
-  //model = mat4::rotationMatrix(model,vec3(0,0,-1), -180);
-  
-  uint uniModel = glGetUniformLocation(s.getProgram(), "model");
-  //glUniformMatrix4fv(uniModel, 1, GL_FALSE, model.dataBlock());
-
-  //dostuff(s_f);
-  
   while(window.getRunning()){
-
-    lastFrameTime = currentFrameTime;
-    currentFrameTime = window.getTicks();
-
-    deltaTime = (float) (currentFrameTime - lastFrameTime) / 1000.0f;
-    
-    window.setDeltaTime(deltaTime);
-
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(0.4f,0.2f,0.4f,1);
-    glViewport(0,0,800,600);
+    glClearColor(0.39f,0.37f,0.45f,1);
+    glViewport(0,0,window.getWidth(),window.getHeight());
 
-    window.printFPS();
+    render(); //TODO check if render should be first
+    update();
 
-    /*
-    m_texture->bind();
-    s.bind();
-    m_mesh->draw(6);
-    s.unbind();
-    m_texture->unbind();
-    */
-
-    float sx = 2.0f / 800;
-    float sy = 2.0f / 600;
-    
-    s_f.bind();
-    m_font.draw("Hello little boy! Enjoy the simple life.", -1 + 8 * sx,   1 - 50 * sy, sx, sy);
-    s_f.unbind();
-    
-    window.update();
-
-    int currentSpeed = window.getTicks() - currentFrameTime;
-    if(fpsMill > currentSpeed) {
-      window.delay(fpsMill - currentSpeed);
-    }
+    //int currentSpeed = window.getTicks() - currentFrameTime;
+     //if(fpsMill > currentSpeed) {
+        //window.delay(fpsMill - currentSpeed);
+     //}
   }
-  m_texture->destroy();
 
-  window.quit();
-
-  //  SAFE_DELETE(m_mesh);
-  SAFE_DELETE(m_texture);
+  SAFE_DELETE(m_shader);
   return 0;
 }
 

@@ -21,6 +21,8 @@
 #include "../utils/definitions.h"
 
 using namespace simple;
+using namespace simple::graphics;
+
 using namespace std;
 
 shader::shader():
@@ -38,91 +40,89 @@ shader::~shader()
 void shader::create(const char* vertexShaderFilename,
                     const char* fragmentShaderFilename) {
 
-    GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-    GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+  GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+  GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
-    glShaderSource(vertexShaderID, 1, &vertexShaderFilename, 0);
-    glShaderSource(fragmentShaderID, 1, &fragmentShaderFilename, 0);
+  glShaderSource(vertexShaderID, 1, &vertexShaderFilename, 0);
+  glShaderSource(fragmentShaderID, 1, &fragmentShaderFilename, 0);
 
-    glCompileShader(vertexShaderID);
-    glCompileShader(fragmentShaderID);
+  glCompileShader(vertexShaderID);
+  glCompileShader(fragmentShaderID);
 
-    GLint compileStatus;
+  GLint compileStatus;
 
-    glGetShaderiv(vertexShaderID,GL_COMPILE_STATUS,&compileStatus);
-    if(compileStatus != GL_TRUE)
+  glGetShaderiv(vertexShaderID,GL_COMPILE_STATUS,&compileStatus);
+  if(compileStatus != GL_TRUE)
     {
-        GLint info;
-        glGetShaderiv(vertexShaderID,GL_INFO_LOG_LENGTH,&info);
-        GLchar* buffer = new GLchar[info];
+      GLint info;
+      glGetShaderiv(vertexShaderID,GL_INFO_LOG_LENGTH,&info);
+      GLchar* buffer = new GLchar[info];
 
-        int bufferSize;
-        glGetShaderInfoLog(vertexShaderID, info,&bufferSize,buffer);
+      int bufferSize;
+      glGetShaderInfoLog(vertexShaderID, info,&bufferSize,buffer);
 
-        std::cout << buffer << std::endl;
+      std::cout << buffer << std::endl;
 
-        delete[] buffer;
-        glDeleteShader(vertexShaderID);
-        glDeleteShader(fragmentShaderID);
+      delete[] buffer;
+      glDeleteShader(vertexShaderID);
+      glDeleteShader(fragmentShaderID);
     }
 
-    glGetShaderiv(fragmentShaderID,GL_COMPILE_STATUS,&compileStatus);
-    if(compileStatus != GL_TRUE)
+  glGetShaderiv(fragmentShaderID,GL_COMPILE_STATUS,&compileStatus);
+  if(compileStatus != GL_TRUE)
     {
-        GLint info;
-        glGetShaderiv(fragmentShaderID,GL_INFO_LOG_LENGTH,&info);
-        GLchar* buffer = new GLchar[info];
+      GLint info;
+      glGetShaderiv(fragmentShaderID,GL_INFO_LOG_LENGTH,&info);
+      GLchar* buffer = new GLchar[info];
 
-        int bufferSize;
-        glGetShaderInfoLog(fragmentShaderID, info,&bufferSize,buffer);
+      int bufferSize;
+      glGetShaderInfoLog(fragmentShaderID, info,&bufferSize,buffer);
 
-        std::cout << buffer << std::endl;
+      std::cout << buffer << std::endl;
 
-        delete[] buffer;
-        glDeleteShader(vertexShaderID);
-        glDeleteShader(fragmentShaderID);
+      delete[] buffer;
+      glDeleteShader(vertexShaderID);
+      glDeleteShader(fragmentShaderID);
     }
 
-    GLuint program = glCreateProgram();
-    glAttachShader(program, vertexShaderID);
-    glAttachShader(program, fragmentShaderID);
+  GLuint program = glCreateProgram();
+  glAttachShader(program, vertexShaderID);
+  glAttachShader(program, fragmentShaderID);
 
-    glLinkProgram(program);
+  glLinkProgram(program);
 
-    GLint isLinked = 0;
-    glGetProgramiv(program, GL_LINK_STATUS, (int *)&isLinked);
-    if(isLinked == GL_FALSE)
+  GLint isLinked = 0;
+  glGetProgramiv(program, GL_LINK_STATUS, (int *)&isLinked);
+  if(isLinked == GL_FALSE)
     {
-        GLint info = 0;
-        glGetProgramiv(program, GL_INFO_LOG_LENGTH, &info);
-        GLchar* buffer=  new GLchar[info];
+      GLint info = 0;
+      glGetProgramiv(program, GL_INFO_LOG_LENGTH, &info);
+      GLchar* buffer=  new GLchar[info];
 
-        int bufferSize;
-        glGetProgramInfoLog(program, info, &bufferSize, buffer);
+      int bufferSize;
+      glGetProgramInfoLog(program, info, &bufferSize, buffer);
 
-        glDeleteProgram(program);
-        glDeleteShader(vertexShaderID);
-        glDeleteShader(fragmentShaderID);
+      glDeleteProgram(program);
+      glDeleteShader(vertexShaderID);
+      glDeleteShader(fragmentShaderID);
     }
 
-    mProgramObjectID = program;
+  mProgramObjectID = program;
 
-    glUseProgram(mProgramObjectID);
-
-    if (DEBBUG)
-     std::cout<<"Shader compiled and ready to be used!" << std::endl;
+  if (DEBBUG)
+    std::cout<<"Shader compiled and ready to be used!" << std::endl;
 }
 
 void shader::bind()
 {
-   if(mProgramObjectID == 0)
-       LOG("Error: create method must be called first!");
-   glUseProgram(mProgramObjectID);
+  if(mProgramObjectID == 0)
+    LOG("Error: shader, create method must be called first!");
+  glUseProgram(mProgramObjectID);
 }
 
 void shader::unbind()
 {
-    glUseProgram(0);
+  glUseProgram(0);
 }
 
 

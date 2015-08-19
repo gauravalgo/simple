@@ -23,57 +23,72 @@
 #include <iostream>
 
 using namespace simple;
+using namespace simple::graphics;
 
 mesh::mesh():
-    m_position_attribute(0),
-    m_color_attribute(0)
+  m_position_attribute(0),
+  m_color_attribute(0),
+  m_vbo(0),
+  m_tex_attribute(0)
 {
 
 }
 
 mesh::~mesh()
 {
+    glDisableVertexAttribArray(m_tex_attribute);
     glDisableVertexAttribArray(m_position_attribute);
     glDisableVertexAttribArray(m_color_attribute);
 }
 
-void mesh::create(shader& a_shader,float vertices[], int sizeV, unsigned short indices[], short sizeI)
+void mesh::create(shader* a_shader,float vertices[], int sizeV, unsigned short indices[], short sizeI)
 {
-    uint vbo;
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  m_vertices = vertices;
+  m_sizeV = sizeV;
 
-    m_position_attribute = glGetAttribLocation(a_shader.getProgram(), "position");
-    glEnableVertexAttribArray(m_position_attribute);
-    glVertexAttribPointer(m_position_attribute, 2, GL_FLOAT, GL_FALSE, 7*sizeof(float), 0);
+  m_indices = indices;
+  m_sizeI = sizeI;
 
-    m_color_attribute = glGetAttribLocation(a_shader.getProgram(), "color");
-    glEnableVertexAttribArray(m_color_attribute);
-    glVertexAttribPointer(m_color_attribute, 3, GL_FLOAT, GL_FALSE, 7*sizeof(float), (void*)(2*sizeof(float)));
+  glGenBuffers(1, &m_vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+  glBufferData(GL_ARRAY_BUFFER, m_sizeV, m_vertices, GL_STATIC_DRAW);
 
-    m_tex_attribute = glGetAttribLocation(a_shader.getProgram(), "texcoords");
-    glEnableVertexAttribArray(m_tex_attribute);
-    glVertexAttribPointer(m_tex_attribute, 2, GL_FLOAT, GL_FALSE, 7*sizeof(float), (void*)(5*sizeof(float)));
-    m_vertices = vertices;
+  m_position_attribute = glGetAttribLocation(a_shader->getProgram(), "position");
+  glEnableVertexAttribArray(m_position_attribute);
+  glVertexAttribPointer(m_position_attribute, 2, GL_FLOAT, GL_FALSE, 7*sizeof(float), 0);
 
-    glBufferData(GL_ARRAY_BUFFER, sizeV, vertices, GL_STATIC_DRAW);
+  m_color_attribute = glGetAttribLocation(a_shader->getProgram(), "color");
+  glEnableVertexAttribArray(m_color_attribute);
+  glVertexAttribPointer(m_color_attribute, 3, GL_FLOAT, GL_FALSE, 7*sizeof(float), (void*)(2*sizeof(float)));
 
-    m_indices = indices;
+  m_tex_attribute = glGetAttribLocation(a_shader->getProgram(), "texcoords");
+  glEnableVertexAttribArray(m_tex_attribute);
+  glVertexAttribPointer(m_tex_attribute, 2, GL_FLOAT, GL_FALSE, 7*sizeof(float), (void*)(5*sizeof(float)));
 
-    uint ebo;
-    glGenBuffers(1, &ebo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeI, indices, GL_STATIC_DRAW);
-
+  glGenBuffers(1, &m_ebo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_sizeI, m_indices, GL_STATIC_DRAW);
 }
 
 void mesh::draw(int count)
 {
-    glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_SHORT, 0);
-    //glDrawArrays(GL_TRIANGLES, 0, count);
+  //glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_SHORT, 0);
+  glDrawArrays(GL_TRIANGLES, 0, count);
 }
 
+void mesh::begin()
+{
+  glEnableVertexAttribArray(m_position_attribute);
+  glEnableVertexAttribArray(m_color_attribute);
+  glEnableVertexAttribArray(m_tex_attribute);
+}
 
+void mesh::end()
+{
+  glDisableVertexAttribArray(m_tex_attribute);
+  glDisableVertexAttribArray(m_position_attribute);
+  glDisableVertexAttribArray(m_color_attribute);
+}
 
 
 

@@ -14,46 +14,42 @@
  * limitations under the License.
  ******************************************************************************/
 
-#ifndef MESH_H
-#define MESH_H
-#include <iostream>
-#include <stdio.h>
-#include <string.h>
-#include "shader.h"
-#include <vector>
-#include <iostream>
+#ifndef BATCH2D_H
+#define BATCH2D_H
 
+#include "shader.h"
+#include "../maths/vec3.h"
+#include "../maths/mat4.h"
 #include "../utils/definitions.h"
+#include "mesh.h"
+#include "texture2D.h"
 
 namespace simple
 {
   namespace graphics
   {
-    class mesh
+    class batch2d
     {
     public:
-      mesh();
-      ~mesh();
+      batch2d();
+      ~batch2d();
     private:
-      int m_position_attribute;
-      int m_color_attribute;
-      int m_tex_attribute;
-      uint m_vbo;
-      uint m_ebo;
       shader* m_shader;
-      float* m_vertices;
-      int m_sizeV;
-      unsigned short* m_indices;
-      unsigned short m_sizeI;
+      texture2D* m_texture;
+      mesh* m_mesh;
+      float m_vertices[5028]; //28
     public:
-      void create(shader* a_shader, float vertices[], int sizeV,unsigned short indices[], short sizeI);
-
-      void setVertices(float* v, int sV){m_vertices = v; m_sizeV = sV;}
-      void setIndices(unsigned short* i, unsigned short sI){m_indices = i; m_sizeI = sI;}
-
       void begin();
       void end();
-      void draw(int count);
+      void draw(texture2D* texture, float x, float y);
+      void renderMesh();
+      void create();
+    private:
+      void switchTexture(texture2D* texture);
+      int index;
+
+    public:
+      void setShader(shader* s){m_shader = s;}
     };
   }
 }

@@ -22,6 +22,7 @@
 #include FT_FREETYPE_H
 
 using namespace simple;
+using namespace simple::graphics;
 
 #include "shader.h"
 
@@ -35,12 +36,7 @@ font::~font()
   
 }
 
-void font::begin()
-{
-  glEnable(GL_BLEND);
-}
-
-void font::load(FT_Library ft,shader s,const char* fontPath)
+void font::load(FT_Library ft, shader s, const char* fontPath)
 {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -54,14 +50,15 @@ void font::load(FT_Library ft,shader s,const char* fontPath)
   //Set a default size for our font
   FT_Set_Pixel_Sizes(m_face, 0, 12);
   
-  //Not: We are must use a font shader !
+  //Note: We must use a font shader !
   //Take a look at graphics/default_shaders.h
   GLuint tex;
+  glEnable(GL_TEXTURE_2D);
   glActiveTexture(GL_TEXTURE0);
   glGenTextures(1, &tex);
   glBindTexture(GL_TEXTURE_2D, tex);
-  uint unitex = glGetUniformLocation(s.getProgram(), "tex");
-  glUniform1i(unitex, 0);
+  font::m_tex = glGetUniformLocation(s.getProgram(), "tex");
+  glUniform1i(m_tex, 0);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -72,10 +69,22 @@ void font::load(FT_Library ft,shader s,const char* fontPath)
 
   GLuint vbo;
   glGenBuffers(1, &vbo);
-  uint co = glGetAttribLocation(s.getProgram(), "coord");
-  glEnableVertexAttribArray(co);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glVertexAttribPointer(co, 4, GL_FLOAT, GL_FALSE, 0, 0);
+  
+}
+
+void font::begin()
+{
+  glEnable(GL_BLEND);
+  //glEnableVertexAttribArray(font::m_coord);
+  glEnableVertexAttribArray(font::m_tex);
+}
+
+void font::end()
+{
+  //glDisableVertexAttribArray(font::m_coord);
+  glDisableVertexAttribArray(font::m_tex);
+  glDisable(GL_BLEND);
 }
 
 void font::draw(const char* text, float x, float y, float sx, float sy)
@@ -90,12 +99,12 @@ void font::draw(const char* text, float x, float y, float sx, float sy)
 		 GL_TEXTURE_2D,
 		 0,
 		 GL_RED,
-         m_glyph->bitmap.width,
-         m_glyph->bitmap.rows,
+		 m_glyph->bitmap.width,
+		 m_glyph->bitmap.rows,
 		 0,
 		 GL_RED,
 		 GL_UNSIGNED_BYTE,
-         m_glyph->bitmap.buffer
+		 m_glyph->bitmap.buffer
 		 );
  
     float x2 = x + m_glyph->bitmap_left * sx;
@@ -118,20 +127,14 @@ void font::draw(const char* text, float x, float y, float sx, float sy)
   }
 }
 
-void font::setColor(shader s,float r, float g, float b, float a)
+void font::setColor(shader* s,float r, float g, float b, float a)
 {
-   GLfloat color[4] = {r,g,b,a};
-   uint uniColor = glGetUniformLocation(s.getProgram(),"color");
-    glUniform4fv(uniColor, 1, color);
-
+  GLfloat color[4] = {r,g,b,a};
+  uint uniColor = glGetUniformLocation(s->getProgram(),"color");
+  glUniform4fv(uniColor, 1, color);
 }
 
 void font::setFontSize(int size)
 {
   FT_Set_Pixel_Sizes(m_face, 0, size);
-}
-
-void font::end()
-{
-  glDisable(GL_BLEND);
 }

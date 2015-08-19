@@ -24,7 +24,7 @@ src/*.cpp
 ## Set version and info
 set(simple_major_version 0)
 set(simple_minor_version 1)
-set(simple_patch_version 0)
+set(simple_patch_version 2)
 
 set(simple_package "simple")
 set(simple_creator "Muresan Vlad")
@@ -45,15 +45,6 @@ add_executable(
   deps/glew/src/glew.c
   deps/stb_image/stb_image.c
 )
-
-#SDL2
-#Autofind?
-#INCLUDE(FindPkgConfig)
-#PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
-#INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS})
-add_subdirectory(deps/sdl2)
-set(SDL2_INCLUDE_DIR deps/sdl2/include)
-include_directories(deps/sdl2/include)
 
 #freetype
 add_subdirectory(deps/freetype)

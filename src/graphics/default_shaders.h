@@ -19,54 +19,58 @@
 
 namespace simple
 {
+  namespace graphics
+  {
 
-  const char* font_vertex =
-    "#version 130\n"
-    "attribute vec4 coord;"
-    "varying vec2 texcoord;"
+    const char* font_vertex =
+      "#version 130\n"
+      "attribute vec4 coord;"
+      "varying vec2 texcoord;"
 
-    "void main(void) {"
-    " gl_Position = vec4(coord.xy, 0, 1);"
-    "texcoord = coord.zw;"
-    "}";
+      "uniform mat4 proj = mat4(1);"
+    
+      "void main(void) {"
+      "gl_Position = proj * vec4(coord.xy, 0, 1);"
+      "texcoord = coord.zw;"
+      "}";
 
-  const char* font_fragment =
-    "#version 130\n"
-    "varying vec2 texcoord;"
-    "uniform sampler2D tex;"
-    "uniform vec4 color;"
+    const char* font_fragment =
+      "#version 130\n"
+      "varying vec2 texcoord;"
+      "uniform sampler2D tex;"
+      "uniform vec4 color;"
 
-    "void main(void) {"
-    "gl_FragColor = vec4(1, 1, 1, texture2D(tex, texcoord).r) * color;"
-    "}";
+      "void main(void) {"
+      "gl_FragColor = vec4(1, 1, 1, texture2D(tex, texcoord).r) * color;"
+      "}";
   
-  const char* texture_fragment =
-    "#version 130\n"
+    const char* texture_fragment =
+      "#version 130\n"
 
-    "in vec3 Color;"
-    "in vec2 Texcoords;"
-    "uniform sampler2D tex;"
-    "void main(void) {"
-    "gl_FragColor = texture(tex,Texcoords) * vec4(Color, 1.0);"
-    "}";
+      "in vec3 Color;"
+      "in vec2 Texcoords;"
+      "uniform sampler2D tex;"
+      "void main(void) {"
+      "gl_FragColor = texture(tex,Texcoords) * vec4(Color, 1.0);"
+      "}";
 
-  const char* texture_vertex =
-    "#version 130\n"
-    "in vec2 position;"
-    "in vec3 color;"
-    "in vec2 texcoords;"
+    const char* texture_vertex =
+      "#version 130\n"
+      "in vec2 position;"
+      "in vec3 color;"
+      "in vec2 texcoords;"
 
-    "out vec3 Color;"
-    "out vec2 Texcoords;"
+      "out vec3 Color;"
+      "out vec2 Texcoords;"
 
-    "uniform mat4 proj = mat4(1);"
-    "uniform mat4 model = mat4(1);"
+      "uniform mat4 proj = mat4(1);"
+      "uniform mat4 model = mat4(1);"
 
-    "void main(void) {"
-    "Color = color;"
-    "Texcoords = texcoords;"
-    "gl_Position = proj * model * vec4(position, 0, 1);"
-    "}";
-
+      "void main(void) {"
+      "Color = color;"
+      "Texcoords = texcoords;"
+      "gl_Position = proj *  vec4(position, 0, 1);"
+      "}";
+  }
 }
 #endif

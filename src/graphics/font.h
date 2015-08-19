@@ -24,22 +24,27 @@
 
 namespace simple
 {
-  class font
+  namespace graphics
   {
-  public:
-    font();
-    ~font();
-  private:
-    FT_Face m_face;
-    FT_GlyphSlot m_glyph;
-  public:
-    void begin();
-    void end();
-    void load(FT_Library ft, shader s, const char* fontPath);
-    void draw(const char* text, float x, float y, float sx, float sy);
-    void setFontSize(int size);
-    void setColor(shader s, float r, float g, float b, float a);
-  };
+    class font
+    {
+    public:
+      font();
+      ~font();
+    private:
+      FT_Face m_face;
+      FT_GlyphSlot m_glyph;
+      int m_coord;
+      int m_tex;
+    public:
+      void load(FT_Library ft, shader s, const char* fontPath);
+      void draw(const char* text, float x, float y, float sx, float sy);
+      void setFontSize(int size);
+      void setColor(shader* s, float r, float g, float b, float a);
+      void begin();
+      void end();
+    };
+  }
 }
 
 #endif
