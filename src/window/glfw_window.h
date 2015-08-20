@@ -4,6 +4,10 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include "../maths/vec2.h"
+
+using namespace simple::maths;
+
 namespace simple
 {
 
@@ -21,8 +25,17 @@ namespace simple
       float getDeltaTime(){return m_delta;}
       float getTicks();
       void printFPS();
+      void setPosition(int x, int y);
+      void setTitle(const char* title);
+      void setVisible(bool visible);
+      float getPointX();
+      float getPointY();
+      vec2 getPointPosition();
+      bool isFocused();
       void destory();
     private:
+      double px; //point x
+      double py; //point y
       bool m_running;
       int m_width,m_height;
       float m_delta;

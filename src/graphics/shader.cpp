@@ -108,7 +108,7 @@ void shader::create(const char* vertexShaderFilename,
     }
 
   mProgramObjectID = program;
-
+     glUseProgram(mProgramObjectID);
   if (DEBBUG)
     std::cout<<"Shader compiled and ready to be used!" << std::endl;
 }

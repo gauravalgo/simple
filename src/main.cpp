@@ -50,13 +50,33 @@ mat4 proj;
 batch2d* batch;
 texture2D* texture;
 shader* m_shader;
-mesh* m;
 uint uniProj;
 glfw_window window;
 
 float deltaTime;
 int lastFrameTime = 0, currentFrameTime = 0;
 int fpsMill = 1000/60;
+
+void init()
+{
+
+    m_shader = new shader();
+    m_shader->create(texture_vertex,texture_fragment);
+
+    proj.setToIdentity();
+    proj = proj.setOrtho(0, window.getWidth(), window.getHeight(), 0, 0, 100);
+
+    uniProj = glGetUniformLocation(m_shader->getProgram(), "proj");
+    glUniformMatrix4fv(uniProj, 1, GL_FALSE, proj.dataBlock());
+
+    batch = new batch2d(m_shader);
+    batch->create(150,150);
+    batch->create(250,30);
+
+    texture = new texture2D();
+    texture->create("res/test.png");
+}
+
 void update()
 {
     //update stuff
@@ -73,15 +93,13 @@ void update()
 
 void render()
 {
+
     m_shader->bind();
-    texture->bind();
-
     batch->begin();
-    for(int i = 0; i < 100;i++)
-      batch->draw(texture,rand()%window.getWidth(),rand()%window.getHeight());
+    for(int i = 0; i < 1000;i++){ //my fps is decressed a lot because of streaming
+      batch->draw(texture, rand()%260,200);
+    }
     batch->end();
-
-    texture->unbind();
     m_shader->unbind();
 }
 
@@ -93,7 +111,7 @@ int main()
   if(!DEBBUG)
     LOG("Simple - version " << VERSION << " - Debbug messages are disabled!");
 
-  window.create("Replacing SDL with GLFW and Batches", 640, 480);
+  window.create("I'm doing stupid things! >_<*", 640, 480);
 
   if(FT_Init_FreeType(&ft)){
     LOG("Error: Could not init freetype lib!");
@@ -102,23 +120,7 @@ int main()
   
   glEnable(GL_DEPTH);
 
-  m_shader = new shader();
-  m_shader->create(texture_vertex,texture_fragment);
-  m_shader->bind();
-
-  m = new mesh();
-
-  proj.setToIdentity();
-  proj = proj.setOrtho(0, window.getWidth(), window.getHeight(), 0, 0, 100);
-
-  uniProj = glGetUniformLocation(m_shader->getProgram(), "proj");
-  glUniformMatrix4fv(uniProj, 1, GL_FALSE, proj.dataBlock());
-
-  batch = new batch2d();
-  batch->setShader(m_shader);
-  batch->create();
-  texture = new texture2D();
-  texture->create("res/test1.png");
+  init();
 
   currentFrameTime = window.getTicks();
 
@@ -130,10 +132,6 @@ int main()
     render(); //TODO check if render should be first
     update();
 
-    //int currentSpeed = window.getTicks() - currentFrameTime;
-     //if(fpsMill > currentSpeed) {
-        //window.delay(fpsMill - currentSpeed);
-     //}
   }
 
   SAFE_DELETE(m_shader);

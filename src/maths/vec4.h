@@ -21,6 +21,8 @@
 #include <math.h>
 #include <assert.h>
 
+#include "../utils/definitions.h"
+
 namespace simple {
 
   namespace maths {
@@ -136,6 +138,9 @@ namespace simple {
 	else if (w<0.f) w=0.f;
 	return *this;
       }
+
+      void print(){LOG("x: " << x << " " << "y: " << y << " " << "z: " << z << " " << "w:" << w);}
+
 
       // Return the squared length of the vector
       float lengthSquared() const { return x * x + y * y + z * z + w * w; }

@@ -72,8 +72,9 @@ void mesh::create(shader* a_shader,float vertices[], int sizeV, unsigned short i
 
 void mesh::draw(int count)
 {
-  //glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_SHORT, 0);
-  glDrawArrays(GL_TRIANGLES, 0, count);
+
+  glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_SHORT, 0);
+  //glDrawArrays(GL_TRIANGLES, 0, count);
 }
 
 void mesh::begin()

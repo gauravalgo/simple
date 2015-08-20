@@ -64,12 +64,12 @@ namespace simple
       "out vec2 Texcoords;"
 
       "uniform mat4 proj = mat4(1);"
-      "uniform mat4 model = mat4(1);"
+      "uniform mat4 model;"
 
       "void main(void) {"
       "Color = color;"
       "Texcoords = texcoords;"
-      "gl_Position = proj *  vec4(position, 0, 1);"
+      "gl_Position = proj * model *  vec4(position, 0, 1);"
       "}";
   }
 }

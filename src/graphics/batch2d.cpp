@@ -23,113 +23,108 @@
 #include "mesh.h"
 #include "texture2D.h"
 
+#include <vector>
+
 using namespace simple;
 using namespace simple::graphics;
 
-unsigned short elements[] =
-  { 0, 1, 2,
-    2, 3, 0
-  };
+using std::vector;
 
-
-batch2d::batch2d()
+batch2d::batch2d(shader* shader)
 {
-  m_texture = new texture2D();
-  m_mesh = new mesh();
-
-}
-
-void batch2d::create()
-{
-    m_mesh->create(m_shader,m_vertices,sizeof(m_vertices),elements,sizeof(elements));
+  m_shader = shader;
 }
 
 batch2d::~batch2d()
 {
+  SAFE_DELETE(m_shader);
   SAFE_DELETE(m_mesh);
-  SAFE_DELETE(m_texture);
+}
+
+void batch2d::create(float x,float y)
+{
+  m_model.setToIdentity();
+  m_modelAttrib = glGetUniformLocation(m_shader->getProgram(), "model");
+
+  int width = 16;
+  int height = 16;
+   	
+  m_vertices[0] = -width;
+  m_vertices[1] = -height;
+
+  //c
+  m_vertices[2] = 1;
+  m_vertices[3] = 1;
+  m_vertices[4] = 1;
+  //t
+  m_vertices[5] = 0;
+  m_vertices[6] = 0;
+
+  //p
+  m_vertices[7] = +width;
+  m_vertices[8] = -height;
+
+  //c
+  m_vertices[9] = 1;
+  m_vertices[10] = 1;
+  m_vertices[11] = 1;
+  //t
+  m_vertices[12] = 1;
+  m_vertices[13] = 0;
+
+  //p
+  m_vertices[14] = +width;
+  m_vertices[15] = +height;
+
+  //c
+  m_vertices[16] = 1;
+  m_vertices[17] = 1;
+  m_vertices[18] = 1;
+  //t
+  m_vertices[19] = 1;
+  m_vertices[20] = 1;
+
+  //p
+  m_vertices[21] = -width;
+  m_vertices[22] = +height;
+  //c
+
+  m_vertices[23] = 1;
+  m_vertices[24] = 1;
+  m_vertices[25] = 1;
+  //t
+  m_vertices[26] = 0;
+  m_vertices[27] = 1;
+  unsigned short i[] =
+    { 0, 1, 2,
+      2, 3, 0
+    };
+
+  m_mesh = new mesh();
+  m_mesh->create(m_shader, m_vertices, sizeof(m_vertices), i, sizeof(i));
+}
+
+void batch2d::draw(texture2D* texture, float x, float y)
+{
+  m_model.translate(vec3(x,y,0));
+  glUniformMatrix4fv(m_modelAttrib, 1, GL_FALSE, m_model.dataBlock()); //this is very expensive . TODO find a better way (using vertices?)?
+
+  texture->bind();
+  m_mesh->draw(6);
+  texture->unbind();
+
 }
 
 void batch2d::begin()
 {
-    glDepthMask(false);
-    index = 0;
+  glDepthMask(false);
 }
 
 void batch2d::end()
 {
-    glDepthMask(true);
-    m_texture = NULL;
-    index = 0;
-}
-
-
-//TODO optimisate this(how?) and exapand it
-
-void batch2d::draw(texture2D* texture, float x, float y)
-{
-
-    if(texture != m_texture)
-    {
-        switchTexture(texture);
-    }else if (index == 350) renderMesh();
-
-  int width = texture->getWidth();
-  int height = texture->getHeight();
-
-  //p
-  m_vertices[index++] = -width+x;
-  m_vertices[index++] = -height+y;
-  m_vertices[index++] = 1;
-  m_vertices[index++] = 1;
-  m_vertices[index++] = 1;
-  m_vertices[index++] = 0;
-  m_vertices[index++] = 0;
-
-
-  m_vertices[index++] = +width+x;
-  m_vertices[index++] = -height+y;
-  m_vertices[index++] = 1;
-  m_vertices[index++] = 1;
-  m_vertices[index++] = 1;
-  m_vertices[index++] = 1;
-  m_vertices[index++] = 0;
-
-
-  m_vertices[index++] = +width+x;
-  m_vertices[index++] = +height+y;
-  m_vertices[index++] = 1;
-  m_vertices[index++] = 1;
-  m_vertices[index++] = 1;
-  m_vertices[index++] = 1;
-  m_vertices[index++] = 1;
-  m_vertices[index++] = -width+x;
-  m_vertices[index++] = +height+y;
-  m_vertices[index++] = 1;
-  m_vertices[index++] = 1;
-  m_vertices[index++] = 1;
-  m_vertices[index++] = 0;
-  m_vertices[index++] = 1;
+  glDepthMask(true);
 
 }
-
-void batch2d::switchTexture(texture2D *texture){
- renderMesh();
- m_texture = texture;
-}
-
-void batch2d::renderMesh()
-{
-    if(index == 0) return;
-
-    m_texture->bind();
-    m_mesh->setVertices(m_vertices,sizeof(m_vertices));
-    m_mesh->draw(6);
-
-    index = 0;
-}
-
-
 
 /*
 //p
@@ -179,7 +174,7 @@ m_vertices[25] = 1;
 //t
 m_vertices[26] = 0;
 m_vertices[27] = 1;
-  */
+*/
 
 
 

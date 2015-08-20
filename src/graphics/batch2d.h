@@ -23,6 +23,9 @@
 #include "../utils/definitions.h"
 #include "mesh.h"
 #include "texture2D.h"
+#include "sprite2d.h"
+
+using namespace simple::maths;
 
 namespace simple
 {
@@ -31,23 +34,19 @@ namespace simple
     class batch2d
     {
     public:
-      batch2d();
+      batch2d(shader* shader);
       ~batch2d();
     private:
       shader* m_shader;
-      texture2D* m_texture;
       mesh* m_mesh;
-      float m_vertices[5028]; //28
+      float m_vertices[28];
+      mat4 m_model;
+      uint m_modelAttrib;
     public:
       void begin();
       void end();
-      void draw(texture2D* texture, float x, float y);
-      void renderMesh();
-      void create();
-    private:
-      void switchTexture(texture2D* texture);
-      int index;
-
+      void draw(texture2D* texture,float x, float y);
+      void create(float x, float y);
     public:
       void setShader(shader* s){m_shader = s;}
     };

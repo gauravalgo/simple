@@ -22,6 +22,8 @@
 #include <cassert>
 #include <limits>
 
+#include "../utils/definitions.h"
+
 namespace simple {
 
   namespace maths {
@@ -29,6 +31,7 @@ namespace simple {
 
     public:
       float x, y, z;
+      void print(){LOG("x: " << x << " " << "y: " << y << " " << "z: " << z);}
 
     vec3(float x=0, float y=0, float z=0) : x(x), y(y), z(z) {}
 
