@@ -111,7 +111,7 @@ void glfw_window::update()
     glfwPollEvents();
 }
 
-float glfw_window::getTicks()
+double glfw_window::getTicks()
 {
     return glfwGetTime();
 }

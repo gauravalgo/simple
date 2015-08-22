@@ -69,7 +69,7 @@ namespace simple
       "void main(void) {"
       "Color = color;"
       "Texcoords = texcoords;"
-      "gl_Position = proj * model *  vec4(position, 0, 1);"
+      "gl_Position = proj *  vec4(position, 0, 1);"
       "}";
   }
 }

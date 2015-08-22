@@ -70,9 +70,20 @@ void mesh::create(shader* a_shader,float vertices[], int sizeV, unsigned short i
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_sizeI, m_indices, GL_STATIC_DRAW);
 }
 
+void mesh::allowVerticesChanges()
+{
+  //this allows us to change the vertices size/attributes on fly
+  glBufferData(GL_ARRAY_BUFFER, m_sizeV, m_vertices, GL_DYNAMIC_DRAW);
+}
+
+void mesh::allowIndicesChanges()
+{
+  //this allows us to change the indices size/attributes on fly
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_sizeI, m_indices, GL_DYNAMIC_DRAW);
+}
+
 void mesh::draw(int count)
 {
-
   glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_SHORT, 0);
   //glDrawArrays(GL_TRIANGLES, 0, count);
 }

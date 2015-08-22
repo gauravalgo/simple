@@ -47,7 +47,8 @@ namespace simple
       unsigned short m_sizeI;
     public:
       void create(shader* a_shader, float vertices[], int sizeV,unsigned short indices[], short sizeI);
-
+      void allowVerticesChanges(); //TODO find a better name?
+       void allowIndicesChanges(); //TODO find a better name?
       void setVertices(float* v, int sV){m_vertices = v; m_sizeV = sV;}
       void setIndices(unsigned short* i, unsigned short sI){m_indices = i; m_sizeI = sI;}
 

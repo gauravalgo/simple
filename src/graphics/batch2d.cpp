@@ -23,162 +23,168 @@
 #include "mesh.h"
 #include "texture2D.h"
 
-#include <vector>
+#include <cmath>
+#include <GL/gl.h>
 
 using namespace simple;
 using namespace simple::graphics;
 
-using std::vector;
-
-batch2d::batch2d(shader* shader)
+batch2d::batch2d(shader* shader):
+  m_SIZE(40000)
 {
   m_shader = shader;
+}
+
+batch2d::batch2d(shader* shader, int size)
+{
+  m_shader = shader;
+  m_SIZE = size;
 }
 
 batch2d::~batch2d()
 {
   SAFE_DELETE(m_shader);
-  SAFE_DELETE(m_mesh);
 }
 
-void batch2d::create(float x,float y)
-{
-  m_model.setToIdentity();
-  m_modelAttrib = glGetUniformLocation(m_shader->getProgram(), "model");
+void batch2d::create()
+{  
+  glGenBuffers(1, &m_vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_STATIC_DRAW);
 
-  int width = 16;
-  int height = 16;
-   	
-  m_vertices[0] = -width;
-  m_vertices[1] = -height;
+  m_position_attribute = glGetAttribLocation(m_shader->getProgram(), "position");
+  glEnableVertexAttribArray(m_position_attribute);
+  glVertexAttribPointer(m_position_attribute, 2, GL_FLOAT, GL_FALSE, 7*sizeof(float), 0);
 
-  //c
-  m_vertices[2] = 1;
-  m_vertices[3] = 1;
-  m_vertices[4] = 1;
-  //t
-  m_vertices[5] = 0;
-  m_vertices[6] = 0;
+  m_color_attribute = glGetAttribLocation(m_shader->getProgram(), "color");
+  glEnableVertexAttribArray(m_color_attribute);
+  glVertexAttribPointer(m_color_attribute, 3, GL_FLOAT, GL_FALSE, 7*sizeof(float), (void*)(2*sizeof(float)));  
 
-  //p
-  m_vertices[7] = +width;
-  m_vertices[8] = -height;
+  m_tex_attribute = glGetAttribLocation(m_shader->getProgram(), "texcoords");
+  glEnableVertexAttribArray(m_tex_attribute);
+  glVertexAttribPointer(m_tex_attribute, 2, GL_FLOAT, GL_FALSE, 7*sizeof(float), (void*)(5*sizeof(float)));
 
-  //c
-  m_vertices[9] = 1;
-  m_vertices[10] = 1;
-  m_vertices[11] = 1;
-  //t
-  m_vertices[12] = 1;
-  m_vertices[13] = 0;
+  m_index = 0;
+  m_numSprite = 0;
 
-  //p
-  m_vertices[14] = +width;
-  m_vertices[15] = +height;
+  int l = m_SIZE*6;
+  unsigned short m_indices[l];
+  short j = 0;
+  for (int i = 0; i < l; i += 6, j += 4) {
+    m_indices[i + 0] = (short)(j + 0);
+    m_indices[i + 1] = (short)(j + 1);
+    m_indices[i + 2] = (short)(j + 2);
+    m_indices[i + 3] = (short)(j + 2);
+    m_indices[i + 4] = (short)(j + 3);
+    m_indices[i + 5] = (short)(j + 0);
+  }
 
-  //c
-  m_vertices[16] = 1;
-  m_vertices[17] = 1;
-  m_vertices[18] = 1;
-  //t
-  m_vertices[19] = 1;
-  m_vertices[20] = 1;
+  glGenBuffers(1, &m_ebo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_indices), m_indices, GL_STATIC_DRAW);
 
-  //p
-  m_vertices[21] = -width;
-  m_vertices[22] = +height;
-  //c
-
-  m_vertices[23] = 1;
-  m_vertices[24] = 1;
-  m_vertices[25] = 1;
-  //t
-  m_vertices[26] = 0;
-  m_vertices[27] = 1;
-  unsigned short i[] =
-    { 0, 1, 2,
-      2, 3, 0
-    };
-
-  m_mesh = new mesh();
-  m_mesh->create(m_shader, m_vertices, sizeof(m_vertices), i, sizeof(i));
 }
 
-void batch2d::draw(texture2D* texture, float x, float y)
+void batch2d::draw(float x, float y, float width, float height)
 {
-  m_model.translate(vec3(x,y,0));
-  glUniformMatrix4fv(m_modelAttrib, 1, GL_FALSE, m_model.dataBlock()); //this is very expensive . TODO find a better way (using vertices?)?
+  if(m_numSprite >= m_SIZE){
+    LOG("Error: You're trying to draw more than " << m_SIZE << " sprites!");
+    end();
+  }
+  
+  m_vertices[m_index++] = -width+x;
+  m_vertices[m_index++] = -height+y;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 0;
+  m_vertices[m_index++] = 0;
+  m_vertices[m_index++] = +width+x;
+  m_vertices[m_index++] = -height+y;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 0;
+  m_vertices[m_index++] = +width+x;
+  m_vertices[m_index++] = +height+y;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = -width+x;
+  m_vertices[m_index++] = +height+y;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 0;
+  m_vertices[m_index++] = 1;
+  
+  m_numSprite++;  
+}
 
-  texture->bind();
-  m_mesh->draw(6);
-  texture->unbind();
+void batch2d::draw(float x, float y, float width, float height, float r, float g, float b)
+{
+  if(m_numSprite >= m_SIZE){
+    LOG("Error: You're trying to draw more than " << m_SIZE << " sprites!");
+    end();
+  }
+  
+  m_vertices[m_index++] = -width+x;
+  m_vertices[m_index++] = -height+y;
+  m_vertices[m_index++] = r;
+  m_vertices[m_index++] = g;
+  m_vertices[m_index++] = b;
+  m_vertices[m_index++] = 0;
+  m_vertices[m_index++] = 0;
+  m_vertices[m_index++] = +width+x;
+  m_vertices[m_index++] = -height+y;
+  m_vertices[m_index++] = r;
+  m_vertices[m_index++] = g;
+  m_vertices[m_index++] = b;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 0;
+  m_vertices[m_index++] = +width+x;
+  m_vertices[m_index++] = +height+y;
+  m_vertices[m_index++] = r;
+  m_vertices[m_index++] = g;
+  m_vertices[m_index++] = b;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = -width+x;
+  m_vertices[m_index++] = +height+y;
+  m_vertices[m_index++] = r;
+  m_vertices[m_index++] = g;
+  m_vertices[m_index++] = b;
+  m_vertices[m_index++] = 0;
+  m_vertices[m_index++] = 1;
+  
+  m_numSprite++;  
+}
 
+
+void batch2d::renderMesh()
+{
+  if(m_numSprite > 0){
+    glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_DYNAMIC_DRAW);
+
+    glDrawElements(GL_TRIANGLES, m_numSprite * 6, GL_UNSIGNED_SHORT, 0);
+    //glDrawArrays(GL_QUADS, 0, m_numSprite * 6); //Legacy :)
+  }
 }
 
 void batch2d::begin()
 {
   glDepthMask(false);
+  m_index = 0;
+  m_numSprite = 0;
 }
 
 void batch2d::end()
 {
   glDepthMask(true);
-
+  m_index = 0;
+  m_numSprite = 0;
 }
-
-/*
-//p
-m_vertices[0] = -width+x;
-m_vertices[1] = -height+y;
-
-//c
-m_vertices[2] = 1;
-m_vertices[3] = 1;
-m_vertices[4] = 1;
-//t
-m_vertices[5] = 0;
-m_vertices[6] = 0;
-
-//p
-m_vertices[7] = +width+x;
-m_vertices[8] = -height+y;
-
-//c
-m_vertices[9] = 1;
-m_vertices[10] = 1;
-m_vertices[11] = 1;
-//t
-m_vertices[12] = 1;
-m_vertices[13] = 0;
-
-//p
-m_vertices[14] = +width+x;
-m_vertices[15] = +height+y;
-
-//c
-m_vertices[16] = 1;
-m_vertices[17] = 1;
-m_vertices[18] = 1;
-//t
-m_vertices[19] = 1;
-m_vertices[20] = 1;
-
-//p
-m_vertices[21] = -width+x;
-m_vertices[22] = +height+y;
-//c
-
-m_vertices[23] = 1;
-m_vertices[24] = 1;
-m_vertices[25] = 1;
-//t
-m_vertices[26] = 0;
-m_vertices[27] = 1;
-*/
-
-
-
-
-
-
 

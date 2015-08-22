@@ -53,54 +53,67 @@ shader* m_shader;
 uint uniProj;
 glfw_window window;
 
-float deltaTime;
-int lastFrameTime = 0, currentFrameTime = 0;
-int fpsMill = 1000/60;
+//TODO Mouse and Keyboard input
 
 void init()
 {
+  window.create("Batch rendering is really hard to make", 640, 480);
+  window.setPosition(300,150); //TODO BUG FIXME automatically find the center of screen based on user's monitor
 
-    m_shader = new shader();
-    m_shader->create(texture_vertex,texture_fragment);
+  m_shader = new shader();
+  m_shader->create(texture_vertex,texture_fragment);
 
-    proj.setToIdentity();
-    proj = proj.setOrtho(0, window.getWidth(), window.getHeight(), 0, 0, 100);
+  proj.setToIdentity();
+  proj = proj.setOrtho(0, window.getWidth(), window.getHeight(), 0, 0, 100);
 
-    uniProj = glGetUniformLocation(m_shader->getProgram(), "proj");
-    glUniformMatrix4fv(uniProj, 1, GL_FALSE, proj.dataBlock());
+  uniProj = glGetUniformLocation(m_shader->getProgram(), "proj");
+  glUniformMatrix4fv(uniProj, 1, GL_FALSE, proj.dataBlock());
 
-    batch = new batch2d(m_shader);
-    batch->create(150,150);
-    batch->create(250,30);
+  batch = new batch2d(m_shader);
+  batch->create();
 
-    texture = new texture2D();
-    texture->create("res/test.png");
+  texture = new texture2D();
+  texture->create("res/test.png");
 }
+
+float angle;
+float testx = 100;
+
+float deltaTime;
+double currentFrameTime = window.getTicks();
+double lastFrameTime = currentFrameTime;
 
 void update()
 {
-    //update stuff
-    lastFrameTime = currentFrameTime;
-    currentFrameTime = window.getTicks();
+  //update stuff
+  currentFrameTime = window.getTicks();
+  deltaTime = currentFrameTime - lastFrameTime;
+  lastFrameTime = currentFrameTime;
 
-    deltaTime = (float) (currentFrameTime - lastFrameTime) ; // 1000.0f;
+  window.setDeltaTime(deltaTime);
 
-    window.setDeltaTime(deltaTime);
+  angle += 33 * deltaTime;
+  testx += 20 * deltaTime;
 
-    window.printFPS();
-    window.update();
+  window.printFPS();
+  window.update();
 }
+
 
 void render()
 {
+  m_shader->bind();
+  texture->bind();
+  batch->begin();
+  //batch->draw(100, 300, 16, 16);
+  for(int i = 0; i < 33620;i++)
+    batch->draw(rand()%620, rand()%480, 16, 16);
+  //batch->draw(300,300,16,16, 1, 1, 1);
+  batch->renderMesh();
+  batch->end();
 
-    m_shader->bind();
-    batch->begin();
-    for(int i = 0; i < 1000;i++){ //my fps is decressed a lot because of streaming
-      batch->draw(texture, rand()%260,200);
-    }
-    batch->end();
-    m_shader->unbind();
+  texture->unbind();
+  m_shader->unbind();
 }
 
 int main()
@@ -110,8 +123,6 @@ int main()
     LOG("Simple - version " << VERSION << " - Debbug messages are enabled!");
   if(!DEBBUG)
     LOG("Simple - version " << VERSION << " - Debbug messages are disabled!");
-
-  window.create("I'm doing stupid things! >_<*", 640, 480);
 
   if(FT_Init_FreeType(&ft)){
     LOG("Error: Could not init freetype lib!");
@@ -129,12 +140,14 @@ int main()
     glClearColor(0.39f,0.37f,0.45f,1);
     glViewport(0,0,window.getWidth(),window.getHeight());
 
-    render(); //TODO check if render should be first
+    render();
     update();
 
   }
 
   SAFE_DELETE(m_shader);
+  //SAFE_DELETE(batch);
+  //SAFE_DELETE(texture);
   return 0;
 }
 

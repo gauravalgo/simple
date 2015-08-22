@@ -23,7 +23,7 @@ namespace simple
       void update();
       void setDeltaTime(float dt){m_delta = dt;}
       float getDeltaTime(){return m_delta;}
-      float getTicks();
+      double getTicks();
       void printFPS();
       void setPosition(int x, int y);
       void setTitle(const char* title);

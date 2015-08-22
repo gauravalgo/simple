@@ -34,19 +34,32 @@ namespace simple
     class batch2d
     {
     public:
+      batch2d(shader* shader, int size);
       batch2d(shader* shader);
       ~batch2d();
+      
+      float m_vertices[40000 * 5 * 7];
+ 
+      unsigned int m_vbo;
+      unsigned int m_ebo;
+
+      unsigned int m_position_attribute;
+      unsigned int m_color_attribute;
+      unsigned int m_tex_attribute;
+       
     private:
+      int m_index;
+      int m_numSprite;
+      int m_SIZE;
       shader* m_shader;
-      mesh* m_mesh;
-      float m_vertices[28];
-      mat4 m_model;
       uint m_modelAttrib;
     public:
       void begin();
       void end();
-      void draw(texture2D* texture,float x, float y);
-      void create(float x, float y);
+      void renderMesh();
+      void draw(float x, float y, float width, float height);
+      void draw(float x, float y, float width, float height, float r, float g, float b);
+      void create();
     public:
       void setShader(shader* s){m_shader = s;}
     };
