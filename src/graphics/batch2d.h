@@ -58,7 +58,7 @@ namespace simple
       void end();
       void renderMesh();
       void draw(float x, float y, float width, float height);
-      void draw(float x, float y, float width, float height, float r, float g, float b);
+      void draw(float x, float y, float width, float height, float r, float g, float b, float a);
       void create();
     public:
       void setShader(shader* s){m_shader = s;}

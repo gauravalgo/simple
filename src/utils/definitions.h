@@ -28,7 +28,7 @@ namespace simple {
   typedef unsigned int ushort;
   typedef unsigned char uchar;
   
-#define VERSION "0.1.2"
+#define VERSION "0.1.3"
 #define DEBBUG 1
 
 #define PI (atan(1) * 4)

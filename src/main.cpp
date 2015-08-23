@@ -25,12 +25,12 @@
 #include "utils/file.h"
 #include "graphics/font.h"
 #include "graphics/batch2d.h"
+#include "input/keyboard.h"
 
 #include <stdlib.h> 
 
 #include <GLFW/glfw3.h>
 #include "window/glfw_window.h"
-
 
 using std::string;
 
@@ -39,6 +39,7 @@ using std::string;
 using namespace simple;
 using namespace simple::graphics;
 using namespace simple::maths;
+using namespace simple::input;
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -53,28 +54,63 @@ shader* m_shader;
 uint uniProj;
 glfw_window window;
 
-//TODO Mouse and Keyboard input
+font* f;
+shader* m_font_shader;
+
+keyboard* key;
 
 void init()
 {
   window.create("Batch rendering is really hard to make", 640, 480);
-  window.setPosition(300,150); //TODO BUG FIXME automatically find the center of screen based on user's monitor
-
+  window.setPosition(-1, -1);
+  
   m_shader = new shader();
-  m_shader->create(texture_vertex,texture_fragment);
+  m_shader->create(texture_vertex, texture_fragment);
 
   proj.setToIdentity();
   proj = proj.setOrtho(0, window.getWidth(), window.getHeight(), 0, 0, 100);
 
-  uniProj = glGetUniformLocation(m_shader->getProgram(), "proj");
-  glUniformMatrix4fv(uniProj, 1, GL_FALSE, proj.dataBlock());
+  texture = new texture2D();
+  texture->create("res/test.png");
+
+  m_shader->sendUniformLocation("proj", proj);
+  
+  m_font_shader = new shader();
+  m_font_shader->create(font_vertex, font_fragment);
+
+  m_font_shader->sendUniformLocation("proj", proj);
+    
+  f = new font();
+  f->load(ft, m_font_shader, "res/font.ttf");
+  f->setFontSize(16);
+  f->setColor(m_shader,.2f,.8,.5,1);
 
   batch = new batch2d(m_shader);
   batch->create();
 
-  texture = new texture2D();
-  texture->create("res/test.png");
+  key = new keyboard();
 }
+
+void render()
+{  
+  m_font_shader->bind();
+  f->begin();
+  f->setColor(m_shader, 0.2f, 0.4f, 0.3345f, 1);
+  f->draw("Hello World", 100, 100, 1, 1);
+  f->end();
+  m_font_shader->unbind();
+  
+  m_shader->bind();
+  texture->bind();
+  batch->begin();
+  batch->draw(100, 300, 16, 16, 1, 1, 1, .1f);
+  batch->draw(200, 300, 16, 16);
+  batch->renderMesh();
+  batch->end();
+  texture->unbind();
+  m_shader->unbind();
+}
+
 
 float angle;
 float testx = 100;
@@ -95,25 +131,8 @@ void update()
   angle += 33 * deltaTime;
   testx += 20 * deltaTime;
 
-  window.printFPS();
+  // window.printFPS();
   window.update();
-}
-
-
-void render()
-{
-  m_shader->bind();
-  texture->bind();
-  batch->begin();
-  //batch->draw(100, 300, 16, 16);
-  for(int i = 0; i < 33620;i++)
-    batch->draw(rand()%620, rand()%480, 16, 16);
-  //batch->draw(300,300,16,16, 1, 1, 1);
-  batch->renderMesh();
-  batch->end();
-
-  texture->unbind();
-  m_shader->unbind();
 }
 
 int main()
@@ -144,8 +163,11 @@ int main()
     update();
 
   }
-
+  m_shader->unbind();
+  
   SAFE_DELETE(m_shader);
+  SAFE_DELETE(f);
+  SAFE_DELETE(key);
   //SAFE_DELETE(batch);
   //SAFE_DELETE(texture);
   return 0;

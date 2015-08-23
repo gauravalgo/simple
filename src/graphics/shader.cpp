@@ -19,105 +19,114 @@
 #include <fstream>
 #include <iostream>
 #include "../utils/definitions.h"
+#include "../maths/mat4.h"
 
 using namespace simple;
 using namespace simple::graphics;
+using namespace simple::maths;
 
 using namespace std;
 
-shader::shader():
-  mProgramObjectID(0)
+shader::shader()
 {
 
 }
 
 shader::~shader()
 {
-
+  glDeleteProgram(m_program);
+  glDeleteShader(m_vertexShaderID);
+  glDeleteShader(m_fragmentShaderID);
 }
 
 // Create the shader
 void shader::create(const char* vertexShaderFilename,
                     const char* fragmentShaderFilename) {
 
-  GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-  GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+  m_vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+  m_fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
-  glShaderSource(vertexShaderID, 1, &vertexShaderFilename, 0);
-  glShaderSource(fragmentShaderID, 1, &fragmentShaderFilename, 0);
+  glShaderSource(m_vertexShaderID, 1, &vertexShaderFilename, 0);
+  glShaderSource(m_fragmentShaderID, 1, &fragmentShaderFilename, 0);
 
-  glCompileShader(vertexShaderID);
-  glCompileShader(fragmentShaderID);
+  glCompileShader(m_vertexShaderID);
+  glCompileShader(m_fragmentShaderID);
 
   GLint compileStatus;
 
-  glGetShaderiv(vertexShaderID,GL_COMPILE_STATUS,&compileStatus);
+  glGetShaderiv(m_vertexShaderID,GL_COMPILE_STATUS,&compileStatus);
   if(compileStatus != GL_TRUE)
     {
       GLint info;
-      glGetShaderiv(vertexShaderID,GL_INFO_LOG_LENGTH,&info);
+      glGetShaderiv(m_vertexShaderID,GL_INFO_LOG_LENGTH,&info);
       GLchar* buffer = new GLchar[info];
 
       int bufferSize;
-      glGetShaderInfoLog(vertexShaderID, info,&bufferSize,buffer);
+      glGetShaderInfoLog(m_vertexShaderID, info,&bufferSize,buffer);
 
       std::cout << buffer << std::endl;
 
       delete[] buffer;
-      glDeleteShader(vertexShaderID);
-      glDeleteShader(fragmentShaderID);
+      glDeleteShader(m_vertexShaderID);
+      glDeleteShader(m_fragmentShaderID);
     }
 
-  glGetShaderiv(fragmentShaderID,GL_COMPILE_STATUS,&compileStatus);
+  glGetShaderiv(m_fragmentShaderID,GL_COMPILE_STATUS,&compileStatus);
   if(compileStatus != GL_TRUE)
     {
       GLint info;
-      glGetShaderiv(fragmentShaderID,GL_INFO_LOG_LENGTH,&info);
+      glGetShaderiv(m_fragmentShaderID,GL_INFO_LOG_LENGTH,&info);
       GLchar* buffer = new GLchar[info];
 
       int bufferSize;
-      glGetShaderInfoLog(fragmentShaderID, info,&bufferSize,buffer);
+      glGetShaderInfoLog(m_fragmentShaderID, info,&bufferSize,buffer);
 
       std::cout << buffer << std::endl;
 
       delete[] buffer;
-      glDeleteShader(vertexShaderID);
-      glDeleteShader(fragmentShaderID);
+      glDeleteShader(m_vertexShaderID);
+      glDeleteShader(m_fragmentShaderID);
     }
 
-  GLuint program = glCreateProgram();
-  glAttachShader(program, vertexShaderID);
-  glAttachShader(program, fragmentShaderID);
+  m_program = glCreateProgram();
+  glAttachShader(m_program, m_vertexShaderID);
+  glAttachShader(m_program, m_fragmentShaderID);
 
-  glLinkProgram(program);
+  glLinkProgram(m_program);
 
   GLint isLinked = 0;
-  glGetProgramiv(program, GL_LINK_STATUS, (int *)&isLinked);
+  glGetProgramiv(m_program, GL_LINK_STATUS, (int *)&isLinked);
   if(isLinked == GL_FALSE)
     {
       GLint info = 0;
-      glGetProgramiv(program, GL_INFO_LOG_LENGTH, &info);
+      glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &info);
       GLchar* buffer=  new GLchar[info];
 
       int bufferSize;
-      glGetProgramInfoLog(program, info, &bufferSize, buffer);
+      glGetProgramInfoLog(m_program, info, &bufferSize, buffer);
 
-      glDeleteProgram(program);
-      glDeleteShader(vertexShaderID);
-      glDeleteShader(fragmentShaderID);
+      glDeleteProgram(m_program);
+      glDeleteShader(m_vertexShaderID);
+      glDeleteShader(m_fragmentShaderID);
     }
 
-  mProgramObjectID = program;
-     glUseProgram(mProgramObjectID);
+  glUseProgram(m_program);
+  
   if (DEBBUG)
     std::cout<<"Shader compiled and ready to be used!" << std::endl;
 }
 
+void shader::sendUniformLocation(const char* name, mat4 data)
+{
+  uint uni = glGetUniformLocation(m_program, name);
+  glUniformMatrix4fv(uni, 1, GL_FALSE, data.dataBlock());
+}
+
 void shader::bind()
 {
-  if(mProgramObjectID == 0)
+  if(m_program == 0)
     LOG("Error: shader, create method must be called first!");
-  glUseProgram(mProgramObjectID);
+  glUseProgram(m_program);
 }
 
 void shader::unbind()
