@@ -28,9 +28,9 @@ namespace simple {
   typedef unsigned int ushort;
   typedef unsigned char uchar;
   
-#define VERSION "0.1.3"
 #define DEBBUG 1
-
+#define VERSION "0.1.3"
+  
 #define PI (atan(1) * 4)
 #define RADIANS(deg)  ((deg) * PI / 180)
 #define DEGREES(rad)  ((rad) * 180 / PI)

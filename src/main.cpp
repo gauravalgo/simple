@@ -26,6 +26,7 @@
 #include "graphics/font.h"
 #include "graphics/batch2d.h"
 #include "input/keyboard.h"
+#include "utils/lua_lang_init.h"
 
 #include <stdlib.h> 
 
@@ -40,6 +41,7 @@ using namespace simple;
 using namespace simple::graphics;
 using namespace simple::maths;
 using namespace simple::input;
+using namespace simple::lang;
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -52,23 +54,31 @@ batch2d* batch;
 texture2D* texture;
 shader* m_shader;
 uint uniProj;
-glfw_window window;
 
 font* f;
 shader* m_font_shader;
 
 keyboard* key;
+lua_lang_init* lua_init;
+
+static glfw_window* window;
 
 void init()
 {
-  window.create("Batch rendering is really hard to make", 640, 480);
-  window.setPosition(-1, -1);
+  //Init Lua!
+  lua_init = new lua_lang_init();
+  lua_init->create();
+
+  lua_init->registerFunctions();
+  lua_init->setMainScript("main.lua");
+  
+  window = lua_init->getWindow();
   
   m_shader = new shader();
   m_shader->create(texture_vertex, texture_fragment);
 
   proj.setToIdentity();
-  proj = proj.setOrtho(0, window.getWidth(), window.getHeight(), 0, 0, 100);
+  proj = proj.setOrtho(0, window->getWidth(), window->getHeight(), 0, 0, 100);
 
   texture = new texture2D();
   texture->create("res/test.png");
@@ -116,23 +126,23 @@ float angle;
 float testx = 100;
 
 float deltaTime;
-double currentFrameTime = window.getTicks();
+double currentFrameTime = window->getTicks();
 double lastFrameTime = currentFrameTime;
 
 void update()
 {
   //update stuff
-  currentFrameTime = window.getTicks();
+  currentFrameTime = window->getTicks();
   deltaTime = currentFrameTime - lastFrameTime;
   lastFrameTime = currentFrameTime;
 
-  window.setDeltaTime(deltaTime);
+  window->setDeltaTime(deltaTime);
 
   angle += 33 * deltaTime;
   testx += 20 * deltaTime;
 
   // window.printFPS();
-  window.update();
+  window->update();
 }
 
 int main()
@@ -152,23 +162,25 @@ int main()
 
   init();
 
-  currentFrameTime = window.getTicks();
+  currentFrameTime = window->getTicks();
 
-  while(window.getRunning()){
+  while(window->getRunning()){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(0.39f,0.37f,0.45f,1);
-    glViewport(0,0,window.getWidth(),window.getHeight());
+    glViewport(0,0,window->getWidth(),window->getHeight());
 
     render();
     update();
 
   }
   m_shader->unbind();
-  
+
   SAFE_DELETE(m_shader);
   SAFE_DELETE(f);
   SAFE_DELETE(key);
-  //SAFE_DELETE(batch);
+  //  SAFE_DELETE(lua_init);
+  // SAFE_DELETE(window);
+  lua_init->dumb();
   //SAFE_DELETE(texture);
   return 0;
 }

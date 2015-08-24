@@ -17,6 +17,9 @@ src/window/*.h
 src/utils/*.cpp
 src/utils/*.h
 
+src/input/*.cpp
+src/input/*.h
+
 src/*.h
 src/*.cpp
 )
@@ -24,7 +27,7 @@ src/*.cpp
 ## Set version and info
 set(simple_major_version 0)
 set(simple_minor_version 1)
-set(simple_patch_version 2)
+set(simple_patch_version 3)
 
 set(simple_package "simple")
 set(simple_creator "Muresan Vlad")
@@ -52,17 +55,22 @@ set(FREETYPE_INCLUDE_DIR deps/freetype/include)
 set(FREETYPE_LIBRARIES freetype)
 include_directories(deps/freetype/include)
 
+#lua
+add_subdirectory(deps/lua)
+set(LUA_INCLUDE_DIR deps/lua/src ${CMAKE_BINARY_DIR}/deps/lua/)
+SET(LUA_LIBRARIES liblua)
+
 if(APPLE)
   target_link_libraries(simple ${SDL2_LIBRARIES} glfw
-    ${GLFW_LIBRARIES} ${FREETYPE_LIBRARIES})
+    ${GLFW_LIBRARIES} ${FREETYPE_LIBRARIES} ${LUA_LIBRARIES})
 endif()
 
 if(UNIX)
   target_link_libraries(simple dl glfw
-    ${GLFW_LIBRARIES} ${FREETYPE_LIBRARIES} ${SDL2_LIBRARIES})
+    ${GLFW_LIBRARIES} ${FREETYPE_LIBRARIES} ${LUA_LIBRARIES})
 endif()
 
 if(MINGW)
   target_link_libraries(simple ws2_32.lib glfw
-    ${GLFW_LIBRARIES} ${FREETYPE_LIBRARIES} ${SDL2_LIBRARIES})
+    ${GLFW_LIBRARIES} ${FREETYPE_LIBRARIES} ${LUA_LIBRARIES})
 endif()

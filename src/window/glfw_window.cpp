@@ -34,8 +34,6 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
   
   if (DEBBUG && key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GL_TRUE);
-  const char* k = (char) key;
-  LOG(k);
 }
 
 static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
