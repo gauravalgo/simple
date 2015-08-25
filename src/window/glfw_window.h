@@ -19,16 +19,19 @@ namespace simple
   public:
     GLFWwindow* window;
   public:
-    void create(const char* title, int width, int height);
+    void create(const char* title, int width, int height, bool fullscreen);
     void update();
     void setDeltaTime(float dt){m_delta = dt;}
-    void printFPS();
     //@parm x: -1 = find center @parm y: -1 = find center
     void setPosition(int x, int y);
     void setTitle(const char* title);
     void setVisible(bool visible);
+    void setVSync(bool value){m_vsync = value;}
     bool isFocused();
-    void destory();
+    void destroy();
+  private:
+    void calculateFPS();
+    void calculateDeltaTime();
   private:
     //point x
     double m_px;
@@ -37,15 +40,19 @@ namespace simple
     bool m_running;
     int m_width,m_height;
     float m_delta;
+    bool m_vsync;
+    float m_fps;
     const GLFWvidmode* m_mode;
   public:
-    float getDeltaTime(){return m_delta;}
+    float getDeltaTime();
+    float getFPS();
     GLFWwindow* getWindow(){return window;}
     double getTicks();
     float getPointX();
     float getPointY();
     vec2 getPointPosition();
     vec2 getMonitorSize();
+    bool getVSync(){return m_vsync;}
     bool getRunning(){return m_running;}
     int getWidth(){return m_width;}
     int getHeight(){return m_height;}

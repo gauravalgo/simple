@@ -14,28 +14,29 @@
  * limitations under the License.
  ******************************************************************************/
 
-#ifndef KEYBOARD_H
-#define KEYBOARD_H
+#include "gl_graphics.h"
 
-#include "../utils/definitions.h"
-#include "../utils/core.h"
-#include "../window/glfw_window.h"
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
-namespace simple
+using namespace simple;
+using namespace simple::graphics;
+
+/*
+ *Useful GL/ES 2.0 functions. 
+ */
+
+gl_graphics::gl_graphics()
 {
-  namespace input
-  {
-    class keyboard
-    {
-    public:
-      keyboard();
-      ~keyboard();
-    public:
-      bool isKeyDown(const char* key);
-      bool isKeyUp(const char* key);
-    private:
-      glfw_window* m_window;
-    };
-  }
+  
 }
-#endif
+
+gl_graphics::~gl_graphics()
+{
+  
+}
+
+void gl_graphics::clearScreen(float r, float g, float b, float a)
+{
+  glClearColor(r,g,b,a);    
+}

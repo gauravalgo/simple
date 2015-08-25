@@ -24,6 +24,7 @@ extern "C" {
 }
 
 #include "../window/glfw_window.h"
+#include "core.h"
 
 namespace simple
 {
@@ -38,11 +39,13 @@ namespace simple
       lua_State* m_L;
     public:
       lua_State* getState(){return m_L;}
-      glfw_window* getWindow();
+      glfw_window getWindow();
       void setMainScript(const char* name);
       void create();
       void registerFunctions();
       void dumb();
+      bool callFunction(const char* name);
+      core* simple_core;
     private:
       //WINDOW
       static int makeWindow(lua_State* L);
@@ -51,11 +54,16 @@ namespace simple
       static int getMonitorSize(lua_State* L);
       static int getWindowTicks(lua_State* L);
       static int getWindowFocus(lua_State* L);
+      static int setWindowVSync(lua_State* L);
       //MOUSE
       static int getPointerX(lua_State* L);
       static int getPointerY(lua_State* L);
       static int getPointer(lua_State* L);
-      
+      //GL GRAPHICS
+      static int clearScreen(lua_State* L);
+      //UTILS
+      static int getDeltaTime(lua_State* L);
+      static int getFPS(lua_State* L);
     };
   }
 }

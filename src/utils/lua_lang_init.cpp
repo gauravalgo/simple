@@ -17,9 +17,12 @@
 
 #include "../utils/definitions.h"
 #include "../window/glfw_window.h"
+#include "../graphics/gl_graphics.h"
+#include "core.h"
 
 using namespace simple;
 using namespace simple::lang;
+using namespace simple::graphics;
 
 extern "C" {
 #include "lua.h"
@@ -30,48 +33,66 @@ extern "C" {
 lua_lang_init::lua_lang_init(){}
 lua_lang_init::~lua_lang_init(){}
 
-static glfw_window* m_window;
+static glfw_window m_window;
 static bool default_window;
+
+static core* c;
 
 void lua_lang_init::create()
 {
-   m_L = luaL_newstate();
-  // load Lua libraries
-  static const luaL_Reg lualibs[] ={
-    { "base", luaopen_base },
-    { NULL, NULL}
-  };
-  const luaL_Reg *lib = lualibs;
-    for(; lib->func != NULL; lib++)
-    {
-        lib->func(m_L);
-        lua_settop(m_L, 0);
-    }
+  m_L = luaL_newstate();
+  luaL_openlibs(m_L);
   if(!m_L)
     LOG("Error: Could not load lua state!");
 
   //Create the main window 
   default_window = true;
-  m_window = new glfw_window();
+  simple_core = new core();
+  simple_core->create();
+
+  c = simple_core;
 }
 
 void lua_lang_init::setMainScript(const char* name)
 {
-   //Look for main.lua and execute it
+  //Look for main.lua and execute it
   luaL_dofile(m_L, name);
 
-  //Get the init function if there's one
-  lua_getglobal(m_L, "init");
+  //Did the user forgot to make his own window?
+  if(default_window){
+     c->getWindow()->create("Simple - No Title!", 800, 600, false);
+     c->getWindow()->setVSync(true); //don't melt the CPU
+  }
+}
+
+/*
+int lua_lang_init::test(float x, float y)
+{
+  int z;
+  lua_getglobal(m_L, "test");
+  lua_pushnumber(m_L, x);
+  lua_pushnumber(m_L, y);
+  lua_call(m_L, 2, 1);
+  z = (int)lua_tointeger(m_L, -1);
+  lua_pop(m_L, 1);
+  return z;
+}*/
+
+bool lua_lang_init::callFunction(const char* name)
+{
+  lua_getglobal(m_L, name);
+  lua_call(m_L, 0, 0);
+  return true;
 }
 
 static bool checkArguments(lua_State* L, int number)
 {
-  if(lua_gettop(L) < number || lua_gettop(L) > number)
+  if(lua_gettop(L) < number)
     return false;
   return true;
 }
 
-glfw_window* lua_lang_init::getWindow()
+glfw_window lua_lang_init::getWindow()
 {
   return m_window;
 }
@@ -80,17 +101,38 @@ glfw_window* lua_lang_init::getWindow()
 
 int lua_lang_init::makeWindow(lua_State* L)
 {
+
   default_window = false;
- 
-  if(checkArguments(L, 4))
-    LOG("Warning: function makeWindow takes: 1)title 2)width 3)height");
+  if(lua_gettop(L) < 5)
+    LOG("Warning: function makeWindow takes: 1)title 2)width 3)height 4) boolean fullscreen");
 
   const char* title = lua_tostring(L, 1);
   int width = lua_tonumber(L, 2);
   int height = lua_tonumber(L, 3);
-  m_window->create(title, width, height);
-  
+  bool fullscreen = false;
+  int x = -1; //set a default position for our window
+  int y = -1;
+  //Optional
+  if(lua_tonumber(L, 4))
+      fullscreen = lua_tonumber(L, 4);
+  if(lua_tonumber(L, 5) && lua_tonumber(L, 6)){
+     x = lua_tonumber(L, 5);
+     y = lua_tonumber(L, 6);
+  }
+
+  c->getWindow()->create(title, width, height, fullscreen);
+  c->getWindow()->setPosition(x, y);
   return 1;
+}
+
+int lua_lang_init::setWindowVSync(lua_State *L)
+{
+    if(checkArguments(L, 2))
+      LOG("Warning: function makeWindow takes: 1)boolean");
+
+    bool v = lua_toboolean(L, 1);
+    c->getWindow()->setVSync(v);
+    return 1;
 }
 
 int lua_lang_init::setWindowPosition(lua_State* L)
@@ -101,7 +143,7 @@ int lua_lang_init::setWindowPosition(lua_State* L)
   int x = lua_tonumber(L, 1);
   int y = lua_tonumber(L, 1);
 
-  m_window->setPosition(x, y);
+  c->getWindow()->setPosition(x, y);
   
   return 1;
 }
@@ -113,7 +155,7 @@ int lua_lang_init::setWindowTitle(lua_State* L)
 
   const char* title = lua_tostring(L, 1);
 
-  m_window->setTitle(title);
+  c->getWindow()->setTitle(title);
   
   return 1;
 }
@@ -123,7 +165,7 @@ int lua_lang_init::getWindowFocus(lua_State* L)
   if(checkArguments(L, 1))
     LOG("Warning: function getWindowFocus takes no parameter");
 
-  lua_pushboolean(L, m_window->isFocused());
+  lua_pushboolean(L, c->getWindow()->isFocused());
   
   return 1;
 }
@@ -133,13 +175,11 @@ int lua_lang_init::getWindowTicks(lua_State* L)
   if(checkArguments(L, 1))
     LOG("Warning: function getTicks takes no parameter");
 
-  lua_pushnumber(L, m_window->getTicks());
+  lua_pushnumber(L, c->getWindow()->getTicks());
   
   return 1;
 }
 
-
-//TODO
 int lua_lang_init::getMonitorSize(lua_State* L)
 {
   lua_newtable(L);
@@ -147,28 +187,46 @@ int lua_lang_init::getMonitorSize(lua_State* L)
   if(checkArguments(L, 0))
     LOG("Warning: function getMonitorSize does not take any parameters !");
 
-  int x = m_window->getMonitorSize().x;
-  int y = m_window->getMonitorSize().y;
-  
-  lua_pushnumber(L, x); 
-  lua_pushnumber(L, y);
+  int x = c->getWindow()->getMonitorSize().x;
+  int y = c->getWindow()->getMonitorSize().y;
 
-  lua_settable(L, -3);
-  lua_pcall(L,1,0,0);
-  
+  lua_pushinteger(L, (lua_Integer)3);
+  lua_pushinteger(L, (lua_Integer)x);
+  lua_pushinteger(L, (lua_Integer)y);
+  //lua_rawset(L, -3);
+  //lua_setmetatable(L, -3);
   return 1;
 }
 
 
 /*** END OF WINDOW *****/
 
+/*** GL GRAPHICS *****/
+
+int lua_lang_init::clearScreen(lua_State* L)
+{
+
+  //if(checkArguments(L, 3))
+    //LOG("Warning: function clearScreen takes 3 parameters(RGB) and one optional alpha");
+  float r = lua_tonumber(L, 1);
+  float g = lua_tonumber(L, 2);
+  float b = lua_tonumber(L, 3);
+  float a = lua_tonumber(L, 4); //TODO do more checks about this
+
+  c->getGLGraphics()->clearScreen(r, g, b, a);
+
+  return 1;
+}
+
+/*** END OF GL GRAPHICS *****/
+
 /*** MOUSE *****/
 int lua_lang_init::getPointerX(lua_State* L)
 {
   if(checkArguments(L, 1))
-   LOG("Warning: function getPointerX takes no parameter");
+    LOG("Warning: function getPointerX takes no parameter");
 
-  lua_pushnumber(L, m_window->getPointX());
+  lua_pushnumber(L, c->getWindow()->getPointX());
 
   return 1;
 }
@@ -176,9 +234,9 @@ int lua_lang_init::getPointerX(lua_State* L)
 int lua_lang_init::getPointerY(lua_State* L)
 {
   if(checkArguments(L, 1))
-   LOG("Warning: function getPointerY takes no parameter");
+    LOG("Warning: function getPointerY takes no parameter");
 
-  lua_pushnumber(L, m_window->getPointY());
+  lua_pushnumber(L, c->getWindow()->getPointY());
 
   return 1;
 }
@@ -186,37 +244,54 @@ int lua_lang_init::getPointerY(lua_State* L)
 /*** END OF MOUSE *****/
 
 
+/*** UTILS *****/
+
+int lua_lang_init::getDeltaTime(lua_State* L)
+{
+  if(checkArguments(L, 1))
+    LOG("Warning: function getDeltaTime takes no parameters");
+  
+  lua_pushnumber(L, c->getWindow()->getDeltaTime());
+  return 1;
+}
+
+int lua_lang_init::getFPS(lua_State* L)
+{
+  if(checkArguments(L, 1))
+    LOG("Warning: function getFPS takes no parameters");
+  float FPS = c->getWindow()->getFPS();
+  lua_pushnumber(L, FPS);
+  return 1;
+}
+
 /*** END OF UTILS *****/
-
-
-
-/*** END OF UTILS *****/
-
 
 void lua_lang_init::registerFunctions()
 {
   //WINDOW
-  lua_register(m_L, "makeWindow", makeWindow);
-  lua_register(m_L, "setWindowPosition", setWindowPosition);
-  lua_register(m_L, "setWindowTitle", setWindowTitle);
-  lua_register(m_L, "getMonitorSize", getMonitorSize);
-  lua_register(m_L, "getWindowFocus", getWindowFocus);
-  lua_register(m_L, "getWindowTicks", getWindowTicks);
+  lua_register(m_L, "simple_makeWindow", makeWindow);
+  lua_register(m_L, "simple_setWindowPosition", setWindowPosition);
+  lua_register(m_L, "simple_setWindowTitle", setWindowTitle);
+  lua_register(m_L, "simple_getMonitorSize", getMonitorSize);
+  lua_register(m_L, "simple_getWindowFocus", getWindowFocus);
+  lua_register(m_L, "simple_getWindowTicks", getWindowTicks);
+  lua_register(m_L, "simple_setWindowVSync", setWindowVSync);
   
-
   //MOUSE
-  lua_register(m_L, "getPointerX", getPointerX);
-  lua_register(m_L, "getPointerY", getPointerY);
+  lua_register(m_L, "simple_getPointerX", getPointerX);
+  lua_register(m_L, "simple_getPointerY", getPointerY);
 
+  //GL Graphics
+  lua_register(m_L, "simple_clearScreen", clearScreen);
+  
   //UTILS
-
-   
+  lua_register(m_L, "simple_getDeltaTime", getDeltaTime);
+  lua_register(m_L, "simple_getFPS", getFPS);
 }
 
 //TODO
-//LEARN how tables work in C
-//ADD UPDATE/DRAW/INIT method
-//default window
+//ADD error handling 
+//LEARN how Lua tables work in C
 
 void lua_lang_init::dumb()
 {

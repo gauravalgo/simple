@@ -17,6 +17,7 @@
 #include <iostream>
 
 #include "graphics/shader.h"
+#include "maths/mat4.h"
 #include "maths/vec3.h"
 #include "utils/definitions.h"
 #include "graphics/mesh.h"
@@ -27,15 +28,15 @@
 #include "graphics/batch2d.h"
 #include "input/keyboard.h"
 #include "utils/lua_lang_init.h"
+#include "utils/core.h"
 
 #include <stdlib.h> 
 
-#include <GLFW/glfw3.h>
+#include <GLFW/glfw3.h> 
 #include "window/glfw_window.h"
+#include "graphics/gl_graphics.h"
 
 using std::string;
-
-#include "maths/mat4.h"
 
 using namespace simple;
 using namespace simple::graphics;
@@ -61,24 +62,25 @@ shader* m_font_shader;
 keyboard* key;
 lua_lang_init* lua_init;
 
-static glfw_window* window;
+gl_graphics gl_g;
+
+//NOTE: Don't forget to clean this class ;)
 
 void init()
 {
+
   //Init Lua!
   lua_init = new lua_lang_init();
   lua_init->create();
-
   lua_init->registerFunctions();
   lua_init->setMainScript("main.lua");
-  
-  window = lua_init->getWindow();
-  
+  lua_init->callFunction("simple_init");
+
   m_shader = new shader();
   m_shader->create(texture_vertex, texture_fragment);
 
   proj.setToIdentity();
-  proj = proj.setOrtho(0, window->getWidth(), window->getHeight(), 0, 0, 100);
+  proj = proj.setOrtho(0, lua_init->simple_core->getWindow()->getWidth(), lua_init->simple_core->getWindow()->getHeight(), 0, 0, 100);
 
   texture = new texture2D();
   texture->create("res/test.png");
@@ -99,10 +101,15 @@ void init()
   batch->create();
 
   key = new keyboard();
+
 }
 
 void render()
-{  
+{
+
+  //TODO check if it exists
+  lua_init->callFunction("simple_draw");
+  
   m_font_shader->bind();
   f->begin();
   f->setColor(m_shader, 0.2f, 0.4f, 0.3345f, 1);
@@ -113,7 +120,7 @@ void render()
   m_shader->bind();
   texture->bind();
   batch->begin();
-  batch->draw(100, 300, 16, 16, 1, 1, 1, .1f);
+  batch->draw(100, 300, 16, 16, 1, 1, 1, .4f);
   batch->draw(200, 300, 16, 16);
   batch->renderMesh();
   batch->end();
@@ -121,28 +128,14 @@ void render()
   m_shader->unbind();
 }
 
-
-float angle;
-float testx = 100;
-
-float deltaTime;
-double currentFrameTime = window->getTicks();
-double lastFrameTime = currentFrameTime;
+float test;
 
 void update()
 {
-  //update stuff
-  currentFrameTime = window->getTicks();
-  deltaTime = currentFrameTime - lastFrameTime;
-  lastFrameTime = currentFrameTime;
-
-  window->setDeltaTime(deltaTime);
-
-  angle += 33 * deltaTime;
-  testx += 20 * deltaTime;
-
-  // window.printFPS();
-  window->update();
+  //TODO check if it exists
+  lua_init->callFunction("simple_update");
+  
+  lua_init->simple_core->getWindow()->update();
 }
 
 int main()
@@ -158,29 +151,26 @@ int main()
     return 1; 
   }
   
-  glEnable(GL_DEPTH);
+  //glEnable(GL_DEPTH); //3D
 
   init();
 
-  currentFrameTime = window->getTicks();
-
-  while(window->getRunning()){
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(0.39f,0.37f,0.45f,1);
-    glViewport(0,0,window->getWidth(),window->getHeight());
+  while(lua_init->simple_core->getWindow()->getRunning()){
+    glClear(GL_COLOR_BUFFER_BIT); //3D? Not yet. | GL_DEPTH_BUFFER_BIT);
+    gl_g.clearScreen(0.55f, 0.556f, 0.5f, 1);
+    glViewport(0,0,lua_init->simple_core->getWindow()->getWidth(), lua_init->simple_core->getWindow()->getHeight());
 
     render();
     update();
 
   }
-  m_shader->unbind();
 
   SAFE_DELETE(m_shader);
   SAFE_DELETE(f);
   SAFE_DELETE(key);
   //  SAFE_DELETE(lua_init);
   // SAFE_DELETE(window);
-  lua_init->dumb();
+  //lua_init->dumb();
   //SAFE_DELETE(texture);
   return 0;
 }

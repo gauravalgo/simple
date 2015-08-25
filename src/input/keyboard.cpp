@@ -17,18 +17,27 @@
 #include "keyboard.h"
 
 #include "../utils/definitions.h"
+#include "../utils/core.h"
+#include "../window/glfw_window.h"
+
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+
+#include <stdlib.h>
+#include <stdio.h>
 
 using namespace simple;
 using namespace simple::input;
 
 keyboard::keyboard()
 {
-  m_window = new glfw_window();
+  core l_core;
+  
 }
 
 keyboard::~keyboard()
 {
-  SAFE_DELETE(m_window);
+
 }
 
 bool keyboard::isKeyDown(const char* key)

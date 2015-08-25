@@ -14,28 +14,39 @@
  * limitations under the License.
  ******************************************************************************/
 
-#ifndef KEYBOARD_H
-#define KEYBOARD_H
+#include "core.h"
 
-#include "../utils/definitions.h"
-#include "../utils/core.h"
 #include "../window/glfw_window.h"
+#include "definitions.h"
 
-namespace simple
+using namespace simple;
+
+/*
+ *Global holder of important classes
+ */
+
+core::core()
 {
-  namespace input
-  {
-    class keyboard
-    {
-    public:
-      keyboard();
-      ~keyboard();
-    public:
-      bool isKeyDown(const char* key);
-      bool isKeyUp(const char* key);
-    private:
-      glfw_window* m_window;
-    };
-  }
+  
 }
-#endif
+
+core::~core()
+{
+
+}
+
+void core::create()
+{
+  m_window = new glfw_window();
+  m_graphics = new gl_graphics();
+}
+
+glfw_window* core::getWindow()
+{
+    return m_window;
+}
+
+gl_graphics* core::getGLGraphics()
+{
+    return m_graphics;
+}

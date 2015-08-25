@@ -15,6 +15,7 @@ using namespace simple::maths;
 glfw_window::glfw_window():
   m_running(true),
   m_width(0),
+  m_vsync(false),
   m_height(0)
 {
 
@@ -41,30 +42,32 @@ static void cursor_position_callback(GLFWwindow* window, double xpos, double ypo
   glfwGetCursorPos(window, &xpos, &ypos);
 }
 
-void glfw_window::create(const char *title, int width, int height)
+void glfw_window::create(const char *title, int width, int height, bool fullscreen)
 {
 
   if (!glfwInit())
     LOG("Error: GLFW(window) could not be inited");
 
   m_mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-  
-  window = glfwCreateWindow(width, height, title, NULL, NULL);
+
+  if(fullscreen)
+     window = glfwCreateWindow(width, height, title, glfwGetPrimaryMonitor(), NULL);
+   else
+      window = glfwCreateWindow(width, height, title, NULL, NULL);
+
   m_width = width;
   m_height = height;
   m_running = true;
 
   glfwSetErrorCallback(error_callback);
+  glfwSetKeyCallback(window, key_callback);
+  glfwSetCursorPosCallback(window, cursor_position_callback);
 
   if (!window){
     LOG("Error: Could not create window");
     glfwTerminate();
   }
   glfwMakeContextCurrent(window);
-  glfwSwapInterval(1);
-
-  glfwSetKeyCallback(window, key_callback);
-  glfwSetCursorPosCallback(window, cursor_position_callback);
 
   GLenum res = glewInit();
   if(res != GLEW_OK){
@@ -78,17 +81,36 @@ void glfw_window::create(const char *title, int width, int height)
 double currentTick, startTick = glfwGetTime();
 unsigned int numFrame = 0;
 
-void glfw_window::printFPS()
+float glfw_window::getFPS()
+{
+  return m_fps;
+}
+
+void glfw_window::calculateFPS()
 {
   ++numFrame;
   currentTick = glfwGetTime() ;
 
-  if (currentTick - startTick >= 1.0)
-    {
+  if (currentTick - startTick >= 1.0){
       startTick += 1.0;
-      std::cout << "fps: " << numFrame << ", ft: " << 1000.0f / numFrame << "ms" << std::endl;
+      m_fps = numFrame;
+      //std::cout << "fps: " << m_fps << ", ft: " << 1000.0f / m_fps << "ms" << std::endl;
       numFrame = 0;
     }
+}
+
+float deltaTime;
+double currentFrameTime = glfwGetTime();
+double lastFrameTime = currentFrameTime;
+void glfw_window::calculateDeltaTime()
+{
+    //update stuff
+    currentFrameTime = glfwGetTime();
+    deltaTime = currentFrameTime - lastFrameTime;
+    lastFrameTime = currentFrameTime;
+
+    setDeltaTime(deltaTime);
+    calculateFPS();
 }
 
 void glfw_window::update()
@@ -96,12 +118,16 @@ void glfw_window::update()
   if(!m_running)
     return;
 
+  calculateDeltaTime();
+
   //limit fps to 60
-  glfwSwapInterval(1);
+  if(m_vsync)
+     glfwSwapInterval(1);
+
   glfwGetCursorPos(window, &m_px, &m_py); //keep track of the current position of the pointer
   if(glfwWindowShouldClose(window)){
     LOG("GLFW: closing");
-    destory();
+    destroy();
   }
   glfwSwapBuffers(window);
   glfwPollEvents();
@@ -110,6 +136,11 @@ void glfw_window::update()
 double glfw_window::getTicks()
 {
   return glfwGetTime();
+}
+
+float glfw_window::getDeltaTime()
+{
+  return m_delta;
 }
 
 bool glfw_window::isFocused()
@@ -166,7 +197,7 @@ void glfw_window::setPosition(int x, int y)
     glfwSetWindowPos(window, x, y);
 }
 
-void glfw_window::destory()
+void glfw_window::destroy()
 {
   glfwSetWindowShouldClose(window, GL_TRUE);
   glfwDestroyWindow(window);
