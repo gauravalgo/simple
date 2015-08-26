@@ -49,7 +49,7 @@ batch2d::~batch2d()
 }
 
 void batch2d::create()
-{  
+{
   glGenBuffers(2, &m_vbo);
   glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_STATIC_DRAW);

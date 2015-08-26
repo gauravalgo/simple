@@ -28,6 +28,7 @@ namespace simple
       ~gl_graphics();
     public:
       void clearScreen(float r, float g, float b, float a);
+      void setViewport(int x, int y, int width, int height);
     };
   }
 }

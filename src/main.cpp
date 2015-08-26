@@ -75,8 +75,10 @@ void init()
   lua_init->registerFunctions();
   lua_init->setMainScript("main.lua");
   lua_init->callFunction("simple_init");
+  lua_init->makeDefaultWindow();
 
   m_shader = new shader();
+
   m_shader->create(texture_vertex, texture_fragment);
 
   proj.setToIdentity();
@@ -86,12 +88,12 @@ void init()
   texture->create("res/test.png");
 
   m_shader->sendUniformLocation("proj", proj);
-  
+
   m_font_shader = new shader();
   m_font_shader->create(font_vertex, font_fragment);
 
   m_font_shader->sendUniformLocation("proj", proj);
-    
+
   f = new font();
   f->load(ft, m_font_shader, "res/font.ttf");
   f->setFontSize(16);
@@ -104,20 +106,20 @@ void init()
 
 }
 
-void render()
-{
 
+void render ()
+{
   //TODO check if it exists
   lua_init->callFunction("simple_draw");
-  
+
   m_font_shader->bind();
   f->begin();
   f->setColor(m_shader, 0.2f, 0.4f, 0.3345f, 1);
   f->draw("Hello World", 100, 100, 1, 1);
   f->end();
   m_font_shader->unbind();
-  
   m_shader->bind();
+  //texture
   texture->bind();
   batch->begin();
   batch->draw(100, 300, 16, 16, 1, 1, 1, .4f);
@@ -128,13 +130,10 @@ void render()
   m_shader->unbind();
 }
 
-float test;
-
 void update()
 {
   //TODO check if it exists
   lua_init->callFunction("simple_update");
-  
   lua_init->simple_core->getWindow()->update();
 }
 
@@ -148,18 +147,13 @@ int main()
 
   if(FT_Init_FreeType(&ft)){
     LOG("Error: Could not init freetype lib!");
-    return 1; 
+    return 1;
   }
-  
   //glEnable(GL_DEPTH); //3D
 
   init();
 
   while(lua_init->simple_core->getWindow()->getRunning()){
-    glClear(GL_COLOR_BUFFER_BIT); //3D? Not yet. | GL_DEPTH_BUFFER_BIT);
-    gl_g.clearScreen(0.55f, 0.556f, 0.5f, 1);
-    glViewport(0,0,lua_init->simple_core->getWindow()->getWidth(), lua_init->simple_core->getWindow()->getHeight());
-
     render();
     update();
 
@@ -168,6 +162,7 @@ int main()
   SAFE_DELETE(m_shader);
   SAFE_DELETE(f);
   SAFE_DELETE(key);
+
   //  SAFE_DELETE(lua_init);
   // SAFE_DELETE(window);
   //lua_init->dumb();

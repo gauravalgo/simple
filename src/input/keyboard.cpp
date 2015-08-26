@@ -31,8 +31,7 @@ using namespace simple::input;
 
 keyboard::keyboard()
 {
-  core l_core;
-  
+
 }
 
 keyboard::~keyboard()

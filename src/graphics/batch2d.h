@@ -23,7 +23,6 @@
 #include "../utils/definitions.h"
 #include "mesh.h"
 #include "texture2D.h"
-#include "sprite2d.h"
 
 using namespace simple::maths;
 
@@ -37,17 +36,16 @@ namespace simple
       batch2d(shader* shader, int size);
       batch2d(shader* shader);
       ~batch2d();
-      
+
+    private:
       float m_vertices[40000 * 5 * 7];
- 
+
       unsigned int m_vbo;
       unsigned int m_ebo;
 
       unsigned int m_position_attribute;
       unsigned int m_color_attribute;
       unsigned int m_tex_attribute;
-       
-    private:
       int m_index;
       int m_numSprite;
       int m_SIZE;
