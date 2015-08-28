@@ -156,7 +156,7 @@ float glfw_window::getPointY()
   return (float) m_py;
 }
 
-vec2 glfw_window::getPointPosition()
+vec2 glfw_window::getPointerPosition()
 {
   return vec2(m_px,m_py);
 }

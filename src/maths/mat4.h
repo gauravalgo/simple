@@ -325,12 +325,12 @@ namespace simple {
 
       // Return the pointer to the data array of the matrix
       float* dataBlock() {
-	return m[0];
+        return m[0];
       }
 
       // Return the constant pointer to the data array of the matrix
       const float* dataBlock() const {
-	return m[0];
+        return m[0];
       }
 
       // Return a given value from the matrix

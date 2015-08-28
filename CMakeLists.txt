@@ -20,14 +20,18 @@ src/utils/*.h
 src/input/*.cpp
 src/input/*.h
 
+src/sound/*.cpp
+src/sound/*.h
+
+
 src/*.h
 src/*.cpp
 )
 
 ## Set version and info
 set(simple_major_version 0)
-set(simple_minor_version 1)
-set(simple_patch_version 3)
+set(simple_minor_version 2)
+set(simple_patch_version 0)
 
 set(simple_package "simple")
 set(simple_creator "Muresan Vlad")

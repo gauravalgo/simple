@@ -17,64 +17,23 @@
 #ifndef _DEFAULT_SHADERS_H
 #define _DEFAULT_SHADERS_H
 
+#include <iostream>
+#include <string>
+using namespace std;
+
 namespace simple
 {
-  namespace graphics
-  {
+      namespace graphics
+      {
 
-    const char* font_fragment =
-      "#version 130\n"
-
-      "in vec4 Color;"
-      "in vec2 Texcoords;"
-      "uniform sampler2D tex;"
-      "void main(void) {"
-      "gl_FragColor = texture2D(tex,Texcoords).r * Color;"
-      "}";
-
-    const char* font_vertex =
-      "#version 130\n"
-      "in vec2 position;"
-      "in vec4 color;"
-      "in vec2 texcoords;"
-
-      "out vec4 Color;"
-      "out vec2 Texcoords;"
-
-      "uniform mat4 proj = mat4(1);"
-      
-      "void main(void) {"
-      "Color = color;"
-      "Texcoords = texcoords;"
-      "gl_Position = proj *  vec4(position, 0.0f, 1.0f);"
-      "}";
-  
-    const char* texture_fragment =
-      "#version 130\n"
-
-      "in vec4 Color;"
-      "in vec2 Texcoords;"
-      "uniform sampler2D tex;"
-      "void main(void) {"
-      "gl_FragColor = texture2D(tex,Texcoords).r * Color * texture2D(tex, Texcoords);"
-      "}";
-
-    const char* texture_vertex =
-      "#version 130\n"
-      "in vec2 position;"
-      "in vec4 color;"
-      "in vec2 texcoords;"
-
-      "out vec4 Color;"
-      "out vec2 Texcoords;"
-
-      "uniform mat4 proj = mat4(1);"
-      
-      "void main(void) {"
-      "Color = color;"
-      "Texcoords = texcoords;"
-      "gl_Position = proj *  vec4(position, 0.0f, 1.0f);"
-      "}";
-  }
+            class default_shaders
+            {
+            public:
+                  static string font_fragment;
+                  static string font_vertex;
+                  static string texture_fragment;
+                  static string texture_vertex;
+            };
+      }
 }
 #endif

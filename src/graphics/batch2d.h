@@ -35,6 +35,7 @@ namespace simple
     public:
       batch2d(shader* shader, int size);
       batch2d(shader* shader);
+      batch2d();
       ~batch2d();
 
     private:

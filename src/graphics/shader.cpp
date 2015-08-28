@@ -64,7 +64,7 @@ void shader::create(const char* vertexShaderFilename,
       int bufferSize;
       glGetShaderInfoLog(m_vertexShaderID, info,&bufferSize,buffer);
 
-      std::cout << buffer << std::endl;
+      LOG("vertex shader compile error " << buffer);
 
       delete[] buffer;
       glDeleteShader(m_vertexShaderID);
@@ -81,7 +81,7 @@ void shader::create(const char* vertexShaderFilename,
       int bufferSize;
       glGetShaderInfoLog(m_fragmentShaderID, info,&bufferSize,buffer);
 
-      std::cout << buffer << std::endl;
+      LOG("fragment shader compile error " << buffer);
 
       delete[] buffer;
       glDeleteShader(m_vertexShaderID);
@@ -113,7 +113,7 @@ void shader::create(const char* vertexShaderFilename,
   glUseProgram(m_program);
   
   if (DEBBUG)
-    std::cout<<"Shader compiled and ready to be used!" << std::endl;
+    LOG("Shader compiled and ready to be used!");
 }
 
 void shader::sendUniformLocation(const char* name, mat4 data)

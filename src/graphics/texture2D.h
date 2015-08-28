@@ -55,7 +55,7 @@ namespace simple
 
       // Create the texture
       void create(int width, int height,
-		  void* data = NULL);
+                  void* data = NULL);
       void create(const string &fileName);
 
       // Destroy the texture
@@ -69,7 +69,8 @@ namespace simple
 
       // Get the OpenGL texture ID
       uint getID() const;
-
+      // Set the OpenGL texuture ID
+      void setID(uint value);
       // Get the layer of the texture
       uint getLayer() const;
 
@@ -105,6 +106,10 @@ namespace simple
     // Get the OpenGL texture ID
     inline uint texture2D::getID() const {
       return mID;
+    }
+
+    inline void texture2D::setID(uint value) {
+      mID = value;
     }
 
     // Get the layer of the texture

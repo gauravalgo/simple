@@ -29,6 +29,34 @@
 using namespace simple;
 using namespace simple::graphics;
 
+const char* default_fragment =
+  "#version 130\n"
+
+  "in vec4 Color;"
+  "in vec2 Texcoords;"
+  "uniform sampler2D tex;"
+  "void main(void) {"
+  "gl_FragColor = texture2D(tex,Texcoords).r * Color * texture2D(tex, Texcoords);"
+  "}";
+
+const char* default_vertex =
+  "#version 130\n"
+  "in vec2 position;"
+  "in vec4 color;"
+  "in vec2 texcoords;"
+
+  "out vec4 Color;"
+  "out vec2 Texcoords;"
+
+  "uniform mat4 proj = mat4(1);"
+
+  "void main(void) {"
+  "Color = color;"
+  "Texcoords = texcoords;"
+  "gl_Position = proj *  vec4(position, 0.0f, 1.0f);"
+  "}";
+
+
 batch2d::batch2d(shader* shader):
   m_SIZE(40000)
 {
@@ -40,6 +68,8 @@ batch2d::batch2d(shader* shader, int size)
   m_shader = shader;
   m_SIZE = size;
 }
+
+batch2d::batch2d(){}
 
 batch2d::~batch2d()
 {
@@ -60,7 +90,7 @@ void batch2d::create()
 
   m_color_attribute = glGetAttribLocation(m_shader->getProgram(), "color");
   glEnableVertexAttribArray(m_color_attribute);
-  glVertexAttribPointer(m_color_attribute, 4, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(2*sizeof(float)));  
+  glVertexAttribPointer(m_color_attribute, 4, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(2*sizeof(float)));
 
   m_tex_attribute = glGetAttribLocation(m_shader->getProgram(), "texcoords");
   glEnableVertexAttribArray(m_tex_attribute);
@@ -127,7 +157,7 @@ void batch2d::draw(float x, float y, float width, float height)
   m_vertices[m_index++] = 0;
   m_vertices[m_index++] = 1;
   
-  m_numSprite++;  
+  m_numSprite++;
 }
 
 void batch2d::draw(float x, float y, float width, float height, float r, float g, float b, float a)
@@ -170,7 +200,7 @@ void batch2d::draw(float x, float y, float width, float height, float r, float g
   m_vertices[m_index++] = 0;
   m_vertices[m_index++] = 1;
   
-  m_numSprite++;  
+  m_numSprite++;
 }
 
 

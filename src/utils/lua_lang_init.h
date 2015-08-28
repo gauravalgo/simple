@@ -62,9 +62,30 @@ namespace simple
       //GL GRAPHICS
       static int clearScreen(lua_State* L);
       static int setViewport(lua_State* L);
-      //UTILS
+      //Maths
+      //Graphics
+      static int initGraphics(lua_State* L);
+      //-Texture
+      static int makeTexture(lua_State* L);
+      static int loadTexture(lua_State* L);
+      static int bindTexture(lua_State* L);
+      static int unBindTexture(lua_State* L);
+      //-Batch
+      static int createBatch(lua_State* L);
+      static int drawBatch(lua_State* L);
+      static int beginBatch(lua_State* L);
+      static int endBatch(lua_State* L);
+      static int renderMesh(lua_State* L);
+//-Shader
+      static int createShader(lua_State* L);
+      static int bindShader(lua_State* L);
+      static int unBindShader(lua_State* L);
+      static int setOrthoView(lua_State* L);
+      static int sendShaderUniformLocation(lua_State* L);
+//UTILS
       static int getDeltaTime(lua_State* L);
       static int getFPS(lua_State* L);
+      static int getVersion(lua_State* L);
     };
   }
 }

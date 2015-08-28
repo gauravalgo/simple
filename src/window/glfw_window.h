@@ -50,7 +50,7 @@ namespace simple
     double getTicks();
     float getPointX();
     float getPointY();
-    vec2 getPointPosition();
+    vec2 getPointerPosition();
     vec2 getMonitorSize();
     bool getVSync(){return m_vsync;}
     bool getRunning(){return m_running;}

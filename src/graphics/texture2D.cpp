@@ -79,7 +79,7 @@ void texture2D::create(const std::string& fileName)  {
 
   // Create the OpenGL texture
   glGenTextures(1, &mID);
-  assert(mID != 0);
+
   glBindTexture(GL_TEXTURE_2D, mID);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);

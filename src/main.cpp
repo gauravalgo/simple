@@ -22,7 +22,6 @@
 #include "utils/definitions.h"
 #include "graphics/mesh.h"
 #include "graphics/texture2D.h"
-#include "graphics/default_shaders.h"
 #include "utils/file.h"
 #include "graphics/font.h"
 #include "graphics/batch2d.h"
@@ -64,8 +63,6 @@ lua_lang_init* lua_init;
 
 gl_graphics gl_g;
 
-//NOTE: Don't forget to clean this class ;)
-
 void init()
 {
 
@@ -77,30 +74,23 @@ void init()
   lua_init->callFunction("simple_init");
   lua_init->makeDefaultWindow();
 
-  m_shader = new shader();
+  //m_shader = new shader();
+  //m_shader->create(texture_vertex, texture_fragment);
+  //proj.setToIdentity();
+  //proj = proj.setOrtho(0, lua_init->simple_core->getWindow()->getWidth(), lua_init->simple_core->getWindow()->getHeight(), 0, 0, 100);
+  //proj.print();
+  //texture = new texture2D();
+  //texture->create("res/test.png");
 
-  m_shader->create(texture_vertex, texture_fragment);
+  //m_shader->sendUniformLocation("proj", proj);
 
-  proj.setToIdentity();
-  proj = proj.setOrtho(0, lua_init->simple_core->getWindow()->getWidth(), lua_init->simple_core->getWindow()->getHeight(), 0, 0, 100);
+  //f = new font();
+  // f->load(ft, m_font_shader, "res/font.ttf");
+  //f->setFontSize(16);
+  //f->setColor(m_shader,.2f,.8,.5,1);
 
-  texture = new texture2D();
-  texture->create("res/test.png");
-
-  m_shader->sendUniformLocation("proj", proj);
-
-  m_font_shader = new shader();
-  m_font_shader->create(font_vertex, font_fragment);
-
-  m_font_shader->sendUniformLocation("proj", proj);
-
-  f = new font();
-  f->load(ft, m_font_shader, "res/font.ttf");
-  f->setFontSize(16);
-  f->setColor(m_shader,.2f,.8,.5,1);
-
-  batch = new batch2d(m_shader);
-  batch->create();
+  //batch = new batch2d(m_shader);
+  //batch->create();
 
   key = new keyboard();
 
@@ -112,6 +102,7 @@ void render ()
   //TODO check if it exists
   lua_init->callFunction("simple_draw");
 
+  /*
   m_font_shader->bind();
   f->begin();
   f->setColor(m_shader, 0.2f, 0.4f, 0.3345f, 1);
@@ -119,20 +110,11 @@ void render ()
   f->end();
   m_font_shader->unbind();
   m_shader->bind();
-  //texture
-  texture->bind();
-  batch->begin();
-  batch->draw(100, 300, 16, 16, 1, 1, 1, .4f);
-  batch->draw(200, 300, 16, 16);
-  batch->renderMesh();
-  batch->end();
-  texture->unbind();
-  m_shader->unbind();
-}
+  */
+ }
 
 void update()
 {
-  //TODO check if it exists
   lua_init->callFunction("simple_update");
   lua_init->simple_core->getWindow()->update();
 }
@@ -149,7 +131,6 @@ int main()
     LOG("Error: Could not init freetype lib!");
     return 1;
   }
-  //glEnable(GL_DEPTH); //3D
 
   init();
 
@@ -159,14 +140,9 @@ int main()
 
   }
 
-  SAFE_DELETE(m_shader);
-  SAFE_DELETE(f);
+  //SAFE_DELETE(m_shader);
+  //SAFE_DELETE(f);
   SAFE_DELETE(key);
-
-  //  SAFE_DELETE(lua_init);
-  // SAFE_DELETE(window);
-  //lua_init->dumb();
-  //SAFE_DELETE(texture);
   return 0;
 }
 
