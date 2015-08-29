@@ -30,6 +30,7 @@ using namespace simple::lang;
 using namespace simple::graphics;
 using namespace simple::maths;
 
+
 extern "C" {
 #include "lua.h"
 #include "lualib.h"
@@ -47,7 +48,9 @@ static core* c;
 void lua_lang_init::create()
 {
   m_L = luaL_newstate();
+
   luaL_openlibs(m_L);
+
   if(!m_L)
     LOG("Error: Could not load lua state!");
 
@@ -73,7 +76,8 @@ void lua_lang_init::setMainScript(const char* name)
   //Look for main.lua and execute it
   int error = luaL_dofile(m_L, name);
   if(error != 0)
-    LOG("Error: Could not load main script " << name << " make sure your " << name << " is in the same folder with simple exe.");
+  LOG("Error: Could not load main script " << name << " make sure your " << name << " is in the same folder with simple exe.");
+
 }
 
 bool lua_lang_init::callFunction(const char* name)
@@ -95,14 +99,6 @@ static bool checkArguments(lua_State* L, int number)
 }
 
 //Errors handling
-static bool isIntError(lua_State *L, int spot, const char* what)
-{
-  if(!lua_isnumber(L, spot)){
-    LOG("Error: " << what << " from location " << spot << " must be a number");
-    return false;
-  }
-  return true;
-}
 
 static bool isObjectError(lua_State *L, int spot, const char* what)
 {
@@ -113,30 +109,10 @@ static bool isObjectError(lua_State *L, int spot, const char* what)
   return true;
 }
 
-
-static bool isFloatError(lua_State *L, int spot, const char* what)
-{
-  if(!lua_isnumber(L, spot)){
-    LOG("Error: " << what << " from location " << spot << " must be a number");
-    return false;
-  }
-  return true;
-}
-
-
 static bool isStringError(lua_State *L, int spot, const char* what)
 {
   if(lua_isnumber(L, spot) || lua_isboolean(L, spot) || lua_isnil(L, spot)){
     LOG("Error: " << what << " from location " << spot << " must be a string");
-    return false;
-  }
-  return true;
-}
-
-static bool isBooleanError(lua_State *L, int spot, const char* what)
-{
-  if(!lua_isboolean(L, spot) || lua_isnumber(L, spot)){
-    LOG("Error: " << what << " from location " << spot << " must be a boolean");
     return false;
   }
   return true;
@@ -214,34 +190,32 @@ int lua_lang_init::makeWindow(lua_State* L)
 {
 
   default_window = false;
-  if(lua_gettop(L) < 5)
-    LOG("Warning: function makeWindow takes: 1)title 2)width 3)height 4) boolean fullscreen");
+  if(lua_gettop(L) < 3)
+    LOG("Warning: function makeWindow takes: 1)title 2)width 3)height");
 
   const char* title = lua_tostring(L, 1);
   isStringError(L, 1, "makeWindow -> title");
-  int width = checkFloat(L, 2);
-  isIntError(L, 2, "makeWindow -> width");
-  int height = checkFloat(L, 3);
-  isIntError(L, 3, "makeWindow -> height");
+  checkFloat(L, 2);
+  checkFloat(L, 3);
+  int width = lua_tonumber(L,2);
+  int height = lua_tonumber(L, 3);
   bool fullscreen = false;
   int x = -1; //set a default position for our window
   int y = -1;
   //Optional
-  if(lua_tonumber(L, 4)){
+  if(lua_isnumber(L, 4)){
     fullscreen = lua_tonumber(L, 4);
   }
 
-  if(checkFloat(L, 5) && checkFloat(L, 6)){
-    x = checkFloat(L, 5);
-    y = checkFloat(L, 6);
+  if(lua_isnumber(L, 5) && lua_isnumber(L, 6)){
+    x = lua_tonumber(L, 5);
+    y = lua_tonumber(L, 6);
   }
-  isIntError(L, 6, "makeWindow ->(optional)positionY");
-  isIntError(L, 5, "makeWindow ->(optional)positionX");
 
-  if(isBooleanError(L, 4, "makeWindow ->(optional)fullscreen"))
+  // if(isBooleanError(L, 4, "makeWindow ->(optional)fullscreen"))
+  //c->getWindow()->create(title, width, height, false);
+  //else
     c->getWindow()->create(title, width, height, false);
-  else
-    c->getWindow()->create(title, width, height, true);
 
   c->getWindow()->setPosition(x, y);
   return 1;
@@ -253,7 +227,6 @@ int lua_lang_init::setWindowVSync(lua_State *L)
     LOG("Warning: function makeWindow takes: 1)boolean");
 
   bool v = lua_toboolean(L, 1);
-  isBooleanError(L, 1, "setWindowVSync -> vsync");
   c->getWindow()->setVSync(v);
   return 1;
 }
@@ -263,10 +236,10 @@ int lua_lang_init::setWindowPosition(lua_State* L)
   if(checkArguments(L, 3))
     LOG("Warning: function setWindowPosition takes: 1)x coord 2) y coord");
 
-  int x = checkFloat(L, 1);
-  isIntError(L, 1, "setWindowPosition -> x");
-  int y = checkFloat(L, 2);
-  isIntError(L, 2, "setWindowPosition -> y");
+  checkFloat(L , 1);
+  checkFloat(L , 2);
+  int x = lua_tonumber(L, 1);
+  int y = lua_tonumber(L, 2);
   c->getWindow()->setPosition(x, y);
   return 1;
 }
@@ -320,17 +293,14 @@ int lua_lang_init::getMonitorSize(lua_State* L)
 
 int lua_lang_init::clearScreen(lua_State* L)
 {
-
-  //if(checkArguments(L, 3))
-  //LOG("Warning: function clearScreen takes 3 parameters(RGB) and one optional alpha");
-  float r = checkFloat(L, 1);
-  isIntError(L, 1, "clearScreen -> red");
-  float g = checkFloat(L, 2);
-  isIntError(L, 2, "clearScreen -> green");
-  float b = checkFloat(L, 3);
-  isIntError(L, 3, "clearScreen -> blue");
-  float a = checkFloat(L, 4);
-  isIntError(L, 4, "clearScreen -> opacity");
+  checkFloat(L, 1);
+  checkFloat(L, 2);
+  checkFloat(L, 3);
+  checkFloat(L, 4);
+  float r = lua_tonumber(L, 1);
+  float g = lua_tonumber(L, 2);
+  float b = lua_tonumber(L, 3);
+  float a = lua_tonumber(L, 4);
 
   c->getGLGraphics()->clearScreen(r, g, b, a);
 
@@ -339,20 +309,16 @@ int lua_lang_init::clearScreen(lua_State* L)
 
 int lua_lang_init::setViewport(lua_State *L)
 {
-  if(checkArguments(L, 5))
-    LOG("Warning: function setViewport takes: 1) x 2) y 3)width 4) height");
-
-  int x = checkFloat(L, 1);
-  isIntError(L, 1, "clearScreen -> x");
-  int y = checkFloat(L, 2);
-  isIntError(L, 2, "clearScreen -> y");
-  int w = checkFloat(L, 3);
-  isIntError(L, 3, "clearScreen -> width");
-  int h = checkFloat(L, 4);
-  isIntError(L, 4, "clearScreen -> height");
-
+  checkFloat(L, 1);
+  checkFloat(L, 2);
+  checkFloat(L, 3);
+  checkFloat(L, 4);
+  int x = lua_tonumber(L, 1);
+  int y = lua_tonumber(L, 2);
+  int w = lua_tonumber(L, 3);
+  int h = lua_tonumber(L, 4);
   c->getGLGraphics()->setViewport(x, y, w, h);
-
+  return 1;
 }
 
 /*** END OF GL GRAPHICS *****/
@@ -366,6 +332,7 @@ int lua_lang_init::setViewport(lua_State *L)
 
 int lua_lang_init::makeTexture(lua_State *L)
 {
+  //TODO
   texture2D tex;
 
   return 1;
@@ -387,15 +354,13 @@ int lua_lang_init::loadTexture(lua_State *L)
 
 int lua_lang_init::bindTexture(lua_State *L)
 {
-  if(checkArguments(L, 2))
-    LOG("Warning: function bindTexture takes: 1) a texture");
-
   texture2D* tex = new texture2D();
-  lua_Integer id = lua_tointeger(L, 1);
-  isIntError(L, 1, "bindTexture -> texture to bind to");
+  checkInteger(L, 1);
+  float id = lua_tointeger(L, 1);
   tex = getTexture2D(id);
   if(tex == getTexture2D(id))
     getTexture2D(id)->bind();
+
   return 1;
 }
 
@@ -405,8 +370,8 @@ int lua_lang_init::unBindTexture(lua_State *L)
     LOG("Warning: function bindTexture takes: 1) a texture");
 
   texture2D* tex = new texture2D();
-  lua_Integer id = lua_tointeger(L, 1);
-  isIntError(L, 1, "unBindTexture -> texture to unbind to");
+  checkInteger(L, 1);
+  int id = lua_tointeger(L, 1);
   tex = getTexture2D(id);
   if(tex == getTexture2D(id))
     tex->unbind();
@@ -415,36 +380,32 @@ int lua_lang_init::unBindTexture(lua_State *L)
 
 int lua_lang_init::createShader(lua_State *L)
 {
-  if(checkArguments(L, 3))
-    LOG("Warning: createShader takes: 1) vertex string 2) fragment string");
-
   shader* s = new shader();
   if(!lua_tostring(L,1) && !lua_tostring(L, 2)){
-    //Put a custom shader
+    //Put a default shader
     default_shaders df;
-    s->create(df.texture_vertex.c_str(),df.texture_fragment.c_str());
+    s->create(df.texture_vertex.c_str(), df.texture_fragment.c_str());
+    pushPointer(L, s);
   }else if(lua_tostring(L,1) && !lua_tostring(L,2)){
       LOG("Warning: (optional)parameters are: 1) vertex shader 2) fragment shader");
   }else{
-    const char* vertex = lua_tostring(L, 1);
+    //custom shader
     isStringError(L, 1 , "createShader -> vertex shader expected");
-    const char* fragment = lua_tostring(L, 2);
+    const char* vertex = lua_tostring(L, 1);
     isStringError(L, 2 , "createShader -> fragment shader expected");
+    const char* fragment = lua_tostring(L, 2);
     s->create(vertex, fragment);
+    pushPointer(L, s);
   }
 
-  pushPointer(L, s);
   return 1;
 }
 
 int lua_lang_init::bindShader(lua_State *L)
 {
-  if(checkArguments(L, 2))
-    LOG("Warning: bindShader takes: 1) shader ");
-
   shader* s = new shader();
-  lua_Integer id = lua_tointeger(L, 1);
-  isIntError(L, 1, "bindshader -> shader to bind to expected");
+  checkInteger(L, 1);
+  int id = lua_tointeger(L, 1);
   s = getShader(id);
   if(s == getShader(id))
     s->bind();
@@ -458,8 +419,8 @@ int lua_lang_init::unBindShader(lua_State *L)
     LOG("Warning: unBindShader takes: 1) shader ");
 
   shader* s = new shader();
-  lua_Integer id = lua_tointeger(L, 1);
-  isIntError(L, 1, "unBindShader -> shader to unbind to expected");
+  checkInteger(L, 1);
+  int id = lua_tointeger(L, 1);
   s = getShader(id);
   if(s == getShader(id))
     s->unbind();
@@ -474,24 +435,18 @@ int lua_lang_init::setOrthoView(lua_State *L)
   mat4  projection;
   projection.setToIdentity();
 
-  float left = checkFloat(L, 1);
-  isFloatError(L, 1, "setOrthoview -> left");
-  float right = checkFloat(L, 2);
-  isFloatError(L, 2, "setOrthoview -> right");
-  float bottom = checkFloat(L, 3);
-  isFloatError(L, 3, "setOrthoview -> bottom");
-  float top = checkFloat(L, 4);
-  isFloatError(L, 4, "setOrthoview -> top");
-  float near = checkFloat(L, 5);
-  isFloatError(L, 5, "setOrthoview -> near");
-  float far = checkFloat(L, 6);
-  isFloatError(L, 6, "setOrthoview -> far");
+  float left = lua_tonumber(L, 1);
+  float right = lua_tonumber(L, 2);
+  float bottom = lua_tonumber(L, 3);
+  float top = lua_tonumber(L, 4);
+  float near = lua_tonumber(L, 5);
+  float far = lua_tonumber(L, 6);
 
   //test this inside an update method and see what happens
   projection = projection.setOrtho(left, right, bottom, top, near, far);
   shader* s = new shader();
-  lua_Integer shid = lua_tointeger(L, 7);
-  isIntError(L, 7, "setOrthoview -> shader");
+  int shid = lua_tointeger(L, 7);
+
   s = getShader(shid);
   if(s == getShader(shid))
     s->sendUniformLocation("proj", projection);
@@ -505,12 +460,10 @@ int lua_lang_init::sendShaderUniformLocation(lua_State *L)
     LOG("Warning: sendShaderUniformLocation takes: 1) shader 2) location 3) matrix");
 
   shader* s = new shader();
-  lua_Integer id = lua_tointeger(L, 1);
-  isIntError(L, 1, "sendShaderUniformLocation -> shader object expected");
+  int id = lua_tointeger(L, 1);
   const char* location = lua_tostring(L, 2);
   isStringError(L, 2, "sendShaderUniformLocation -> location string expected");
   float data = lua_tonumber(L, 3);
-  isFloatError(L, 3, "sendShaderUniformLocation -> matrix data expected");
   s = getShader(id);
   if(s == getShader(id)){
     s->sendUniformLocation(location, data);
@@ -521,29 +474,21 @@ int lua_lang_init::sendShaderUniformLocation(lua_State *L)
 
 int lua_lang_init::createBatch(lua_State *L)
 {
-  if(checkArguments(L, 2))
-    LOG("Warning: createBatch takes: 1) shader");
-
   shader* s = new shader();
-  isObjectError(L, 1, "createBatch -> shader");
-  lua_Integer shID = checkInteger(L, 1);
+  batch2d* batch = new batch2d();
+  isObjectError(L, 1, "makeBatch -> shader");
+  lua_Integer shID = lua_tointeger(L, 1);
   s = getShader(shID);
-  batch2d* batch;
-  if(lua_tointeger(L, 2)){
-    int size = checkInteger(L, 2);
-    batch = new batch2d(s, size);
-  }else
+  if(s == getShader(shID)){
     batch = new batch2d(s, 4000);
-  batch->create();
-  pushPointer(L, batch);
+    batch->create();
+    pushPointer(L, batch);
+  }
   return 1;
 }
 
 int lua_lang_init::renderMesh(lua_State *L)
 {
-  if(checkArguments(L, 2))
-    LOG("Warning: renderMesh takes: 1) batch");
-
   isObjectError(L, 1, "renderMesh -> batch");
   lua_Integer id = lua_tointeger(L, 1);
   batch2d* b = new batch2d();
@@ -554,12 +499,9 @@ int lua_lang_init::renderMesh(lua_State *L)
 
 int lua_lang_init::beginBatch(lua_State *L)
 {
-  if(checkArguments(L, 2))
-    LOG("Warning: beginBatch takes 1) batch");
-
-  lua_Integer id = lua_tointeger(L, 1);
-  isIntError(L, 1, "beginBatch takes 1) batch");
   batch2d* batch = new batch2d();
+  luaL_checkinteger(L, 1);
+  lua_Integer id = lua_tointeger(L, 1);
   batch = getBatch(id);
   if(batch == getBatch(id))
     batch->begin();
@@ -569,21 +511,16 @@ int lua_lang_init::beginBatch(lua_State *L)
 
 int lua_lang_init::drawBatch(lua_State *L)
 {
-  if(checkArguments(L, 6))
-    LOG("Waring: drawBatch takes: 1) batch 2) x coord 3) y coord 4) width 5) height");
+  luaL_checkinteger(L, 1);
   lua_Integer id = lua_tointeger(L, 1);
-  isIntError(L, 1, "drawBatch -> batch expected");
   batch2d* batch = new batch2d();
   batch = getBatch(id);
   if(batch == getBatch(id)){
-    float x = checkFloat(L, 2);
-    isIntError(L, 2, "drawBatch -> x coord expected");
-    float y = checkFloat(L, 3);
-    isIntError(L, 3, "drawBatch -> y coord expected");
-    float w = checkFloat(L, 4);
-    isIntError(L, 4, "drawBatch -> w size expected");
-    float h = checkFloat(L, 5);
-    isIntError(L, 5, "drawBatch -> h size expected");
+    float x = lua_tonumber(L, 2);
+    float y = lua_tonumber(L, 3);
+    float w = lua_tonumber(L, 4);
+    float h = lua_tonumber(L, 5);
+
     batch->draw(x, y, w, h);
   }
   return 1;
@@ -591,12 +528,9 @@ int lua_lang_init::drawBatch(lua_State *L)
 
 int lua_lang_init::endBatch(lua_State* L)
 {
-  if(checkArguments(L, 2))
-    LOG("Warning: endBatch takes 1) batch");
-
-  lua_Integer id = lua_tointeger(L, 1);
-  isIntError(L, 1, "endBatch takes 1) batch");
   batch2d* batch = new batch2d();
+  luaL_checkinteger(L, 1);
+  lua_Integer id = lua_tointeger(L, 1);
   batch = getBatch(id);
   if(batch == getBatch(id))
     batch->end();
@@ -660,14 +594,6 @@ int lua_lang_init::getFPS(lua_State* L)
 //TODO make this damn thing work!
 int lua_lang_init::initGraphics(lua_State* L)
 {
-  luaL_Reg reg[] = {
-    { "makeTexture",	makeTexture	},
-    { "bindTexture",	bindTexture	},
-    { "loadTexture",	loadTexture	},
-    { "unBindTexture",	unBindTexture},
-    { 0, 0 },
-  };
-  luaL_newlib(L, reg);
   return 1;
 }
 
@@ -681,6 +607,7 @@ void lua_lang_init::registerFunctions()
 {
 
   //WINDOW
+
   lua_register(m_L, "simple_makeWindow", makeWindow);
   lua_register(m_L, "simple_setWindowPosition", setWindowPosition);
   lua_register(m_L, "simple_setWindowTitle", setWindowTitle);
@@ -718,6 +645,7 @@ void lua_lang_init::registerFunctions()
   lua_register(m_L, "simple_getVersion", getVersion);
   //MATHS
   lua_register(m_L, "simple_makeOrthoView", setOrthoView);
+
 }
 
 //TODO make simple look more like Love *(evilface)

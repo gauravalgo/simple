@@ -1,151 +1,197 @@
-##############################################################################
-# LuaJIT top level Makefile for installation. Requires GNU Make.
-#
-# Please read doc/install.html before changing any variables!
-#
-# Suitable for POSIX platforms (Linux, *BSD, OSX etc.).
-# Note: src/Makefile has many more configurable options.
-#
-# ##### This Makefile is NOT useful for Windows! #####
-# For MSVC, please follow the instructions given in src/msvcbuild.bat.
-# For MinGW and Cygwin, cd to src and run make with the Makefile there.
-#
-# Copyright (C) 2005-2014 Mike Pall. See Copyright Notice in luajit.h
-##############################################################################
+# Makefile for building Lua
+# See ../doc/readme.html for installation and customization instructions.
 
-MAJVER=  2
-MINVER=  0
-RELVER=  3
-VERSION= $(MAJVER).$(MINVER).$(RELVER)
-ABIVER=  5.1
+# == CHANGE THE SETTINGS BELOW TO SUIT YOUR ENVIRONMENT =======================
 
-##############################################################################
-#
-# Change the installation path as needed. This automatically adjusts
-# the paths in src/luaconf.h, too. Note: PREFIX must be an absolute path!
-#
-export PREFIX= /usr/local
-export MULTILIB= lib
-##############################################################################
+# Your platform. See PLATS for possible values.
+PLAT= none
 
-DPREFIX= $(DESTDIR)$(PREFIX)
-INSTALL_BIN=   $(DPREFIX)/bin
-INSTALL_LIB=   $(DPREFIX)/$(MULTILIB)
-INSTALL_SHARE= $(DPREFIX)/share
-INSTALL_INC=   $(DPREFIX)/include/luajit-$(MAJVER).$(MINVER)
+CC= gcc -std=gnu99
+CFLAGS= -O2 -Wall -Wextra -DLUA_COMPAT_5_2 $(SYSCFLAGS) $(MYCFLAGS)
+LDFLAGS= $(SYSLDFLAGS) $(MYLDFLAGS)
+LIBS= -lm $(SYSLIBS) $(MYLIBS)
 
-INSTALL_LJLIBD= $(INSTALL_SHARE)/luajit-$(VERSION)
-INSTALL_JITLIB= $(INSTALL_LJLIBD)/jit
-INSTALL_LMODD= $(INSTALL_SHARE)/lua
-INSTALL_LMOD= $(INSTALL_LMODD)/$(ABIVER)
-INSTALL_CMODD= $(INSTALL_LIB)/lua
-INSTALL_CMOD= $(INSTALL_CMODD)/$(ABIVER)
-INSTALL_MAN= $(INSTALL_SHARE)/man/man1
-INSTALL_PKGCONFIG= $(INSTALL_LIB)/pkgconfig
-
-INSTALL_TNAME= luajit-$(VERSION)
-INSTALL_TSYMNAME= luajit
-INSTALL_ANAME= libluajit-$(ABIVER).a
-INSTALL_SONAME= libluajit-$(ABIVER).so.$(MAJVER).$(MINVER).$(RELVER)
-INSTALL_SOSHORT= libluajit-$(ABIVER).so
-INSTALL_DYLIBNAME= libluajit-$(ABIVER).$(MAJVER).$(MINVER).$(RELVER).dylib
-INSTALL_DYLIBSHORT1= libluajit-$(ABIVER).dylib
-INSTALL_DYLIBSHORT2= libluajit-$(ABIVER).$(MAJVER).dylib
-INSTALL_PCNAME= luajit.pc
-
-INSTALL_STATIC= $(INSTALL_LIB)/$(INSTALL_ANAME)
-INSTALL_DYN= $(INSTALL_LIB)/$(INSTALL_SONAME)
-INSTALL_SHORT1= $(INSTALL_LIB)/$(INSTALL_SOSHORT)
-INSTALL_SHORT2= $(INSTALL_LIB)/$(INSTALL_SOSHORT)
-INSTALL_T= $(INSTALL_BIN)/$(INSTALL_TNAME)
-INSTALL_TSYM= $(INSTALL_BIN)/$(INSTALL_TSYMNAME)
-INSTALL_PC= $(INSTALL_PKGCONFIG)/$(INSTALL_PCNAME)
-
-INSTALL_DIRS= $(INSTALL_BIN) $(INSTALL_LIB) $(INSTALL_INC) $(INSTALL_MAN) \
-  $(INSTALL_PKGCONFIG) $(INSTALL_JITLIB) $(INSTALL_LMOD) $(INSTALL_CMOD)
-UNINSTALL_DIRS= $(INSTALL_JITLIB) $(INSTALL_LJLIBD) $(INSTALL_INC) \
-  $(INSTALL_LMOD) $(INSTALL_LMODD) $(INSTALL_CMOD) $(INSTALL_CMODD)
-
+AR= ar rcu
+RANLIB= ranlib
 RM= rm -f
-MKDIR= mkdir -p
-RMDIR= rmdir 2>/dev/null
-SYMLINK= ln -sf
-INSTALL_X= install -m 0755
-INSTALL_F= install -m 0644
-UNINSTALL= $(RM)
-LDCONFIG= ldconfig -n
-SED_PC= sed -e "s|^prefix=.*|prefix=$(PREFIX)|" \
-            -e "s|^multilib=.*|multilib=$(MULTILIB)|"
 
-FILE_T= luajit
-FILE_A= libluajit.a
-FILE_SO= libluajit.so
-FILE_MAN= luajit.1
-FILE_PC= luajit.pc
-FILES_INC= lua.h lualib.h lauxlib.h luaconf.h lua.hpp luajit.h
-FILES_JITLIB= bc.lua v.lua dump.lua dis_x86.lua dis_x64.lua dis_arm.lua \
-	      dis_ppc.lua dis_mips.lua dis_mipsel.lua bcsave.lua vmdef.lua
+SYSCFLAGS=
+SYSLDFLAGS=
+SYSLIBS=
 
-ifeq (,$(findstring Windows,$(OS)))
-  ifeq (Darwin,$(shell uname -s))
-    INSTALL_SONAME= $(INSTALL_DYLIBNAME)
-    INSTALL_SHORT1= $(INSTALL_LIB)/$(INSTALL_DYLIBSHORT1)
-    INSTALL_SHORT2= $(INSTALL_LIB)/$(INSTALL_DYLIBSHORT2)
-    LDCONFIG= :
-  endif
-endif
+MYCFLAGS=
+MYLDFLAGS=
+MYLIBS=
+MYOBJS=
 
-##############################################################################
+# == END OF USER SETTINGS -- NO NEED TO CHANGE ANYTHING BELOW THIS LINE =======
 
-INSTALL_DEP= src/luajit
+PLATS= aix bsd c89 freebsd generic linux macosx mingw posix solaris
 
-default all $(INSTALL_DEP):
-	@echo "==== Building LuaJIT $(VERSION) ===="
-	$(MAKE) -C src
-	@echo "==== Successfully built LuaJIT $(VERSION) ===="
+LUA_A=	liblua.a
+CORE_O=	lapi.o lcode.o lctype.o ldebug.o ldo.o ldump.o lfunc.o lgc.o llex.o \
+	lmem.o lobject.o lopcodes.o lparser.o lstate.o lstring.o ltable.o \
+	ltm.o lundump.o lvm.o lzio.o
+LIB_O=	lauxlib.o lbaselib.o lbitlib.o lcorolib.o ldblib.o liolib.o \
+	lmathlib.o loslib.o lstrlib.o ltablib.o lutf8lib.o loadlib.o linit.o
+BASE_O= $(CORE_O) $(LIB_O) $(MYOBJS)
 
-install: $(INSTALL_DEP)
-	@echo "==== Installing LuaJIT $(VERSION) to $(PREFIX) ===="
-	$(MKDIR) $(INSTALL_DIRS)
-	cd src && $(INSTALL_X) $(FILE_T) $(INSTALL_T)
-	cd src && test -f $(FILE_A) && $(INSTALL_F) $(FILE_A) $(INSTALL_STATIC) || :
-	$(RM) $(INSTALL_TSYM) $(INSTALL_DYN) $(INSTALL_SHORT1) $(INSTALL_SHORT2)
-	cd src && test -f $(FILE_SO) && \
-	  $(INSTALL_X) $(FILE_SO) $(INSTALL_DYN) && \
-	  $(LDCONFIG) $(INSTALL_LIB) && \
-	  $(SYMLINK) $(INSTALL_SONAME) $(INSTALL_SHORT1) && \
-	  $(SYMLINK) $(INSTALL_SONAME) $(INSTALL_SHORT2) || :
-	cd etc && $(INSTALL_F) $(FILE_MAN) $(INSTALL_MAN)
-	cd etc && $(SED_PC) $(FILE_PC) > $(FILE_PC).tmp && \
-	  $(INSTALL_F) $(FILE_PC).tmp $(INSTALL_PC) && \
-	  $(RM) $(FILE_PC).tmp
-	cd src && $(INSTALL_F) $(FILES_INC) $(INSTALL_INC)
-	cd src/jit && $(INSTALL_F) $(FILES_JITLIB) $(INSTALL_JITLIB)
-	$(SYMLINK) $(INSTALL_TNAME) $(INSTALL_TSYM)
-	@echo "==== Successfully installed LuaJIT $(VERSION) to $(PREFIX) ===="
+LUA_T=	lua
+LUA_O=	lua.o
 
-uninstall:
-	@echo "==== Uninstalling LuaJIT $(VERSION) from $(PREFIX) ===="
-	$(UNINSTALL) $(INSTALL_TSYM) $(INSTALL_T) $(INSTALL_STATIC) $(INSTALL_DYN) $(INSTALL_SHORT1) $(INSTALL_SHORT2) $(INSTALL_MAN)/$(FILE_MAN) $(INSTALL_PC)
-	for file in $(FILES_JITLIB); do \
-	  $(UNINSTALL) $(INSTALL_JITLIB)/$$file; \
-	  done
-	for file in $(FILES_INC); do \
-	  $(UNINSTALL) $(INSTALL_INC)/$$file; \
-	  done
-	$(LDCONFIG) $(INSTALL_LIB)
-	$(RMDIR) $(UNINSTALL_DIRS) || :
-	@echo "==== Successfully uninstalled LuaJIT $(VERSION) from $(PREFIX) ===="
+LUAC_T=	luac
+LUAC_O=	luac.o
 
-##############################################################################
+ALL_O= $(BASE_O) $(LUA_O) $(LUAC_O)
+ALL_T= $(LUA_A) $(LUA_T) $(LUAC_T)
+ALL_A= $(LUA_A)
 
-amalg:
-	@echo "Building LuaJIT $(VERSION)"
-	$(MAKE) -C src amalg
+# Targets start here.
+default: $(PLAT)
+
+all:	$(ALL_T)
+
+o:	$(ALL_O)
+
+a:	$(ALL_A)
+
+$(LUA_A): $(BASE_O)
+	$(AR) $@ $(BASE_O)
+	$(RANLIB) $@
+
+$(LUA_T): $(LUA_O) $(LUA_A)
+	$(CC) -o $@ $(LDFLAGS) $(LUA_O) $(LUA_A) $(LIBS)
+
+$(LUAC_T): $(LUAC_O) $(LUA_A)
+	$(CC) -o $@ $(LDFLAGS) $(LUAC_O) $(LUA_A) $(LIBS)
 
 clean:
-	$(MAKE) -C src clean
+	$(RM) $(ALL_T) $(ALL_O)
 
-.PHONY: all install amalg clean
+depend:
+	@$(CC) $(CFLAGS) -MM l*.c
 
-##############################################################################
+echo:
+	@echo "PLAT= $(PLAT)"
+	@echo "CC= $(CC)"
+	@echo "CFLAGS= $(CFLAGS)"
+	@echo "LDFLAGS= $(SYSLDFLAGS)"
+	@echo "LIBS= $(LIBS)"
+	@echo "AR= $(AR)"
+	@echo "RANLIB= $(RANLIB)"
+	@echo "RM= $(RM)"
+
+# Convenience targets for popular platforms
+ALL= all
+
+none:
+	@echo "Please do 'make PLATFORM' where PLATFORM is one of these:"
+	@echo "   $(PLATS)"
+
+aix:
+	$(MAKE) $(ALL) CC="xlc" CFLAGS="-O2 -DLUA_USE_POSIX -DLUA_USE_DLOPEN" SYSLIBS="-ldl" SYSLDFLAGS="-brtl -bexpall"
+
+bsd:
+	$(MAKE) $(ALL) SYSCFLAGS="-DLUA_USE_POSIX -DLUA_USE_DLOPEN" SYSLIBS="-Wl,-E"
+
+c89:
+	$(MAKE) $(ALL) SYSCFLAGS="-DLUA_USE_C89" CC="gcc -std=c89"
+	@echo ''
+	@echo '*** C89 does not guarantee 64-bit integers for Lua.'
+	@echo ''
+
+
+freebsd:
+	$(MAKE) $(ALL) SYSCFLAGS="-DLUA_USE_LINUX" SYSLIBS="-Wl,-E -lreadline"
+
+generic: $(ALL)
+
+linux:
+	$(MAKE) $(ALL) SYSCFLAGS="-DLUA_USE_LINUX" SYSLIBS="-Wl,-E -ldl -lreadline"
+
+macosx:
+	$(MAKE) $(ALL) SYSCFLAGS="-DLUA_USE_MACOSX" SYSLIBS="-lreadline" CC=cc
+
+mingw:
+	$(MAKE) "LUA_A=lua53.dll" "LUA_T=lua.exe" \
+	"AR=$(CC) -shared -o" "RANLIB=strip --strip-unneeded" \
+	"SYSCFLAGS=-DLUA_BUILD_AS_DLL" "SYSLIBS=" "SYSLDFLAGS=-s" lua.exe
+	$(MAKE) "LUAC_T=luac.exe" luac.exe
+
+posix:
+	$(MAKE) $(ALL) SYSCFLAGS="-DLUA_USE_POSIX"
+
+solaris:
+	$(MAKE) $(ALL) SYSCFLAGS="-DLUA_USE_POSIX -DLUA_USE_DLOPEN -D_REENTRANT" SYSLIBS="-ldl"
+
+# list targets that do not create files (but not all makes understand .PHONY)
+.PHONY: all $(PLATS) default o a clean depend echo none
+
+# DO NOT DELETE
+
+lapi.o: lapi.c lprefix.h lua.h luaconf.h lapi.h llimits.h lstate.h \
+ lobject.h ltm.h lzio.h lmem.h ldebug.h ldo.h lfunc.h lgc.h lstring.h \
+ ltable.h lundump.h lvm.h
+lauxlib.o: lauxlib.c lprefix.h lua.h luaconf.h lauxlib.h
+lbaselib.o: lbaselib.c lprefix.h lua.h luaconf.h lauxlib.h lualib.h
+lbitlib.o: lbitlib.c lprefix.h lua.h luaconf.h lauxlib.h lualib.h
+lcode.o: lcode.c lprefix.h lua.h luaconf.h lcode.h llex.h lobject.h \
+ llimits.h lzio.h lmem.h lopcodes.h lparser.h ldebug.h lstate.h ltm.h \
+ ldo.h lgc.h lstring.h ltable.h lvm.h
+lcorolib.o: lcorolib.c lprefix.h lua.h luaconf.h lauxlib.h lualib.h
+lctype.o: lctype.c lprefix.h lctype.h lua.h luaconf.h llimits.h
+ldblib.o: ldblib.c lprefix.h lua.h luaconf.h lauxlib.h lualib.h
+ldebug.o: ldebug.c lprefix.h lua.h luaconf.h lapi.h llimits.h lstate.h \
+ lobject.h ltm.h lzio.h lmem.h lcode.h llex.h lopcodes.h lparser.h \
+ ldebug.h ldo.h lfunc.h lstring.h lgc.h ltable.h lvm.h
+ldo.o: ldo.c lprefix.h lua.h luaconf.h lapi.h llimits.h lstate.h \
+ lobject.h ltm.h lzio.h lmem.h ldebug.h ldo.h lfunc.h lgc.h lopcodes.h \
+ lparser.h lstring.h ltable.h lundump.h lvm.h
+ldump.o: ldump.c lprefix.h lua.h luaconf.h lobject.h llimits.h lstate.h \
+ ltm.h lzio.h lmem.h lundump.h
+lfunc.o: lfunc.c lprefix.h lua.h luaconf.h lfunc.h lobject.h llimits.h \
+ lgc.h lstate.h ltm.h lzio.h lmem.h
+lgc.o: lgc.c lprefix.h lua.h luaconf.h ldebug.h lstate.h lobject.h \
+ llimits.h ltm.h lzio.h lmem.h ldo.h lfunc.h lgc.h lstring.h ltable.h
+linit.o: linit.c lprefix.h lua.h luaconf.h lualib.h lauxlib.h
+liolib.o: liolib.c lprefix.h lua.h luaconf.h lauxlib.h lualib.h
+llex.o: llex.c lprefix.h lua.h luaconf.h lctype.h llimits.h ldebug.h \
+ lstate.h lobject.h ltm.h lzio.h lmem.h ldo.h lgc.h llex.h lparser.h \
+ lstring.h ltable.h
+lmathlib.o: lmathlib.c lprefix.h lua.h luaconf.h lauxlib.h lualib.h
+lmem.o: lmem.c lprefix.h lua.h luaconf.h ldebug.h lstate.h lobject.h \
+ llimits.h ltm.h lzio.h lmem.h ldo.h lgc.h
+loadlib.o: loadlib.c lprefix.h lua.h luaconf.h lauxlib.h lualib.h
+lobject.o: lobject.c lprefix.h lua.h luaconf.h lctype.h llimits.h \
+ ldebug.h lstate.h lobject.h ltm.h lzio.h lmem.h ldo.h lstring.h lgc.h \
+ lvm.h
+lopcodes.o: lopcodes.c lprefix.h lopcodes.h llimits.h lua.h luaconf.h
+loslib.o: loslib.c lprefix.h lua.h luaconf.h lauxlib.h lualib.h
+lparser.o: lparser.c lprefix.h lua.h luaconf.h lcode.h llex.h lobject.h \
+ llimits.h lzio.h lmem.h lopcodes.h lparser.h ldebug.h lstate.h ltm.h \
+ ldo.h lfunc.h lstring.h lgc.h ltable.h
+lstate.o: lstate.c lprefix.h lua.h luaconf.h lapi.h llimits.h lstate.h \
+ lobject.h ltm.h lzio.h lmem.h ldebug.h ldo.h lfunc.h lgc.h llex.h \
+ lstring.h ltable.h
+lstring.o: lstring.c lprefix.h lua.h luaconf.h ldebug.h lstate.h \
+ lobject.h llimits.h ltm.h lzio.h lmem.h ldo.h lstring.h lgc.h
+lstrlib.o: lstrlib.c lprefix.h lua.h luaconf.h lauxlib.h lualib.h
+ltable.o: ltable.c lprefix.h lua.h luaconf.h ldebug.h lstate.h lobject.h \
+ llimits.h ltm.h lzio.h lmem.h ldo.h lgc.h lstring.h ltable.h lvm.h
+ltablib.o: ltablib.c lprefix.h lua.h luaconf.h lauxlib.h lualib.h
+ltm.o: ltm.c lprefix.h lua.h luaconf.h ldebug.h lstate.h lobject.h \
+ llimits.h ltm.h lzio.h lmem.h ldo.h lstring.h lgc.h ltable.h lvm.h
+lua.o: lua.c lprefix.h lua.h luaconf.h lauxlib.h lualib.h
+luac.o: luac.c lprefix.h lua.h luaconf.h lauxlib.h lobject.h llimits.h \
+ lstate.h ltm.h lzio.h lmem.h lundump.h ldebug.h lopcodes.h
+lundump.o: lundump.c lprefix.h lua.h luaconf.h ldebug.h lstate.h \
+ lobject.h llimits.h ltm.h lzio.h lmem.h ldo.h lfunc.h lstring.h lgc.h \
+ lundump.h
+lutf8lib.o: lutf8lib.c lprefix.h lua.h luaconf.h lauxlib.h lualib.h
+lvm.o: lvm.c lprefix.h lua.h luaconf.h ldebug.h lstate.h lobject.h \
+ llimits.h ltm.h lzio.h lmem.h ldo.h lfunc.h lgc.h lopcodes.h lstring.h \
+ ltable.h lvm.h
+lzio.o: lzio.c lprefix.h lua.h luaconf.h llimits.h lmem.h lstate.h \
+ lobject.h ltm.h lzio.h
+
+# (end of Makefile)

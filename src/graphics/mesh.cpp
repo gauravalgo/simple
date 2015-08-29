@@ -36,9 +36,11 @@ mesh::mesh():
 
 mesh::~mesh()
 {
-    glDisableVertexAttribArray(m_tex_attribute);
-    glDisableVertexAttribArray(m_position_attribute);
-    glDisableVertexAttribArray(m_color_attribute);
+  glDisableVertexAttribArray(m_tex_attribute);
+  glDisableVertexAttribArray(m_position_attribute);
+  glDisableVertexAttribArray(m_color_attribute);
+  glDeleteBuffers(1, &m_vbo);
+  glDeleteBuffers(1, &m_ebo);
 }
 
 void mesh::create(shader* a_shader,float vertices[], int sizeV, unsigned short indices[], short sizeI)

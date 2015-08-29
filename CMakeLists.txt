@@ -62,7 +62,7 @@ include_directories(deps/freetype/include)
 #lua
 add_subdirectory(deps/lua)
 set(LUA_INCLUDE_DIR deps/lua/src ${CMAKE_BINARY_DIR}/deps/lua/)
-SET(LUA_LIBRARIES liblua)
+SET(LUA_LIBRARIES lua)
 
 if(APPLE)
   target_link_libraries(simple ${SDL2_LIBRARIES} glfw

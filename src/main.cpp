@@ -29,9 +29,9 @@
 #include "utils/lua_lang_init.h"
 #include "utils/core.h"
 
-#include <stdlib.h> 
+#include <stdlib.h>
 
-#include <GLFW/glfw3.h> 
+#include <GLFW/glfw3.h>
 #include "window/glfw_window.h"
 #include "graphics/gl_graphics.h"
 
@@ -74,15 +74,8 @@ void init()
   lua_init->callFunction("simple_init");
   lua_init->makeDefaultWindow();
 
-  //m_shader = new shader();
-  //m_shader->create(texture_vertex, texture_fragment);
-  //proj.setToIdentity();
-  //proj = proj.setOrtho(0, lua_init->simple_core->getWindow()->getWidth(), lua_init->simple_core->getWindow()->getHeight(), 0, 0, 100);
-  //proj.print();
-  //texture = new texture2D();
-  //texture->create("res/test.png");
-
-  //m_shader->sendUniformLocation("proj", proj);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   //f = new font();
   // f->load(ft, m_font_shader, "res/font.ttf");
@@ -145,4 +138,3 @@ int main()
   SAFE_DELETE(key);
   return 0;
 }
-

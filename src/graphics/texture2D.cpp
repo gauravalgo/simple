@@ -19,6 +19,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <stdlib.h>
 
 #include <stb_image.h>
 
@@ -51,8 +52,6 @@ void texture2D::create(int width, int height, void* data)  {
   mWidth = width;
   mHeight = height;
 
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
   glGenTextures(1, &mID);
   assert(mID != 0);
   glBindTexture(GL_TEXTURE_2D, mID);
@@ -70,12 +69,10 @@ void texture2D::create(const std::string& fileName)  {
   destroy();
 
   int numComponents;
-  unsigned char* pixels = stbi_load((fileName).c_str(),&mWidth,&mHeight,&numComponents,4);
+  unsigned char* pixels = stbi_load((fileName).c_str(), &mWidth, &mHeight, &numComponents,4);
 
   if(pixels == NULL)
     LOG("Error: Could not load image - " << fileName);
-
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   // Create the OpenGL texture
   glGenTextures(1, &mID);

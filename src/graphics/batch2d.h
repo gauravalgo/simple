@@ -28,40 +28,41 @@ using namespace simple::maths;
 
 namespace simple
 {
-  namespace graphics
-  {
-    class batch2d
-    {
-    public:
-      batch2d(shader* shader, int size);
-      batch2d(shader* shader);
-      batch2d();
-      ~batch2d();
+namespace graphics
+{
+class batch2d
+{
+  public:
+    batch2d(shader* shader, int size);
+    batch2d(shader* shader);
+    batch2d();
+    ~batch2d();
 
-    private:
-      float m_vertices[40000 * 5 * 7];
+  private:
+    float m_vertices[40000 * 5 * 7];
 
-      unsigned int m_vbo;
-      unsigned int m_ebo;
+    unsigned int m_vbo;
+    unsigned int m_ebo;
 
-      unsigned int m_position_attribute;
-      unsigned int m_color_attribute;
-      unsigned int m_tex_attribute;
-      int m_index;
-      int m_numSprite;
-      int m_SIZE;
-      shader* m_shader;
-      uint m_modelAttrib;
-    public:
-      void begin();
-      void end();
-      void renderMesh();
-      void draw(float x, float y, float width, float height);
-      void draw(float x, float y, float width, float height, float r, float g, float b, float a);
-      void create();
-    public:
-      void setShader(shader* s){m_shader = s;}
-    };
-  }
+    unsigned int m_position_attribute;
+    unsigned int m_color_attribute;
+    unsigned int m_tex_attribute;
+    int m_index;
+    int m_numSprite;
+    int m_SIZE;
+    shader* m_shader;
+    uint m_modelAttrib;
+    texture2D* m_texture;
+  public:
+    void begin();
+    void end();
+    void renderMesh();
+    void draw(float x, float y, float width, float height);
+    void draw(float x, float y, float width, float height, float r, float g, float b, float a);
+    void create();
+  public:
+    void setShader(shader* s){m_shader = s;}
+};
+}
 }
 #endif

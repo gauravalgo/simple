@@ -40,7 +40,7 @@ string default_shaders::texture_fragment =
         "in vec2 Texcoords;"
         "uniform sampler2D tex;"
         "void main(void) {"
-        "gl_FragColor = texture2D(tex,Texcoords).r * Color * texture2D(tex, Texcoords);"
+        "gl_FragColor = Color * texture2D(tex, Texcoords);"
         "}";
 
 string default_shaders::texture_vertex =

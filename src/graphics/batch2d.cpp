@@ -29,34 +29,6 @@
 using namespace simple;
 using namespace simple::graphics;
 
-const char* default_fragment =
-  "#version 130\n"
-
-  "in vec4 Color;"
-  "in vec2 Texcoords;"
-  "uniform sampler2D tex;"
-  "void main(void) {"
-  "gl_FragColor = texture2D(tex,Texcoords).r * Color * texture2D(tex, Texcoords);"
-  "}";
-
-const char* default_vertex =
-  "#version 130\n"
-  "in vec2 position;"
-  "in vec4 color;"
-  "in vec2 texcoords;"
-
-  "out vec4 Color;"
-  "out vec2 Texcoords;"
-
-  "uniform mat4 proj = mat4(1);"
-
-  "void main(void) {"
-  "Color = color;"
-  "Texcoords = texcoords;"
-  "gl_Position = proj *  vec4(position, 0.0f, 1.0f);"
-  "}";
-
-
 batch2d::batch2d(shader* shader):
   m_SIZE(40000)
 {
@@ -74,6 +46,9 @@ batch2d::batch2d(){}
 batch2d::~batch2d()
 {
   SAFE_DELETE(m_shader);
+  glDisableVertexAttribArray(m_tex_attribute);
+  glDisableVertexAttribArray(m_position_attribute);
+  glDisableVertexAttribArray(m_color_attribute);
   glDeleteBuffers(1, &m_vbo);
   glDeleteBuffers(1, &m_ebo);
 }
@@ -117,13 +92,16 @@ void batch2d::create()
 
 }
 
-void batch2d::draw(float x, float y, float width, float height)
+void batch2d::draw( float x, float y, float width, float height)
 {
   if(m_numSprite >= m_SIZE){
     LOG("Error: You're trying to draw more than " << m_SIZE << " sprites!");
     return;
   }
-  
+
+  // if(texture != m_texture)
+  //  m_texture = texture;
+
   m_vertices[m_index++] = -width+x;
   m_vertices[m_index++] = -height+y;
   m_vertices[m_index++] = 1;
@@ -156,7 +134,7 @@ void batch2d::draw(float x, float y, float width, float height)
   m_vertices[m_index++] = 1;
   m_vertices[m_index++] = 0;
   m_vertices[m_index++] = 1;
-  
+
   m_numSprite++;
 }
 
@@ -166,7 +144,7 @@ void batch2d::draw(float x, float y, float width, float height, float r, float g
     LOG("Error: You're trying to draw more than " << m_SIZE << " sprites!");
     return;
   }
-  
+
   m_vertices[m_index++] = -width+x;
   m_vertices[m_index++] = -height+y;
   m_vertices[m_index++] = r;
@@ -199,7 +177,7 @@ void batch2d::draw(float x, float y, float width, float height, float r, float g
   m_vertices[m_index++] = a;
   m_vertices[m_index++] = 0;
   m_vertices[m_index++] = 1;
-  
+
   m_numSprite++;
 }
 
@@ -208,19 +186,19 @@ void batch2d::renderMesh()
 {
   if(m_numSprite > 0){
     glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_DYNAMIC_DRAW);
-
+    // m_texture->bind();
     glDrawElements(GL_TRIANGLES, m_numSprite * 6, GL_UNSIGNED_SHORT, 0);
-    //glDrawArrays(GL_QUADS, 0, m_numSprite * 6); //Legacy :)
+
   }
 }
 
 void batch2d::begin()
 {
   glDepthMask(false);
-  
+
   m_index = 0;
   m_numSprite = 0;
-  
+
 }
 
 void batch2d::end()
@@ -229,4 +207,3 @@ void batch2d::end()
   m_index = 0;
   m_numSprite = 0;
 }
-
