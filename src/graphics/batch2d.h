@@ -58,7 +58,14 @@ class batch2d
     void end();
     void renderMesh();
     void draw(float x, float y, float width, float height);
+    void draw(float x, float y, float width, float height, float rotation);
+    void draw(float x, float y, float width, float height, float rotation, float originX, float originY);
+    void draw(float x, float y, float width, float height, float rotation, float originX, float originY, float r, float g, float b, float a);
+    void draw(float x, float y, float width, float height, float rotation, float originX, float originY, float r,
+              float g, float b, float a, float* texturecoords);
     void draw(float x, float y, float width, float height, float r, float g, float b, float a);
+    void draw(float x, float y, float width, float height, float* texturecoords);
+    void draw(float x, float y, float width, float height, float* texturecoords, float r, float g, float b, float a);
     void create();
   public:
     void setShader(shader* s){m_shader = s;}

@@ -102,32 +102,38 @@ void batch2d::draw( float x, float y, float width, float height)
   // if(texture != m_texture)
   //  m_texture = texture;
 
-  m_vertices[m_index++] = -width+x;
-  m_vertices[m_index++] = -height+y;
+  float px1 = width + x;
+  float py1 = height + y;
+
+  float px2 = -width + x;
+  float py2 = -height + y;
+
+  m_vertices[m_index++] = px2;
+  m_vertices[m_index++] = py2;
   m_vertices[m_index++] = 1;
   m_vertices[m_index++] = 1;
   m_vertices[m_index++] = 1;
   m_vertices[m_index++] = 1;
   m_vertices[m_index++] = 0;
   m_vertices[m_index++] = 0;
-  m_vertices[m_index++] = +width+x;
-  m_vertices[m_index++] = -height+y;
+  m_vertices[m_index++] = px1;
+  m_vertices[m_index++] = py2;
   m_vertices[m_index++] = 1;
   m_vertices[m_index++] = 1;
   m_vertices[m_index++] = 1;
   m_vertices[m_index++] = 1;
   m_vertices[m_index++] = 1;
   m_vertices[m_index++] = 0;
-  m_vertices[m_index++] = +width+x;
-  m_vertices[m_index++] = +height+y;
+  m_vertices[m_index++] = px1;
+  m_vertices[m_index++] = py1;
   m_vertices[m_index++] = 1;
   m_vertices[m_index++] = 1;
   m_vertices[m_index++] = 1;
   m_vertices[m_index++] = 1;
   m_vertices[m_index++] = 1;
   m_vertices[m_index++] = 1;
-  m_vertices[m_index++] = -width+x;
-  m_vertices[m_index++] = +height+y;
+  m_vertices[m_index++] = px2;
+  m_vertices[m_index++] = py1;
   m_vertices[m_index++] = 1;
   m_vertices[m_index++] = 1;
   m_vertices[m_index++] = 1;
@@ -137,6 +143,506 @@ void batch2d::draw( float x, float y, float width, float height)
 
   m_numSprite++;
 }
+
+
+//SPECIAL THANKS TO LIBGDX for helping me understand how rotations work: https://github.com/libgdx/libgdx
+void batch2d::draw(float x, float y, float width, float height, float rotation)
+{
+  if(m_numSprite >= m_SIZE){
+    LOG("Error: You're trying to draw more than " << m_SIZE << " sprites!");
+    return;
+  }
+
+  float _sin;
+  float _cos;
+
+  float px1;
+  float py1;
+  float px2;
+  float py2;
+  float px3;
+  float py3;
+  float px4;
+  float py4;
+
+  float p1x;
+  float p1y;
+  float p2x;
+  float p2y;
+  float p3x;
+  float p3y;
+  float p4x;
+  float p4y;
+
+  float fx;
+  float fy;
+  float fx2;
+  float fy2;
+
+
+  if(rotation != 0){
+    _cos = cos(RADIANS(rotation));
+    _sin = sin(RADIANS(rotation));
+
+    fx = -(width*0.5f);
+    fy = -(height*0.5f);
+    fx2 = width - (width*0.5f);
+    fy2 = height - (height*0.5f);
+
+    p1x = fx;
+    p1y = fy;
+    p2x = fx;
+    p2y = fy2;
+    p3x = fx2;
+    p3y = fy2;
+    p4x = fx2;
+    p4y = fy;
+
+    px1 = p1x * _cos - p1y * _sin;
+    py1 = p1x * _sin + p1y * _cos;
+
+    px2 = p2x * _cos - p2y * _sin;
+    py2 = p2x * _sin + p2y * _cos;
+
+    px3 = p3x * _cos - p3y * _sin;
+    py3 = p3x * _sin + p3y * _cos;
+
+    px4 = px1 + (px3 - px2);
+    py4 = py3 - (py2 - py1);
+
+  }else{
+    px1 = -width + x;
+    py1 = -height + y;
+
+    px2 = width + x;
+    py2 = -height + y;
+
+    px3 = width + x;
+    py3 = height + y;
+
+    px4 = -width + x;
+    py4 = height + y;
+  }
+
+  px1 += x + width * 0.5f;
+  py1 += y + height * 0.5f;
+  px2 += x + width * 0.5f;
+  py2 += y + height * 0.5f;
+  px3 += x + width * 0.5f;
+  py3 += y + height * 0.5f;
+  px4 += x + width * 0.5f;
+  py4 += y + height * 0.5f;
+
+
+  m_vertices[m_index++] = px1;
+  m_vertices[m_index++] = py1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 0;
+  m_vertices[m_index++] = 0;
+  m_vertices[m_index++] = px2;
+  m_vertices[m_index++] = py2;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 0;
+  m_vertices[m_index++] = px3;
+  m_vertices[m_index++] = py3;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = px4;
+  m_vertices[m_index++] = py4;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 0;
+  m_vertices[m_index++] = 1;
+
+  m_numSprite++;
+}
+
+void batch2d::draw(float x, float y, float width, float height, float rotation, float originX, float originY)
+{
+  if(m_numSprite >= m_SIZE){
+    LOG("Error: You're trying to draw more than " << m_SIZE << " sprites!");
+    return;
+  }
+
+  float _sin;
+  float _cos;
+
+  float px1;
+  float py1;
+  float px2;
+  float py2;
+  float px3;
+  float py3;
+  float px4;
+  float py4;
+
+  float p1x;
+  float p1y;
+  float p2x;
+  float p2y;
+  float p3x;
+  float p3y;
+  float p4x;
+  float p4y;
+
+  float fx;
+  float fy;
+  float fx2;
+  float fy2;
+
+
+  if(rotation != 0){
+    _cos = cos(RADIANS(rotation));
+    _sin = sin(RADIANS(rotation));
+
+    fx = -originX;
+    fy = -originY;
+    fx2 = width - originX;
+    fy2 = height - originY;
+
+    p1x = fx;
+    p1y = fy;
+    p2x = fx;
+    p2y = fy2;
+    p3x = fx2;
+    p3y = fy2;
+    p4x = fx2;
+    p4y = fy;
+
+    px1 = p1x * _cos - p1y * _sin;
+    py1 = p1x * _sin + p1y * _cos;
+
+    px2 = p2x * _cos - p2y * _sin;
+    py2 = p2x * _sin + p2y * _cos;
+
+    px3 = p3x * _cos - p3y * _sin;
+    py3 = p3x * _sin + p3y * _cos;
+
+    px4 = px1 + (px3 - px2);
+    py4 = py3 - (py2 - py1);
+
+  }else{
+    px1 = -width + x;
+    py1 = -height + y;
+
+    px2 = width + x;
+    py2 = -height + y;
+
+    px3 = width + x;
+    py3 = height + y;
+
+    px4 = -width + x;
+    py4 = height + y;
+  }
+
+  px1 += x + originX;
+  py1 += y + originY;
+  px2 += x + originX;
+  py2 += y + originY;
+  px3 += x + originX;
+  py3 += y + originY;
+  px4 += x + originX;
+  py4 += y + originY;
+
+  m_vertices[m_index++] = px1;
+  m_vertices[m_index++] = py1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 0;
+  m_vertices[m_index++] = 0;
+  m_vertices[m_index++] = px2;
+  m_vertices[m_index++] = py2;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 0;
+  m_vertices[m_index++] = px3;
+  m_vertices[m_index++] = py3;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = px4;
+  m_vertices[m_index++] = py4;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 0;
+  m_vertices[m_index++] = 1;
+
+  m_numSprite++;
+}
+
+void batch2d::draw(float x, float y, float width, float height, float rotation, float originX, float originY,
+                   float r, float g, float b, float a)
+{
+  if(m_numSprite >= m_SIZE){
+    LOG("Error: You're trying to draw more than " << m_SIZE << " sprites!");
+    return;
+  }
+
+  float _sin;
+  float _cos;
+
+  float px1;
+  float py1;
+  float px2;
+  float py2;
+  float px3;
+  float py3;
+  float px4;
+  float py4;
+
+  float p1x;
+  float p1y;
+  float p2x;
+  float p2y;
+  float p3x;
+  float p3y;
+  float p4x;
+  float p4y;
+
+  float fx;
+  float fy;
+  float fx2;
+  float fy2;
+
+
+  if(rotation != 0){
+    _cos = cos(RADIANS(rotation));
+    _sin = sin(RADIANS(rotation));
+
+    fx = -originX;
+    fy = -originY;
+    fx2 = width - originX;
+    fy2 = height - originY;
+
+    p1x = fx;
+    p1y = fy;
+    p2x = fx;
+    p2y = fy2;
+    p3x = fx2;
+    p3y = fy2;
+    p4x = fx2;
+    p4y = fy;
+
+    px1 = p1x * _cos - p1y * _sin;
+    py1 = p1x * _sin + p1y * _cos;
+
+    px2 = p2x * _cos - p2y * _sin;
+    py2 = p2x * _sin + p2y * _cos;
+
+    px3 = p3x * _cos - p3y * _sin;
+    py3 = p3x * _sin + p3y * _cos;
+
+    px4 = px1 + (px3 - px2);
+    py4 = py3 - (py2 - py1);
+
+  }else{
+    px1 = -width + x;
+    py1 = -height + y;
+
+    px2 = width + x;
+    py2 = -height + y;
+
+    px3 = width + x;
+    py3 = height + y;
+
+    px4 = -width + x;
+    py4 = height + y;
+  }
+
+  px1 += x + originX;
+  py1 += y + originY;
+  px2 += x + originX;
+  py2 += y + originY;
+  px3 += x + originX;
+  py3 += y + originY;
+  px4 += x + originX;
+  py4 += y + originY;
+
+  m_vertices[m_index++] = px1;
+  m_vertices[m_index++] = py1;
+  m_vertices[m_index++] = r;
+  m_vertices[m_index++] = g;
+  m_vertices[m_index++] = b;
+  m_vertices[m_index++] = a;
+  m_vertices[m_index++] = 0;
+  m_vertices[m_index++] = 0;
+  m_vertices[m_index++] = px2;
+  m_vertices[m_index++] = py2;
+  m_vertices[m_index++] = r;
+  m_vertices[m_index++] = g;
+  m_vertices[m_index++] = b;
+  m_vertices[m_index++] = a;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 0;
+  m_vertices[m_index++] = px3;
+  m_vertices[m_index++] = py3;
+  m_vertices[m_index++] = r;
+  m_vertices[m_index++] = g;
+  m_vertices[m_index++] = b;
+  m_vertices[m_index++] = a;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = px4;
+  m_vertices[m_index++] = py4;
+  m_vertices[m_index++] = r;
+  m_vertices[m_index++] = g;
+  m_vertices[m_index++] = b;
+  m_vertices[m_index++] = a;
+  m_vertices[m_index++] = 0;
+  m_vertices[m_index++] = 1;
+
+  m_numSprite++;
+}
+
+
+void batch2d::draw(float x, float y, float width, float height, float rotation, float originX, float originY, float r,
+                   float g, float b, float a, float* texturecoords)
+{
+  if(m_numSprite >= m_SIZE){
+    LOG("Error: You're trying to draw more than " << m_SIZE << " sprites!");
+    return;
+  }
+
+  float _sin;
+  float _cos;
+
+  float px1;
+  float py1;
+  float px2;
+  float py2;
+  float px3;
+  float py3;
+  float px4;
+  float py4;
+
+  float p1x;
+  float p1y;
+  float p2x;
+  float p2y;
+  float p3x;
+  float p3y;
+  float p4x;
+  float p4y;
+
+  float fx;
+  float fy;
+  float fx2;
+  float fy2;
+
+
+  if(rotation != 0){
+    _cos = cos(RADIANS(rotation));
+    _sin = sin(RADIANS(rotation));
+
+    fx = -originX;
+    fy = -originY;
+    fx2 = width - originX;
+    fy2 = height - originY;
+
+    p1x = fx;
+    p1y = fy;
+    p2x = fx;
+    p2y = fy2;
+    p3x = fx2;
+    p3y = fy2;
+    p4x = fx2;
+    p4y = fy;
+
+    px1 = p1x * _cos - p1y * _sin;
+    py1 = p1x * _sin + p1y * _cos;
+
+    px2 = p2x * _cos - p2y * _sin;
+    py2 = p2x * _sin + p2y * _cos;
+
+    px3 = p3x * _cos - p3y * _sin;
+    py3 = p3x * _sin + p3y * _cos;
+
+    px4 = px1 + (px3 - px2);
+    py4 = py3 - (py2 - py1);
+
+  }else{
+    px1 = -width + x;
+    py1 = -height + y;
+
+    px2 = width + x;
+    py2 = -height + y;
+
+    px3 = width + x;
+    py3 = height + y;
+
+    px4 = -width + x;
+    py4 = height + y;
+  }
+
+  px1 += x + originX;
+  py1 += y + originY;
+  px2 += x + originX;
+  py2 += y + originY;
+  px3 += x + originX;
+  py3 += y + originY;
+  px4 += x + originX;
+  py4 += y + originY;
+
+
+  m_vertices[m_index++] = px1;
+  m_vertices[m_index++] = py1;
+  m_vertices[m_index++] = r;
+  m_vertices[m_index++] = g;
+  m_vertices[m_index++] = b;
+  m_vertices[m_index++] = a;
+  m_vertices[m_index++] = texturecoords[0];
+  m_vertices[m_index++] = texturecoords[1];
+  m_vertices[m_index++] = px2;
+  m_vertices[m_index++] = py2;
+  m_vertices[m_index++] = r;
+  m_vertices[m_index++] = g;
+  m_vertices[m_index++] = b;
+  m_vertices[m_index++] = a;
+  m_vertices[m_index++] = texturecoords[2];
+  m_vertices[m_index++] = texturecoords[3];
+  m_vertices[m_index++] = px3;
+  m_vertices[m_index++] = py3;
+  m_vertices[m_index++] = r;
+  m_vertices[m_index++] = g;
+  m_vertices[m_index++] = b;
+  m_vertices[m_index++] = a;
+  m_vertices[m_index++] = texturecoords[4];
+  m_vertices[m_index++] = texturecoords[5];
+  m_vertices[m_index++] = px4;
+  m_vertices[m_index++] = py4;
+  m_vertices[m_index++] = r;
+  m_vertices[m_index++] = g;
+  m_vertices[m_index++] = b;
+  m_vertices[m_index++] = a;
+  m_vertices[m_index++] = texturecoords[6];
+  m_vertices[m_index++] = texturecoords[7];
+
+  m_numSprite++;
+}
+
 
 void batch2d::draw(float x, float y, float width, float height, float r, float g, float b, float a)
 {
@@ -177,6 +683,98 @@ void batch2d::draw(float x, float y, float width, float height, float r, float g
   m_vertices[m_index++] = a;
   m_vertices[m_index++] = 0;
   m_vertices[m_index++] = 1;
+
+  m_numSprite++;
+}
+
+void batch2d::draw(float x, float y, float width, float height, float* texturecoords)
+{
+  if(m_numSprite >= m_SIZE){
+    LOG("Error: You're trying to draw more than " << m_SIZE << " sprites!");
+    return;
+  }
+
+  // if(texture != m_texture)
+  //  m_texture = texture;
+
+  m_vertices[m_index++] = -width+x;
+  m_vertices[m_index++] = -height+y;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = texturecoords[0];
+  m_vertices[m_index++] = texturecoords[1];
+  m_vertices[m_index++] = +width+x;
+  m_vertices[m_index++] = -height+y;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = texturecoords[2];
+  m_vertices[m_index++] = texturecoords[3];
+  m_vertices[m_index++] = +width+x;
+  m_vertices[m_index++] = +height+y;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = texturecoords[4];
+  m_vertices[m_index++] = texturecoords[5];
+  m_vertices[m_index++] = -width+x;
+  m_vertices[m_index++] = +height+y;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = 1;
+  m_vertices[m_index++] = texturecoords[6];
+  m_vertices[m_index++] = texturecoords[7];
+
+  m_numSprite++;
+}
+
+void batch2d::draw(float x, float y, float width, float height, float* texturecoords, float r, float g, float b, float a)
+{
+  if(m_numSprite >= m_SIZE){
+    LOG("Error: You're trying to draw more than " << m_SIZE << " sprites!");
+    return;
+  }
+
+  // if(texture != m_texture)
+  //  m_texture = texture;
+
+  m_vertices[m_index++] = -width+x;
+  m_vertices[m_index++] = -height+y;
+  m_vertices[m_index++] = r;
+  m_vertices[m_index++] = g;
+  m_vertices[m_index++] = b;
+  m_vertices[m_index++] = a;
+  m_vertices[m_index++] = texturecoords[0];
+  m_vertices[m_index++] = texturecoords[1];
+  m_vertices[m_index++] = +width+x;
+  m_vertices[m_index++] = -height+y;
+  m_vertices[m_index++] = r;
+  m_vertices[m_index++] = g;
+  m_vertices[m_index++] = b;
+  m_vertices[m_index++] = a;
+  m_vertices[m_index++] = texturecoords[2];
+  m_vertices[m_index++] = texturecoords[3];
+  m_vertices[m_index++] = +width+x;
+  m_vertices[m_index++] = +height+y;
+  m_vertices[m_index++] = r;
+  m_vertices[m_index++] = g;
+  m_vertices[m_index++] = b;
+  m_vertices[m_index++] = a;
+  m_vertices[m_index++] = texturecoords[4];
+  m_vertices[m_index++] = texturecoords[5];
+  m_vertices[m_index++] = -width+x;
+  m_vertices[m_index++] = +height+y;
+  m_vertices[m_index++] = r;
+  m_vertices[m_index++] = g;
+  m_vertices[m_index++] = b;
+  m_vertices[m_index++] = a;
+  m_vertices[m_index++] = texturecoords[6];
+  m_vertices[m_index++] = texturecoords[7];
 
   m_numSprite++;
 }

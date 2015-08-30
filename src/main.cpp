@@ -84,7 +84,6 @@ void init()
 
   //batch = new batch2d(m_shader);
   //batch->create();
-
   key = new keyboard();
 
 }
@@ -132,7 +131,7 @@ int main()
     update();
 
   }
-
+  lua_init->callFunction("simple_dumb");
   //SAFE_DELETE(m_shader);
   //SAFE_DELETE(f);
   SAFE_DELETE(key);

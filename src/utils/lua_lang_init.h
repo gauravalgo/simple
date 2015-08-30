@@ -66,7 +66,6 @@ namespace simple
       //Graphics
       static int initGraphics(lua_State* L);
       //-Texture
-      static int makeTexture(lua_State* L);
       static int loadTexture(lua_State* L);
       static int bindTexture(lua_State* L);
       static int unBindTexture(lua_State* L);
@@ -76,16 +75,19 @@ namespace simple
       static int beginBatch(lua_State* L);
       static int endBatch(lua_State* L);
       static int renderMesh(lua_State* L);
-//-Shader
+      //-Shader
       static int createShader(lua_State* L);
       static int bindShader(lua_State* L);
       static int unBindShader(lua_State* L);
       static int setOrthoView(lua_State* L);
       static int sendShaderUniformLocation(lua_State* L);
-//UTILS
+      //UTILS
       static int getDeltaTime(lua_State* L);
       static int getFPS(lua_State* L);
       static int getVersion(lua_State* L);
+      static int dumbBatch(lua_State* L);
+      static int dumbTexture(lua_State* L);
+      static int dumbShader(lua_State* L);
     };
   }
 }

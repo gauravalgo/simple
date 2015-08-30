@@ -174,6 +174,36 @@ static mat4* getMatrix4(LUA_INTEGER value)
   return (mat4*)value;
 }
 
+int lua_lang_init::dumbBatch(lua_State *L)
+{
+  luaL_checkinteger(L, 1);
+  lua_Integer id = lua_tointeger(L, 1);
+  batch2d* b;
+  b = getBatch(id);
+  SAFE_DELETE(b);
+  return 1;
+}
+
+int lua_lang_init::dumbTexture(lua_State *L)
+{
+  luaL_checkinteger(L, 1);
+  lua_Integer id = lua_tointeger(L, 1);
+  texture2D* tex;
+  tex = getTexture2D(id);
+  SAFE_DELETE(tex);
+  return 1;
+}
+
+int lua_lang_init::dumbShader(lua_State *L)
+{
+  luaL_checkinteger(L, 1);
+  lua_Integer id = lua_tointeger(L, 1);
+  shader* s;
+  s = getShader(id);
+  SAFE_DELETE(s);
+  return 1;
+}
+
 
 /*Short doc:
 
@@ -190,11 +220,8 @@ int lua_lang_init::makeWindow(lua_State* L)
 {
 
   default_window = false;
-  if(lua_gettop(L) < 3)
-    LOG("Warning: function makeWindow takes: 1)title 2)width 3)height");
-
+  luaL_checkstring(L, 1);
   const char* title = lua_tostring(L, 1);
-  isStringError(L, 1, "makeWindow -> title");
   checkFloat(L, 2);
   checkFloat(L, 3);
   int width = lua_tonumber(L,2);
@@ -206,17 +233,11 @@ int lua_lang_init::makeWindow(lua_State* L)
   if(lua_isnumber(L, 4)){
     fullscreen = lua_tonumber(L, 4);
   }
-
   if(lua_isnumber(L, 5) && lua_isnumber(L, 6)){
     x = lua_tonumber(L, 5);
     y = lua_tonumber(L, 6);
   }
-
-  // if(isBooleanError(L, 4, "makeWindow ->(optional)fullscreen"))
-  //c->getWindow()->create(title, width, height, false);
-  //else
-    c->getWindow()->create(title, width, height, false);
-
+  c->getWindow()->create(title, width, height, fullscreen);
   c->getWindow()->setPosition(x, y);
   return 1;
 }
@@ -233,9 +254,6 @@ int lua_lang_init::setWindowVSync(lua_State *L)
 
 int lua_lang_init::setWindowPosition(lua_State* L)
 {
-  if(checkArguments(L, 3))
-    LOG("Warning: function setWindowPosition takes: 1)x coord 2) y coord");
-
   checkFloat(L , 1);
   checkFloat(L , 2);
   int x = lua_tonumber(L, 1);
@@ -246,11 +264,8 @@ int lua_lang_init::setWindowPosition(lua_State* L)
 
 int lua_lang_init::setWindowTitle(lua_State* L)
 {
-  if(checkArguments(L, 2))
-    LOG("Warning: function setTitle takes: 1) string");
-
+  luaL_checkstring(L, 1);
   const char* title = lua_tostring(L, 1);
-  isStringError(L, 1, "setWindowTitle -> title");
   c->getWindow()->setTitle(title);
   return 1;
 }
@@ -330,19 +345,8 @@ int lua_lang_init::setViewport(lua_State *L)
 
 /*** GRAPHICS *****/
 
-int lua_lang_init::makeTexture(lua_State *L)
-{
-  //TODO
-  texture2D tex;
-
-  return 1;
-}
-
 int lua_lang_init::loadTexture(lua_State *L)
 {
-  if(checkArguments(L, 2))
-    LOG("Warning: function loadTexture takes: 1) string(file path)");
-
   texture2D* tex = new texture2D();
 
   const char* path = lua_tostring(L, 1);
@@ -354,7 +358,7 @@ int lua_lang_init::loadTexture(lua_State *L)
 
 int lua_lang_init::bindTexture(lua_State *L)
 {
-  texture2D* tex = new texture2D();
+  texture2D* tex;
   checkInteger(L, 1);
   float id = lua_tointeger(L, 1);
   tex = getTexture2D(id);
@@ -369,7 +373,7 @@ int lua_lang_init::unBindTexture(lua_State *L)
   if(checkArguments(L, 2))
     LOG("Warning: function bindTexture takes: 1) a texture");
 
-  texture2D* tex = new texture2D();
+  texture2D* tex;
   checkInteger(L, 1);
   int id = lua_tointeger(L, 1);
   tex = getTexture2D(id);
@@ -403,7 +407,7 @@ int lua_lang_init::createShader(lua_State *L)
 
 int lua_lang_init::bindShader(lua_State *L)
 {
-  shader* s = new shader();
+  shader* s;
   checkInteger(L, 1);
   int id = lua_tointeger(L, 1);
   s = getShader(id);
@@ -418,7 +422,7 @@ int lua_lang_init::unBindShader(lua_State *L)
   if(checkArguments(L, 2))
     LOG("Warning: unBindShader takes: 1) shader ");
 
-  shader* s = new shader();
+  shader* s;
   checkInteger(L, 1);
   int id = lua_tointeger(L, 1);
   s = getShader(id);
@@ -444,7 +448,7 @@ int lua_lang_init::setOrthoView(lua_State *L)
 
   //test this inside an update method and see what happens
   projection = projection.setOrtho(left, right, bottom, top, near, far);
-  shader* s = new shader();
+  shader* s;
   int shid = lua_tointeger(L, 7);
 
   s = getShader(shid);
@@ -459,7 +463,7 @@ int lua_lang_init::sendShaderUniformLocation(lua_State *L)
   if(checkArguments(L, 4))
     LOG("Warning: sendShaderUniformLocation takes: 1) shader 2) location 3) matrix");
 
-  shader* s = new shader();
+  shader* s;
   int id = lua_tointeger(L, 1);
   const char* location = lua_tostring(L, 2);
   isStringError(L, 2, "sendShaderUniformLocation -> location string expected");
@@ -474,13 +478,13 @@ int lua_lang_init::sendShaderUniformLocation(lua_State *L)
 
 int lua_lang_init::createBatch(lua_State *L)
 {
-  shader* s = new shader();
-  batch2d* batch = new batch2d();
+  shader* s;
+  batch2d* batch;
   isObjectError(L, 1, "makeBatch -> shader");
   lua_Integer shID = lua_tointeger(L, 1);
   s = getShader(shID);
   if(s == getShader(shID)){
-    batch = new batch2d(s, 4000);
+    batch = new batch2d(s, 9000);
     batch->create();
     pushPointer(L, batch);
   }
@@ -491,7 +495,7 @@ int lua_lang_init::renderMesh(lua_State *L)
 {
   isObjectError(L, 1, "renderMesh -> batch");
   lua_Integer id = lua_tointeger(L, 1);
-  batch2d* b = new batch2d();
+  batch2d* b;
   b = getBatch(id);
   b->renderMesh();
   return 1;
@@ -499,7 +503,7 @@ int lua_lang_init::renderMesh(lua_State *L)
 
 int lua_lang_init::beginBatch(lua_State *L)
 {
-  batch2d* batch = new batch2d();
+  batch2d* batch;
   luaL_checkinteger(L, 1);
   lua_Integer id = lua_tointeger(L, 1);
   batch = getBatch(id);
@@ -513,22 +517,64 @@ int lua_lang_init::drawBatch(lua_State *L)
 {
   luaL_checkinteger(L, 1);
   lua_Integer id = lua_tointeger(L, 1);
-  batch2d* batch = new batch2d();
+  batch2d* batch;
   batch = getBatch(id);
   if(batch == getBatch(id)){
+    luaL_checknumber(L, 2);
+    luaL_checknumber(L, 3);
+    luaL_checknumber(L, 4);
+    luaL_checknumber(L, 5);
+
     float x = lua_tonumber(L, 2);
     float y = lua_tonumber(L, 3);
     float w = lua_tonumber(L, 4);
     float h = lua_tonumber(L, 5);
 
-    batch->draw(x, y, w, h);
+    if(rotation == 0){
+      batch->draw(x, y, w, h);
+    }else{
+      float rotation = 0;
+      if(lua_isnumber(L, 6)){
+        luaL_checknumber(L, 6);
+        rotation = lua_tonumber(L, 6);
+      }
+
+      float originX = w * 0.5f;
+      float originY = h * 0.5f;
+      if(lua_isnumber(L, 7) && lua_isnumber(L, 8)){
+        luaL_checknumber(L, 7);
+        luaL_checknumber(L, 8);
+
+        originX = lua_tonumber(L, 7);
+        originY = lua_tonumber(L, 8);
+      }
+      float r = 1;
+      float g = 1;
+      float b = 1;
+      float a = 1;
+      if(lua_isnumber(L, 9) && lua_isnumber(L, 10) && lua_isnumber(L, 11)){
+        luaL_checknumber(L, 9);
+        luaL_checknumber(L, 10);
+        luaL_checknumber(L, 11);
+        if(lua_isnumber(L, 12)){
+          luaL_checknumber(L, 12);
+          a = lua_tonumber(L, 12);
+        }
+
+        r = lua_tonumber(L, 9);
+        g = lua_tonumber(L, 10);
+        b = lua_tonumber(L, 11);
+      }
+      batch->draw(x, y, w, h, rotation, originX, originY, r, g, b, a);
+    }
   }
+
   return 1;
 }
 
 int lua_lang_init::endBatch(lua_State* L)
 {
-  batch2d* batch = new batch2d();
+  batch2d* batch;
   luaL_checkinteger(L, 1);
   lua_Integer id = lua_tointeger(L, 1);
   batch = getBatch(id);
@@ -620,7 +666,6 @@ void lua_lang_init::registerFunctions()
   lua_register(m_L, "simple_getPointerY", getPointerY);
   lua_register(m_L, "simple_getPointer",  getPointer);
   //Graphics
-  lua_register(m_L, "simple_makeTexture", makeTexture);
   lua_register(m_L, "simple_loadTexture", loadTexture);
   lua_register(m_L, "simple_bindTexture", bindTexture);
   lua_register(m_L, "simple_unBindTexture", unBindTexture);
@@ -643,6 +688,9 @@ void lua_lang_init::registerFunctions()
   lua_register(m_L, "simple_getDeltaTime", getDeltaTime);
   lua_register(m_L, "simple_getFPS", getFPS);
   lua_register(m_L, "simple_getVersion", getVersion);
+  lua_register(m_L, "simple_dumbTexture", dumbTexture);
+  lua_register(m_L, "simple_dumbShader", dumbShader);
+  lua_register(m_L, "simple_dumbBatch", dumbBatch);
   //MATHS
   lua_register(m_L, "simple_makeOrthoView", setOrthoView);
 
