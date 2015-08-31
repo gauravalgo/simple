@@ -96,12 +96,6 @@ void update()
 
 int main()
 {
-
-  if(DEBBUG)
-    LOG("Simple - version " << VERSION << " - Debbug messages are enabled!");
-  if(!DEBBUG)
-    LOG("Simple - version " << VERSION << " - Debbug messages are disabled!");
-
   if(FT_Init_FreeType(&ft)){
     LOG("Error: Could not init freetype lib!");
     return 1;

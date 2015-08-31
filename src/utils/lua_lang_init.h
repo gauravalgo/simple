@@ -55,6 +55,9 @@ namespace simple
                   static int getWindowTicks(lua_State* L);
                   static int getWindowFocus(lua_State* L);
                   static int setWindowVSync(lua_State* L);
+                  static int getWindowSize(lua_State* L);
+                  static int getWindowWidth(lua_State* L);
+                  static int getWindowHeight(lua_State* L);
                   //MOUSE
                   static int getPointerX(lua_State* L);
                   static int getPointerY(lua_State* L);
@@ -82,6 +85,9 @@ namespace simple
                   //UTILS
                   static int getDeltaTime(lua_State* L);
                   static int getFPS(lua_State* L);
+                  static int quit(lua_State* L);
+                  static int isKeyDown(lua_State* L);
+                  static int isKeyUp(lua_State* L);
                   //static int getVersion(lua_State* L);
                   static int dumbBatch(lua_State* L);
                   static int dumbTexture(lua_State* L);

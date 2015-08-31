@@ -34,7 +34,7 @@ namespace simple
       bool isKeyDown(const char* key);
       bool isKeyUp(const char* key);
     private:
-      glfw_window* m_window;
+      core c;
     };
   }
 }

@@ -17,38 +17,27 @@ glfw_window::glfw_window():
   m_running(true),
   m_width(0),
   m_vsync(false),
-  m_height(0)
+  m_height(0),
+  m_key(0)
 {
 
 }
 glfw_window::~glfw_window(){}
 
-void glfw_window::error_callback(int error, const char* description)
+void error_callback(int error, const char* description)
 {
   fputs(description, stderr);
 }
 
-void glfw_window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-  //LOG(GLFW_KEY_ESCAPE); = 256
-  core c;
-
-  if (DEBBUG && key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-    glfwSetWindowShouldClose(window, GL_TRUE);
-
-  if(key == GLFW_KEY_W && action == GLFW_PRESS)
-    LOG("W has been pressed");
-  if(key == GLFW_KEY_W && action == GLFW_RELEASE)
-    LOG("W has been relased");
-
-  //isKeyDown(key);
-
-  LOG(GLFW_KEY_W);
-}
 
 static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
   glfwGetCursorPos(window, &xpos, &ypos);
+}
+
+void glfw_window::initInput()
+{
+
 }
 
 void glfw_window::create(const char *title, int width, int height, bool fullscreen)
@@ -69,7 +58,6 @@ void glfw_window::create(const char *title, int width, int height, bool fullscre
   m_running = true;
 
   glfwSetErrorCallback(error_callback);
-  glfwSetKeyCallback(window, key_callback);
   glfwSetCursorPosCallback(window, cursor_position_callback);
 
   if (!window){

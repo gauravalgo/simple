@@ -19,11 +19,10 @@
 
 #include "../window/glfw_window.h"
 #include "../graphics/gl_graphics.h"
-#include "../input/keyboard.h"
+
 namespace simple
 {
   using namespace simple::graphics;
-  //using namespace simple::input;
 
   class core
   {
@@ -33,11 +32,9 @@ namespace simple
   private:
     glfw_window* m_window;
     gl_graphics* m_graphics;
-    //keyboard* m_keyboard;
   public:
     void create();
 
-    //keyboard* getKeyboard();
     glfw_window* getWindow();
     gl_graphics* getGLGraphics();
   };

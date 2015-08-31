@@ -59,6 +59,24 @@ void lua_lang_init::create()
 
   c = simple_core;
 }
+bool ikp = false;
+bool ikr = false;
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+  if (DEBBUG && key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+    glfwSetWindowShouldClose(window, GL_TRUE);
+
+  if(action == GLFW_PRESS){
+    ikp = true;
+    c->getWindow()->setKey(key);
+
+  }
+  if(action == GLFW_RELEASE){
+    ikr = true;
+    c->getWindow()->setKey(key);
+
+  }
+}
 
 void lua_lang_init::makeDefaultWindow()
 {
@@ -68,6 +86,7 @@ void lua_lang_init::makeDefaultWindow()
     c->getWindow()->setVSync(true); //don't melt the CPU
     c->getGLGraphics()->setViewport(0, 0, 800, 600);
   }
+  glfwSetKeyCallback(c->getWindow()->getWindow(), key_callback);
 }
 
 void lua_lang_init::setMainScript(const char* name)
@@ -173,15 +192,6 @@ static mat4* getMatrix4(LUA_INTEGER value)
   return (mat4*)value;
 }
 
-int lua_lang_init::dumbBatch(lua_State *L)
-{
-  luaL_checkinteger(L, 1);
-  lua_Integer id = lua_tointeger(L, 1);
-  batch2d* b;
-  b = getBatch(id);
-  SAFE_DELETE(b);
-  return 1;
-}
 
 int lua_lang_init::dumbTexture(lua_State *L)
 {
@@ -193,13 +203,25 @@ int lua_lang_init::dumbTexture(lua_State *L)
   return 1;
 }
 
+//TODO make this damn thing to work
 int lua_lang_init::dumbShader(lua_State *L)
 {
   luaL_checkinteger(L, 1);
   lua_Integer id = lua_tointeger(L, 1);
   shader* s;
   s = getShader(id);
-  SAFE_DELETE(s);
+  if(s == getShader(id))
+    SAFE_DELETE(s);
+  return 1;
+}
+
+int lua_lang_init::dumbBatch(lua_State *L)
+{
+  luaL_checkinteger(L, 1);
+  lua_Integer id = lua_tointeger(L, 1);
+  batch2d* b;
+  b = getBatch(id);
+  SAFE_DELETE(b);
   return 1;
 }
 
@@ -238,6 +260,31 @@ int lua_lang_init::makeWindow(lua_State* L)
   }
   c->getWindow()->create(title, width, height, fullscreen);
   c->getWindow()->setPosition(x, y);
+  return 1;
+}
+
+int lua_lang_init::getWindowSize(lua_State *L)
+{
+  float w = c->getWindow()->getWidth();
+  float h = c->getWindow()->getHeight();
+
+  lua_pushnumber(L, h);
+  lua_pushnumber(L, w);
+
+  return 2;
+}
+
+int lua_lang_init::getWindowWidth(lua_State *L)
+{
+  float w = c->getWindow()->getWidth();
+  lua_pushnumber(L, w);
+  return 1;
+}
+
+int lua_lang_init::getWindowHeight(lua_State *L)
+{
+  float h = c->getWindow()->getHeight();
+  lua_pushnumber(L, h);
   return 1;
 }
 
@@ -400,7 +447,6 @@ int lua_lang_init::createShader(lua_State *L)
     s->create(vertex, fragment);
     pushPointer(L, s);
   }
-
   return 1;
 }
 
@@ -605,13 +651,13 @@ int lua_lang_init::getPointerY(lua_State* L)
 
 int lua_lang_init::getPointer(lua_State *L)
 {
-  lua_newtable(L);
   float x = c->getWindow()->getPointerPosition().x;
   float y = c->getWindow()->getPointerPosition().y;
+
   lua_pushnumber(L, x);
   lua_pushnumber(L, y);
-  lua_settable(L, -3);
-  return 1;
+
+  return 2;
 }
 
 /*** END OF MOUSE *****/
@@ -634,6 +680,40 @@ int lua_lang_init::getFPS(lua_State* L)
   lua_pushnumber(L, FPS);
   return 1;
 }
+
+int lua_lang_init::quit(lua_State* L)
+{
+  c->getWindow()->setRunning(false);
+  return 1;
+}
+
+int lua_lang_init::isKeyDown(lua_State* L)
+{
+  int key = c->getWindow()->getKey();
+  luaL_checkinteger(L, 1);
+  int pressedKey = lua_tointeger(L, 1);
+  if(pressedKey == key && ikp){
+    lua_pushboolean(L, 1);
+    ikp = false;
+}else
+    lua_pushboolean(L, 0);
+  return 1;
+}
+
+int lua_lang_init::isKeyUp(lua_State* L)
+{
+  int key = c->getWindow()->getKey();
+  luaL_checkinteger(L, 1);
+  int pressedKey = lua_tointeger(L, 1);
+  if(pressedKey == key && ikr){
+    lua_pushboolean(L, 1);
+    ikr = false;
+  }else
+    lua_pushboolean(L, 0);
+  return 1;
+}
+
+
 /*** END OF UTILS *****/
 
 static int getVersion(lua_State *L)
@@ -649,6 +729,9 @@ int lua_lang_init::initWindow(lua_State *L)
     {"setPosition", setWindowPosition},
     {"setTitle", setWindowTitle},
     {"getMonitorSize", getMonitorSize},
+    {"getSize", getWindowSize },
+    {"getWidth", getWindowWidth },
+    {"getHeight", getWindowHeight },
     {"getFocus", getWindowFocus},
     {"setVSync", setWindowVSync},
     {0, 0},
@@ -676,6 +759,8 @@ int lua_lang_init::initInput(lua_State *L)
     {"getPointerX",getPointerX},
     {"getPointerY",getPointerY},
     {"getPointer", getPointer},
+    {"isKeyDown", isKeyDown},
+    {"isKeyUp", isKeyUp},
     {0, 0},
   };
   luaL_newlib(L, reg);
@@ -731,6 +816,7 @@ int lua_lang_init::initSimple(lua_State* L)
 
   luaL_Reg reg[] = {
     { "getVersion",	getVersion },
+    { "quit", quit },
     { 0, 0 },
   };
 

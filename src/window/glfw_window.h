@@ -27,13 +27,10 @@ namespace simple
     void setTitle(const char* title);
     void setVisible(bool visible);
     void setVSync(bool value){m_vsync = value;}
-    bool isKeyDown(int key);
-    bool isKeyUp(int key);
     bool isFocused();
     void destroy();
+    void initInput();
   private:
-    static void error_callback(int error, const char* description);
-    static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
     void calculateFPS();
     void calculateDeltaTime();
   private:
@@ -46,8 +43,12 @@ namespace simple
     float m_delta;
     bool m_vsync;
     float m_fps;
+    int m_key;
     const GLFWvidmode* m_mode;
   public:
+    int getKey(){return m_key;}
+    int setKey(int value){m_key = value;}
+
     float getDeltaTime();
     float getFPS();
     GLFWwindow* getWindow(){return window;}
@@ -58,6 +59,7 @@ namespace simple
     vec2 getMonitorSize();
     bool getVSync(){return m_vsync;}
     bool getRunning(){return m_running;}
+    void setRunning(bool value){m_running = value;}
     int getWidth(){return m_width;}
     int getHeight(){return m_height;}
   };

@@ -41,7 +41,7 @@ keyboard::~keyboard()
 
 bool keyboard::isKeyDown(const char* key)
 {
-  
+//  LOG(c.getWindow()->getKey());
   return false;
 }
 

@@ -38,8 +38,8 @@ namespace simple {
 #define LOG(m) cout << m << endl
 #define LENGTH(v) (sizeof(v)/sizeof(*v))
 
-#define SAFE_DELETE(p) { if(p) { delete   (p); (p)=NULL; } }
-#define SAFE_DELETE_ARRAY(p) { if(p) { delete[] (p); (p)=NULL; } }
+#define SAFE_DELETE(p) { if(p != NULL) { delete (p); (p)=NULL; } }
+#define SAFE_DELETE_ARRAY(p) { if(p != NULL) { delete[] (p); (p)=NULL; } }
 }
 
 #endif
