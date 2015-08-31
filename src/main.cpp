@@ -48,20 +48,7 @@ using namespace simple::lang;
 
 FT_Library ft;
 
-mat4 proj;
-
-batch2d* batch;
-texture2D* texture;
-shader* m_shader;
-uint uniProj;
-
-font* f;
-shader* m_font_shader;
-
-keyboard* key;
 lua_lang_init* lua_init;
-
-gl_graphics gl_g;
 
 void init()
 {
@@ -81,10 +68,6 @@ void init()
   // f->load(ft, m_font_shader, "res/font.ttf");
   //f->setFontSize(16);
   //f->setColor(m_shader,.2f,.8,.5,1);
-
-  //batch = new batch2d(m_shader);
-  //batch->create();
-  key = new keyboard();
 
 }
 
@@ -132,8 +115,5 @@ int main()
 
   }
   lua_init->callFunction("simple_dumb");
-  //SAFE_DELETE(m_shader);
-  //SAFE_DELETE(f);
-  SAFE_DELETE(key);
   return 0;
 }

@@ -18,8 +18,12 @@
 
 #include "../window/glfw_window.h"
 #include "definitions.h"
+#include "../input/keyboard.h"
 
 using namespace simple;
+using namespace simple::graphics;
+using namespace simple::input;
+
 
 /*
  *Global holder of important classes
@@ -39,6 +43,7 @@ void core::create()
 {
   m_window = new glfw_window();
   m_graphics = new gl_graphics();
+  // m_keyboard = new keyboard();
 }
 
 glfw_window* core::getWindow()
@@ -50,3 +55,8 @@ gl_graphics* core::getGLGraphics()
 {
     return m_graphics;
 }
+/*
+keyboard* core::getKeyboard()
+{
+  return m_keyboard;
+}*/

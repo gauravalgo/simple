@@ -8,64 +8,63 @@ local shader;
 local image2;
 local image3;
 function simple_init()
-   simple_makeWindow("Simple - 0.2.0", width, height)
-   simple_setWindowPosition(-1, -1)
-   simple_setWindowVSync(true)
-   simple_setViewport(0, 0, width, height);
- 
- shader = simple_makeShader()	
- image = simple_loadTexture("res/test.png")
- image2 = simple_loadTexture("res/test1.png")
- image3 = simple_loadTexture("res/test2.png")
- 
-batch = simple_makeBatch(shader)
- simple_makeOrthoView(0,width,height,0,0,100,shader)
+   simple.window.create("Simple - A new era", width, height)
+   simple.graphics.setViewport(0, 0, width, height);
+
+   shader = simple.graphics.newShader()
+   image = simple.graphics.loadTexture("res/test.png")
+   image2 = simple.graphics.loadTexture("res/test1.png")
+   image3 = simple.graphics.loadTexture("res/test2.png")
+
+   batch = simple.graphics.newBatch(shader,7000)
+   simple.math.setOrtho(0,width,height,0,0,100,shader)
+   --simple.getVersion()
 end
 local x = 100
 local y = 100
+local rotation = 10
+local w = 32;
+local h = 32;
+local originX = w / 2
+local originY = h / 2
 function simple_draw()
-   simple_clearScreen(.4,.5,.2,1)
-    simple_bindShader(shader)
-  
+   simple.graphics.clearScreen(.4,.5,.2,1)
+   simple.graphics.bindShader(shader)
 
-   simple_beginBatch(batch) 
+   simple.graphics.beginBatch(batch)
    --texture2
-   simple_bindTexture(image3)
-   simple_drawBatch(batch, 300, 100, 25, 25)
-   simple_renderMesh(batch)
-   simple_unBindTexture(image3)
+   simple.graphics.bindTexture(image)
+   --  for i=1, 20 do
+   simple.graphics.drawBatch(batch, x, 300, w, h, 0, originX, originY)
+   simple.graphics.drawBatch(batch, x, 100, w*2, h*2, rotation, originX*2, originY*2)
+   --end
+   simple.graphics.renderMesh(batch)
+   simple.graphics.unBindTexture(image)
    --texture2
-   simple_endBatch(batch)
+   simple.graphics.endBatch(batch)
 
-   simple_beginBatch(batch) 
-   --texture2
-   simple_bindTexture(image2)
-   simple_drawBatch(batch, 100, 100, 40, 40)
-   simple_renderMesh(batch)
-   simple_unBindTexture(image2)
-   --texture2
-   simple_endBatch(batch)
-
-   --texture3
-    simple_beginBatch(batch)
-   simple_bindTexture(image)
-   simple_drawBatch(batch, 200, 200, 40, 40)
-   simple_renderMesh(batch)
-   simple_unBindTexture(image)
-       simple_endBatch(batch)
-   --texture3
-
-simple_unBindShader(shader)
+   simple.graphics.unBindShader(shader)
 
 end
 
 local timer = 2;
 function simple_update()
-   timer = timer + 2 * simple_getDeltaTime();
+   timer = timer + 2 * simple.time.delta();
    if timer > 4 then 
-      print("FPS: " .. simple_getFPS()) 
+      print("Ticks:" .. simple.time.getTicks())
+      print("FPS: " .. simple.time.getFPS())
       timer = 0
    end
-	x = x + 40 * simple_getDeltaTime();
-	y = y + 40 * simple_getDeltaTime();
+   rotation = rotation + 108 * simple.time.delta();
+
+   x = x + 40 * simple.time.delta();
+   y = y + 40 * simple.time.delta();
+end
+
+function simple_dumb()
+   --simple_dumbShader(shader);
+   --simple_dumbBatch(batch);
+   --simple_dumbTexture(image);
+   -- simple_dumbTexture(image2);
+   --simple_dumbTexture(image3);
 end

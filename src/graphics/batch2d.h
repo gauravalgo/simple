@@ -41,6 +41,33 @@ class batch2d
   private:
     float m_vertices[40000 * 5 * 7];
 
+    float _sin;
+    float _cos;
+
+    float px1;
+    float py1;
+    float px2;
+    float py2;
+    float px3;
+    float py3;
+    float px4;
+    float py4;
+
+    float p1x;
+    float p1y;
+    float p2x;
+    float p2y;
+    float p3x;
+    float p3y;
+    float p4x;
+    float p4y;
+
+    float fx;
+    float fy;
+    float fx2;
+    float fy2;
+
+
     unsigned int m_vbo;
     unsigned int m_ebo;
 

@@ -50,7 +50,6 @@ void lua_lang_init::create()
   m_L = luaL_newstate();
 
   luaL_openlibs(m_L);
-
   if(!m_L)
     LOG("Error: Could not load lua state!");
 
@@ -84,7 +83,7 @@ bool lua_lang_init::callFunction(const char* name)
 {
   lua_getglobal(m_L, name);
   if(!lua_isfunction(m_L, 1)){
-    LOG("Error: function " << name << " should have been created in your main.lua file!");
+    //LOG("Error: function " << name << " should have been created in your main.lua file!");
   }
   lua_call(m_L, 0, 0);
 
@@ -530,15 +529,14 @@ int lua_lang_init::drawBatch(lua_State *L)
     float w = lua_tonumber(L, 4);
     float h = lua_tonumber(L, 5);
 
+    float rotation = 0;
+    if(lua_isnumber(L, 6)){
+      luaL_checknumber(L, 6);
+      rotation = lua_tonumber(L, 6);
+    }
     if(rotation == 0){
       batch->draw(x, y, w, h);
     }else{
-      float rotation = 0;
-      if(lua_isnumber(L, 6)){
-        luaL_checknumber(L, 6);
-        rotation = lua_tonumber(L, 6);
-      }
-
       float originX = w * 0.5f;
       float originY = h * 0.5f;
       if(lua_isnumber(L, 7) && lua_isnumber(L, 8)){
@@ -637,66 +635,133 @@ int lua_lang_init::getFPS(lua_State* L)
   return 1;
 }
 /*** END OF UTILS *****/
-//TODO make this damn thing work!
-int lua_lang_init::initGraphics(lua_State* L)
+
+static int getVersion(lua_State *L)
 {
+  LOG("Simple - cracking bottles- version 0.2.0");
   return 1;
 }
 
-int lua_lang_init::getVersion(lua_State *L)
+int lua_lang_init::initWindow(lua_State *L)
 {
-  LOG("Simple - cracking bottles- version 0.2.0");
+  luaL_Reg reg[] = {
+    {"create", makeWindow},
+    {"setPosition", setWindowPosition},
+    {"setTitle", setWindowTitle},
+    {"getMonitorSize", getMonitorSize},
+    {"getFocus", getWindowFocus},
+    {"setVSync", setWindowVSync},
+    {0, 0},
+  };
+  luaL_newlib(L, reg);
+  return 1;
+}
+
+int lua_lang_init::initTime(lua_State *L)
+{
+  luaL_Reg reg[] = {
+    {"getFPS", getFPS},
+    {"delta", getDeltaTime},
+    {"getTicks", getWindowTicks},
+    {0, 0},
+  };
+  luaL_newlib(L, reg);
+  return 1;
+}
+
+
+int lua_lang_init::initInput(lua_State *L)
+{
+  luaL_Reg reg[] = {
+    {"getPointerX",getPointerX},
+    {"getPointerY",getPointerY},
+    {"getPointer", getPointer},
+    {0, 0},
+  };
+  luaL_newlib(L, reg);
+  return 1;
+}
+
+int lua_lang_init::initMath(lua_State *L)
+{
+  luaL_Reg reg[] = {
+    {"setOrtho",setOrthoView},
+    {0, 0},
+  };
+  luaL_newlib(L, reg);
+  return 1;
+}
+
+
+int lua_lang_init::initGraphics(lua_State *L)
+{
+  luaL_Reg reg[] = {
+    {"loadTexture", loadTexture},
+    {"bindTexture", bindTexture},
+    {"unBindTexture", unBindTexture},
+    {"newShader", createShader},
+    {"bindShader", bindShader},
+    {"unBindShader", unBindShader},
+    {"sendShaderUniformLocation", sendShaderUniformLocation},
+    {"newBatch", createBatch},
+    {"renderMesh", renderMesh},
+    {"beginBatch", beginBatch},
+    {"endBatch", endBatch},
+    {"drawBatch", drawBatch},
+    {"clearScreen", clearScreen},
+    {"setViewport", setViewport},
+    {0, 0},
+  };
+  luaL_newlib(L, reg);
+  return 1;
+}
+
+int lua_lang_init::initSimple(lua_State* L)
+{
+  int i;
+
+  int (*classes[])(lua_State *L) = {
+    NULL,
+  };
+
+  for (i = 0; classes[i]; i++) {
+    classes[i](L);
+    lua_pop(L, 1);
+  }
+
+  luaL_Reg reg[] = {
+    { "getVersion",	getVersion },
+    { 0, 0 },
+  };
+
+  luaL_newlib(L, reg);
+
+  struct { char *name; int (*fn)(lua_State *L); } mods[] = {
+    { "window", initWindow  },
+    { "graphics", initGraphics  },
+    { "time", initTime },
+    { "input", initInput },
+    { "math", initMath },
+    { 0, 0 },
+  };
+
+  for (i = 0; mods[i].name; i++) {
+    mods[i].fn(L);
+    lua_setfield(L, -2, mods[i].name);
+  }
   return 1;
 }
 
 void lua_lang_init::registerFunctions()
 {
 
-  //WINDOW
+  luaL_requiref(m_L, "simple", initSimple, 1);
 
-  lua_register(m_L, "simple_makeWindow", makeWindow);
-  lua_register(m_L, "simple_setWindowPosition", setWindowPosition);
-  lua_register(m_L, "simple_setWindowTitle", setWindowTitle);
-  lua_register(m_L, "simple_getMonitorSize", getMonitorSize);
-  lua_register(m_L, "simple_getWindowFocus", getWindowFocus);
-  lua_register(m_L, "simple_getWindowTicks", getWindowTicks);
-  lua_register(m_L, "simple_setWindowVSync", setWindowVSync);
-  //MOUSE
-  lua_register(m_L, "simple_getPointerX", getPointerX);
-  lua_register(m_L, "simple_getPointerY", getPointerY);
-  lua_register(m_L, "simple_getPointer",  getPointer);
-  //Graphics
-  lua_register(m_L, "simple_loadTexture", loadTexture);
-  lua_register(m_L, "simple_bindTexture", bindTexture);
-  lua_register(m_L, "simple_unBindTexture", unBindTexture);
-
-  lua_register(m_L, "simple_makeShader", createShader);
-  lua_register(m_L, "simple_bindShader", bindShader);
-  lua_register(m_L, "simple_unBindShader", unBindShader);
-  lua_register(m_L, "simple_sendShaderUniformLocation", sendShaderUniformLocation);
-
-  lua_register(m_L, "simple_makeBatch", createBatch);
-  lua_register(m_L, "simple_renderMesh", renderMesh);
-  lua_register(m_L, "simple_beginBatch", beginBatch);
-  lua_register(m_L, "simple_endBatch", endBatch);
-  lua_register(m_L, "simple_drawBatch", drawBatch);
-
-//GL Graphics
-  lua_register(m_L, "simple_clearScreen", clearScreen);
-  lua_register(m_L, "simple_setViewport", setViewport);
-  //UTILS
-  lua_register(m_L, "simple_getDeltaTime", getDeltaTime);
-  lua_register(m_L, "simple_getFPS", getFPS);
-  lua_register(m_L, "simple_getVersion", getVersion);
   lua_register(m_L, "simple_dumbTexture", dumbTexture);
   lua_register(m_L, "simple_dumbShader", dumbShader);
   lua_register(m_L, "simple_dumbBatch", dumbBatch);
-  //MATHS
-  lua_register(m_L, "simple_makeOrthoView", setOrthoView);
 
 }
-
-//TODO make simple look more like Love *(evilface)
 
 void lua_lang_init::dumb()
 {

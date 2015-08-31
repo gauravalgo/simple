@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 #include "../utils/definitions.h"
+#include "../utils/core.h"
 #include "../maths/vec2.h"
 
 using namespace simple;
@@ -22,17 +23,27 @@ glfw_window::glfw_window():
 }
 glfw_window::~glfw_window(){}
 
-static void error_callback(int error, const char* description)
+void glfw_window::error_callback(int error, const char* description)
 {
   fputs(description, stderr);
 }
 
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void glfw_window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
   //LOG(GLFW_KEY_ESCAPE); = 256
-  
+  core c;
+
   if (DEBBUG && key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GL_TRUE);
+
+  if(key == GLFW_KEY_W && action == GLFW_PRESS)
+    LOG("W has been pressed");
+  if(key == GLFW_KEY_W && action == GLFW_RELEASE)
+    LOG("W has been relased");
+
+  //isKeyDown(key);
+
+  LOG(GLFW_KEY_W);
 }
 
 static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)

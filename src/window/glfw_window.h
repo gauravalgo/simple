@@ -27,9 +27,13 @@ namespace simple
     void setTitle(const char* title);
     void setVisible(bool visible);
     void setVSync(bool value){m_vsync = value;}
+    bool isKeyDown(int key);
+    bool isKeyUp(int key);
     bool isFocused();
     void destroy();
   private:
+    static void error_callback(int error, const char* description);
+    static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
     void calculateFPS();
     void calculateDeltaTime();
   private:

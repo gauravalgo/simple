@@ -102,11 +102,11 @@ void batch2d::draw( float x, float y, float width, float height)
   // if(texture != m_texture)
   //  m_texture = texture;
 
-  float px1 = width + x;
-  float py1 = height + y;
+  px1 = width + x;
+  py1 = height + y;
 
-  float px2 = -width + x;
-  float py2 = -height + y;
+  px2 = -width + x;
+  py2 = -height + y;
 
   m_vertices[m_index++] = px2;
   m_vertices[m_index++] = py2;
@@ -152,33 +152,6 @@ void batch2d::draw(float x, float y, float width, float height, float rotation)
     LOG("Error: You're trying to draw more than " << m_SIZE << " sprites!");
     return;
   }
-
-  float _sin;
-  float _cos;
-
-  float px1;
-  float py1;
-  float px2;
-  float py2;
-  float px3;
-  float py3;
-  float px4;
-  float py4;
-
-  float p1x;
-  float p1y;
-  float p2x;
-  float p2y;
-  float p3x;
-  float p3y;
-  float p4x;
-  float p4y;
-
-  float fx;
-  float fy;
-  float fx2;
-  float fy2;
-
 
   if(rotation != 0){
     _cos = cos(RADIANS(rotation));
@@ -276,32 +249,6 @@ void batch2d::draw(float x, float y, float width, float height, float rotation, 
     LOG("Error: You're trying to draw more than " << m_SIZE << " sprites!");
     return;
   }
-
-  float _sin;
-  float _cos;
-
-  float px1;
-  float py1;
-  float px2;
-  float py2;
-  float px3;
-  float py3;
-  float px4;
-  float py4;
-
-  float p1x;
-  float p1y;
-  float p2x;
-  float p2y;
-  float p3x;
-  float p3y;
-  float p4x;
-  float p4y;
-
-  float fx;
-  float fy;
-  float fx2;
-  float fy2;
 
 
   if(rotation != 0){
@@ -401,32 +348,6 @@ void batch2d::draw(float x, float y, float width, float height, float rotation, 
     return;
   }
 
-  float _sin;
-  float _cos;
-
-  float px1;
-  float py1;
-  float px2;
-  float py2;
-  float px3;
-  float py3;
-  float px4;
-  float py4;
-
-  float p1x;
-  float p1y;
-  float p2x;
-  float p2y;
-  float p3x;
-  float p3y;
-  float p4x;
-  float p4y;
-
-  float fx;
-  float fy;
-  float fx2;
-  float fy2;
-
 
   if(rotation != 0){
     _cos = cos(RADIANS(rotation));
@@ -525,33 +446,6 @@ void batch2d::draw(float x, float y, float width, float height, float rotation, 
     LOG("Error: You're trying to draw more than " << m_SIZE << " sprites!");
     return;
   }
-
-  float _sin;
-  float _cos;
-
-  float px1;
-  float py1;
-  float px2;
-  float py2;
-  float px3;
-  float py3;
-  float px4;
-  float py4;
-
-  float p1x;
-  float p1y;
-  float p2x;
-  float p2y;
-  float p3x;
-  float p3y;
-  float p4x;
-  float p4y;
-
-  float fx;
-  float fy;
-  float fx2;
-  float fy2;
-
 
   if(rotation != 0){
     _cos = cos(RADIANS(rotation));
