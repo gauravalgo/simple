@@ -7,6 +7,7 @@ local batch;
 local shader;
 local image2;
 local image3;
+
 function simple_init()
    simple.window.create("Simple - A new era", width, height)
    simple.graphics.setViewport(0, 0, width, height);
@@ -16,9 +17,13 @@ function simple_init()
    image2 = simple.graphics.loadTexture("res/test1.png")
    image3 = simple.graphics.loadTexture("res/test2.png")
 
-   batch = simple.graphics.newBatch(shader,7000)
-   simple.math.setOrtho(0,width,height,0,0,100,shader)
-   --simple.getVersion()
+   batch = simple.graphics.newBatch(shader, 7000)
+   simple.math.setOrtho(0,width,height, 0, 0, 100, shader)
+   simple.getVersion()
+
+   --W,H = simple.window.getSize()
+   --print(W .. " " .. H)
+
 end
 local x = 100
 local y = 100
@@ -35,8 +40,9 @@ function simple_draw()
    --texture2
    simple.graphics.bindTexture(image)
    --  for i=1, 20 do
-   simple.graphics.drawBatch(batch, x, 300, w, h, 0, originX, originY)
-   simple.graphics.drawBatch(batch, x, 100, w*2, h*2, rotation, originX*2, originY*2)
+   simple.graphics.drawBatch(batch, 70, 300, w, h, 0, originX, originY)
+   simple.graphics.drawBatch(batch, 112, 100, w*2, h*2, rotation, originX*2, originY*2)
+   simple.graphics.drawBatch(batch, x, y, w, h, 180, originX, originY)
    --end
    simple.graphics.renderMesh(batch)
    simple.graphics.unBindTexture(image)
@@ -51,20 +57,33 @@ local timer = 2;
 function simple_update()
    timer = timer + 2 * simple.time.delta();
    if timer > 4 then 
-      print("Ticks:" .. simple.time.getTicks())
-      print("FPS: " .. simple.time.getFPS())
+      --print("Ticks:" .. simple.time.getTicks())
+      --print("FPS: " .. simple.time.getFPS())
+     -- simple.quit()
       timer = 0
    end
+
+   if simple.input.isKeyDown("w") then
+      y = y - 110 * simple.time.delta()
+   end
+   if simple.input.isKeyDown("s") then
+      y = y + 110 * simple.time.delta()
+   end
+   if simple.input.isKeyDown("d") then
+     x = x + 110 * simple.time.delta()
+   end
+   if simple.input.isKeyDown("a") then
+     x = x - 110 * simple.time.delta()
+   end
+
    rotation = rotation + 108 * simple.time.delta();
 
-   x = x + 40 * simple.time.delta();
-   y = y + 40 * simple.time.delta();
+   --px, py = simple.input.getPointer()
+   --print(px .. " " .. py)
 end
 
 function simple_dumb()
-   --simple_dumbShader(shader);
-   --simple_dumbBatch(batch);
-   --simple_dumbTexture(image);
-   -- simple_dumbTexture(image2);
-   --simple_dumbTexture(image3);
+   simple_dumbBatch(batch);
+   --simple_dumbShader(shader) --make it work !
+   simple_dumbTexture(image);
 end

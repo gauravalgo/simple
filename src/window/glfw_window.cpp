@@ -33,24 +33,29 @@ static void cursor_position_callback(GLFWwindow* window, double xpos, double ypo
   glfwGetCursorPos(window, &xpos, &ypos);
 }
 
-static int m_key;
+static int m_DownKey;
+static int m_UpKey;
 
 void glfw_window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
   if (DEBBUG && key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GL_TRUE);
+
   if(action == GLFW_PRESS)
-    m_key = key;
+    m_DownKey = key;
+  if(action == GLFW_RELEASE)
+    m_UpKey = key;
 }
 
-void glfw_window::setKey(int value)
+int glfw_window::getDownKey()
 {
-  m_key = value;
+  return m_DownKey;
 }
 
-int glfw_window::getKey()
+
+int glfw_window::getUpKey()
 {
-  return m_key;
+  return m_UpKey;
 }
 
 void glfw_window::initInput()

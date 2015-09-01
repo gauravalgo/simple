@@ -16,16 +16,7 @@
 
 #include <iostream>
 
-#include "graphics/shader.h"
-#include "maths/mat4.h"
-#include "maths/vec3.h"
 #include "utils/definitions.h"
-#include "graphics/mesh.h"
-#include "graphics/texture2D.h"
-#include "utils/file.h"
-#include "graphics/font.h"
-#include "graphics/batch2d.h"
-#include "input/keyboard.h"
 #include "utils/lua_lang_init.h"
 #include "utils/core.h"
 
@@ -33,14 +24,10 @@
 
 #include <GLFW/glfw3.h>
 #include "window/glfw_window.h"
-#include "graphics/gl_graphics.h"
 
 using std::string;
 
 using namespace simple;
-using namespace simple::graphics;
-using namespace simple::maths;
-using namespace simple::input;
 using namespace simple::lang;
 
 #include <ft2build.h>
@@ -49,8 +36,6 @@ using namespace simple::lang;
 FT_Library ft;
 
 lua_lang_init* lua_init;
-
-keyboard key;
 
 void init()
 {
@@ -93,12 +78,6 @@ void render ()
 void update()
 {
   lua_init->callFunction("simple_update");
-
-  if(key.isKeyDown("w"))
-    LOG("yep");
-  if(key.isKeyDown("a"))
-    LOG("a");
-
   lua_init->getCore()->getWindow()->update();
 }
 

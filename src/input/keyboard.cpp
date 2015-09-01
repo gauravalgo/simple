@@ -138,7 +138,7 @@ std::string keyboard::getKey(int key)
 
 bool keyboard::isKeyDown(std::string key)
 {
-  std::string k = getKey(c.getWindow()->getKey());
+  std::string k = getKey(c.getWindow()->getDownKey());
   if(key == k)
     return true;
   return false;
@@ -146,7 +146,7 @@ bool keyboard::isKeyDown(std::string key)
 
 bool keyboard::isKeyUp(const char* key)
 {
-  std::string k = getKey(c.getWindow()->getKey());
+  std::string k = getKey(c.getWindow()->getUpKey());
   if(key == k)
     return true;
   return false;

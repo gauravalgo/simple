@@ -23,13 +23,14 @@
 #include "../graphics/shader.h"
 #include "../graphics/default_shaders.h"
 #include "../maths/mat4.h"
+#include "../input/keyboard.h"
 #include "core.h"
 
 using namespace simple;
 using namespace simple::lang;
 using namespace simple::graphics;
 using namespace simple::maths;
-
+using namespace simple::input;
 
 extern "C" {
 #include "lua.h"
@@ -44,6 +45,7 @@ static glfw_window m_window;
 static bool default_window;
 
 static core* c;
+static keyboard* k;
 
 void lua_lang_init::create()
 {
@@ -59,6 +61,8 @@ void lua_lang_init::create()
 
   c = co;
   setCore(c);
+
+  k = new keyboard();
 }
 
 void lua_lang_init::makeDefaultWindow()
@@ -671,13 +675,23 @@ int lua_lang_init::quit(lua_State* L)
 
 int lua_lang_init::isKeyDown(lua_State* L)
 {
-
+  luaL_checkstring(L, 1);
+  const char* key = lua_tostring(L, 1);
+  if(k->isKeyDown(key))
+    lua_pushboolean(L, 1);
+  else
+    lua_pushboolean(L, 0);
   return 1;
 }
 
 int lua_lang_init::isKeyUp(lua_State* L)
 {
-
+  luaL_checkstring(L, 1);
+  const char* key = lua_tostring(L, 1);
+  if(k->isKeyUp(key))
+    lua_pushboolean(L, 1);
+  else
+    lua_pushboolean(L, 0);
   return 1;
 }
 
@@ -811,5 +825,6 @@ void lua_lang_init::registerFunctions()
 void lua_lang_init::dumb()
 {
   lua_close(m_L);
+  SAFE_DELETE(k);
   SAFE_DELETE(c);
 }

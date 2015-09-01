@@ -45,8 +45,8 @@ namespace simple
     float m_fps;
     const GLFWvidmode* m_mode;
   public:
-    int getKey();
-    void setKey(int value);
+    int getDownKey();
+    int getUpKey();
 
     float getDeltaTime();
     float getFPS();
