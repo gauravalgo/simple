@@ -35,8 +35,8 @@ namespace simple
       ~keyboard();
     public:
       bool isKeyDown(std::string key);
-      bool isKeyUp(const char* key);
-      std::string getKey(int key);
+      bool isKeyUp(std::string key);
+      int getKey(std::string key);
     private:
       core c;
     };

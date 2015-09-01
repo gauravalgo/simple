@@ -80,6 +80,7 @@ namespace simple
                   static int renderMesh(lua_State* L);
                   //-Shader
                   static int createShader(lua_State* L);
+                  static int createDefaultShader(lua_State* L);
                   static int bindShader(lua_State* L);
                   static int unBindShader(lua_State* L);
                   static int setOrthoView(lua_State* L);

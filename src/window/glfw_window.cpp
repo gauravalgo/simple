@@ -33,29 +33,34 @@ static void cursor_position_callback(GLFWwindow* window, double xpos, double ypo
   glfwGetCursorPos(window, &xpos, &ypos);
 }
 
-static int m_DownKey;
-static int m_UpKey;
+static bool m_DownKey[256];
+static bool m_UpKey[256];
 
 void glfw_window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
   if (DEBBUG && key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GL_TRUE);
 
-  if(action == GLFW_PRESS)
-    m_DownKey = key;
-  if(action == GLFW_RELEASE)
-    m_UpKey = key;
+  m_DownKey[key] = action != GLFW_RELEASE;
+  m_UpKey[key] = action != GLFW_PRESS;
 }
 
-int glfw_window::getDownKey()
+int glfw_window::getDownKey(int key)
 {
-  return m_DownKey;
+  if(m_DownKey[key] <= 256)
+    return m_DownKey[key];
+  else
+    LOG("You're trying to get an unknow key");
+  return 0;
 }
 
-
-int glfw_window::getUpKey()
+int glfw_window::getUpKey(int key)
 {
-  return m_UpKey;
+  if(m_UpKey[key] <= 256)
+    return m_UpKey[key];
+  else
+    LOG("You're trying to get an unknow key");
+  return 0;
 }
 
 void glfw_window::initInput()

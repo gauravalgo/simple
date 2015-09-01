@@ -12,7 +12,7 @@ function simple_init()
    simple.window.create("Simple - A new era", width, height)
    simple.graphics.setViewport(0, 0, width, height);
 
-   shader = simple.graphics.newShader()
+   shader = simple.graphics.newDefaultShader()
    image = simple.graphics.loadTexture("res/test.png")
    image2 = simple.graphics.loadTexture("res/test1.png")
    image3 = simple.graphics.loadTexture("res/test2.png")
@@ -63,6 +63,12 @@ function simple_update()
       timer = 0
    end
 
+   if simple.input.isKeyDown("e") or simple.input.isKeyDown("q") then
+      print("it works");
+   end
+   if simple.input.isKeyUp("v") then
+      print("it works");
+   end
    if simple.input.isKeyDown("w") then
       y = y - 110 * simple.time.delta()
    end
@@ -83,7 +89,7 @@ function simple_update()
 end
 
 function simple_dumb()
-   simple_dumbBatch(batch);
-   --simple_dumbShader(shader) --make it work !
-   simple_dumbTexture(image);
+   simple_dumpBatch(batch);
+   --simple_dumpShader(shader) --make it work !
+   simple_dumpTexture(image);
 end

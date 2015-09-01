@@ -417,22 +417,26 @@ int lua_lang_init::unBindTexture(lua_State *L)
 int lua_lang_init::createShader(lua_State *L)
 {
   shader* s = new shader();
-  if(!lua_tostring(L,1) && !lua_tostring(L, 2)){
-    //Put a default shader
-    default_shaders df;
-    s->create(df.texture_vertex.c_str(), df.texture_fragment.c_str());
-    pushPointer(L, s);
-  }else if(lua_tostring(L,1) && !lua_tostring(L,2)){
-      LOG("Warning: (optional)parameters are: 1) vertex shader 2) fragment shader");
-  }else{
-    //custom shader
-    isStringError(L, 1 , "createShader -> vertex shader expected");
-    const char* vertex = lua_tostring(L, 1);
-    isStringError(L, 2 , "createShader -> fragment shader expected");
-    const char* fragment = lua_tostring(L, 2);
-    s->create(vertex, fragment);
-    pushPointer(L, s);
-  }
+  //custom shader
+  luaL_checkstring(L, 1);
+  luaL_checkstring(L, 2);
+  isStringError(L, 1 , "createShader -> vertex shader expected");
+  isStringError(L, 2 , "createShader -> fragment shader expected");
+  const char* vertex = lua_tostring(L, 1);
+  const char* fragment = lua_tostring(L, 2);
+  s->create(vertex, fragment);
+
+  pushPointer(L, s);
+  return 1;
+}
+
+int lua_lang_init::createDefaultShader(lua_State* L)
+{
+  shader* s = new shader();
+  default_shaders df;
+  s->create(df.texture_vertex.c_str(), df.texture_fragment.c_str());
+
+  pushPointer(L, s);
   return 1;
 }
 
@@ -678,10 +682,10 @@ int lua_lang_init::isKeyDown(lua_State* L)
   luaL_checkstring(L, 1);
   const char* key = lua_tostring(L, 1);
   if(k->isKeyDown(key))
-    lua_pushboolean(L, 1);
+   return 1;
   else
-    lua_pushboolean(L, 0);
-  return 1;
+    return 0;
+  return 0;
 }
 
 int lua_lang_init::isKeyUp(lua_State* L)
@@ -689,10 +693,10 @@ int lua_lang_init::isKeyUp(lua_State* L)
   luaL_checkstring(L, 1);
   const char* key = lua_tostring(L, 1);
   if(k->isKeyUp(key))
-    lua_pushboolean(L, 1);
+    return 1;
   else
-    lua_pushboolean(L, 0);
-  return 1;
+    return 0;
+  return 0;
 }
 
 
@@ -767,6 +771,7 @@ int lua_lang_init::initGraphics(lua_State *L)
     {"bindTexture", bindTexture},
     {"unBindTexture", unBindTexture},
     {"newShader", createShader},
+    {"newDefaultShader", createDefaultShader},
     {"bindShader", bindShader},
     {"unBindShader", unBindShader},
     {"sendShaderUniformLocation", sendShaderUniformLocation},
@@ -816,9 +821,9 @@ void lua_lang_init::registerFunctions()
 
   luaL_requiref(m_L, "simple", initSimple, 1);
 
-  lua_register(m_L, "simple_dumbTexture", dumbTexture);
-  lua_register(m_L, "simple_dumbShader", dumbShader);
-  lua_register(m_L, "simple_dumbBatch", dumbBatch);
+  lua_register(m_L, "simple_dumpTexture", dumbTexture);
+  lua_register(m_L, "simple_dumpShader", dumbShader);
+  lua_register(m_L, "simple_dumpBatch", dumbBatch);
 
 }
 

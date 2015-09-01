@@ -36,118 +36,116 @@ keyboard::~keyboard()
 
 }
 
-std::string keyboard::getKey(int key)
+int keyboard::getKey(std::string key)
 {
 
-  switch(key){
-  case 48:
-    return "0";
-  case 49:
-    return "1";
-  case 50:
-    return "2";
-  case 51:
-    return "3";
-  case 52:
-    return "4";
-  case 53:
-    return "5";
-  case 54:
-    return "6";
-  case 55:
-    return "7";
-  case 56:
-    return "8";
-  case 57:
-    return "9";
+  if (key == "0")
+    return GLFW_KEY_0;
+  if(key ==  "1")
+    return GLFW_KEY_1;
+  if(key ==  "2")
+    return GLFW_KEY_2;
+  if(key ==  "3")
+    return GLFW_KEY_3;
+  if(key ==  "4")
+    return GLFW_KEY_4;
+  if(key ==  "5")
+    return GLFW_KEY_5;
+  if(key ==  "6")
+    return GLFW_KEY_6;
+  if(key ==  "7")
+    return GLFW_KEY_7;
+  if(key ==  "8")
+    return GLFW_KEY_8;
+  if(key ==  "9")
+    return GLFW_KEY_9;
 
-  case 13:
-    return "enter";
-  case 27:
-    return "esc";
-  case 32:
-    return "space";
+  if(key ==  "enter")
+    return GLFW_KEY_ENTER;
+  if(key ==  "esc")
+    return GLFW_KEY_ESCAPE;
+  if(key ==  "space")
+    return GLFW_KEY_SPACE;
 
-  case 37:
-    return "left";
-  case 38:
-    return "up";
-  case 40:
-    return "down";
-  case 39:
-    return "right";
+  if(key ==  "left")
+    return GLFW_KEY_LEFT;
+  if(key ==  "up")
+    return GLFW_KEY_UP;
+  if(key ==  "down")
+    return GLFW_KEY_DOWN;
+  if(key ==  "right")
+    return GLFW_KEY_RIGHT;
 
 
-  case 65:
-    return "a";
-  case 66:
-    return "b";
-  case 67:
-    return "c";
-  case 68:
-    return "d";
-  case 69:
-    return "e";
-  case 70:
-    return "f";
-  case 71:
-    return "g";
-  case 72:
-    return "h";
-  case 73:
-    return "i";
-  case 74:
-    return "j";
-  case 75:
-    return "k";
-  case 76:
-    return "l";
-  case 77:
-    return "m";
-  case 78:
-    return "n";
-  case 79:
-    return "o";
-  case 80:
-    return "p";
-  case 81:
-    return "q";
-  case 82:
-    return "r";
-  case 83:
-    return "s";
-  case 84:
-    return "t";
-  case 85:
-    return "u";
-  case 86:
-    return "v";
-  case 87:
-    return "w";
-  case 89:
-    return "x";
-  case 90:
-    return "y";
-  case 91:
-    return "z";
-  default:
-    return "";
-  }
-  return "";
+  if(key ==  "a")
+    return GLFW_KEY_A;
+  if(key ==  "b")
+    return GLFW_KEY_B;
+  if(key ==  "c")
+    return GLFW_KEY_C;
+  if(key ==  "d")
+    return GLFW_KEY_D;
+  if(key ==  "e")
+    return GLFW_KEY_E;
+  if(key ==  "f")
+    return GLFW_KEY_F;
+  if(key ==  "g")
+    return GLFW_KEY_G;
+  if(key ==  "h")
+    return GLFW_KEY_H;
+  if(key ==  "i")
+    return GLFW_KEY_I;
+  if(key ==  "j")
+    return GLFW_KEY_J;
+  if(key ==  "k")
+    return GLFW_KEY_K;
+  if(key ==  "l")
+    return GLFW_KEY_L;
+  if(key ==  "m")
+    return GLFW_KEY_M;
+  if(key ==  "n")
+    return GLFW_KEY_N;
+  if(key ==  "q")
+    return GLFW_KEY_O;
+  if(key ==  "p")
+    return GLFW_KEY_P;
+  if(key ==  "q")
+    return GLFW_KEY_Q;
+  if(key ==  "r")
+    return GLFW_KEY_R;
+  if(key ==  "s")
+    return GLFW_KEY_S;
+  if(key ==  "t")
+    return GLFW_KEY_T;
+  if(key ==  "u")
+    return GLFW_KEY_U;
+  if(key ==  "v")
+    return GLFW_KEY_V;
+  if(key ==  "w")
+    return GLFW_KEY_W;
+  if(key ==  "x")
+    return GLFW_KEY_X;
+  if(key ==  "y")
+    return GLFW_KEY_Y;
+  if(key ==  "z")
+    return GLFW_KEY_Z;
+
+
+  return 0;
 }
 
 bool keyboard::isKeyDown(std::string key)
 {
-  std::string k = getKey(c.getWindow()->getDownKey());
-  if(key == k)
+  if(c.getWindow()->getDownKey(getKey(key))) {
     return true;
+  }
   return false;
 }
 
-bool keyboard::isKeyUp(const char* key)
+bool keyboard::isKeyUp(std::string key)
 {
-  std::string k = getKey(c.getWindow()->getUpKey());
-  if(key == k)
+  if(c.getWindow()->getUpKey(getKey(key))) {
     return true;
+  }
   return false;
 }
