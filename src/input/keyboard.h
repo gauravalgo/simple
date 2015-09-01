@@ -21,6 +21,9 @@
 #include "../utils/core.h"
 #include "../window/glfw_window.h"
 
+#include <string>
+#include <iostream>
+
 namespace simple
 {
   namespace input
@@ -31,8 +34,9 @@ namespace simple
       keyboard();
       ~keyboard();
     public:
-      bool isKeyDown(const char* key);
+      bool isKeyDown(std::string key);
       bool isKeyUp(const char* key);
+      std::string getKey(int key);
     private:
       core c;
     };

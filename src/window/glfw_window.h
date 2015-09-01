@@ -33,21 +33,20 @@ namespace simple
   private:
     void calculateFPS();
     void calculateDeltaTime();
+    static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
   private:
-    //point x
     double m_px;
-    //point y
-    double m_py; 
+    double m_py;
+
     bool m_running;
     int m_width,m_height;
     float m_delta;
     bool m_vsync;
     float m_fps;
-    int m_key;
     const GLFWvidmode* m_mode;
   public:
-    int getKey(){return m_key;}
-    int setKey(int value){m_key = value;}
+    int getKey();
+    void setKey(int value);
 
     float getDeltaTime();
     float getFPS();

@@ -50,6 +50,8 @@ FT_Library ft;
 
 lua_lang_init* lua_init;
 
+keyboard key;
+
 void init()
 {
 
@@ -74,7 +76,7 @@ void init()
 
 void render ()
 {
-  //TODO check if it exists
+
   lua_init->callFunction("simple_draw");
 
   /*
@@ -91,7 +93,13 @@ void render ()
 void update()
 {
   lua_init->callFunction("simple_update");
-  lua_init->simple_core->getWindow()->update();
+
+  if(key.isKeyDown("w"))
+    LOG("yep");
+  if(key.isKeyDown("a"))
+    LOG("a");
+
+  lua_init->getCore()->getWindow()->update();
 }
 
 int main()
@@ -103,11 +111,12 @@ int main()
 
   init();
 
-  while(lua_init->simple_core->getWindow()->getRunning()){
+  while(lua_init->getCore()->getWindow()->getRunning()){
     render();
     update();
 
   }
   lua_init->callFunction("simple_dumb");
+  lua_init->dumb();
   return 0;
 }

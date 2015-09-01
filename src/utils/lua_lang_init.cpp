@@ -54,28 +54,11 @@ void lua_lang_init::create()
     LOG("Error: Could not load lua state!");
 
   default_window = true;
-  simple_core = new core();
-  simple_core->create();
+  core* co = new core();
+  co->create();
 
-  c = simple_core;
-}
-bool ikp = false;
-bool ikr = false;
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-  if (DEBBUG && key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-    glfwSetWindowShouldClose(window, GL_TRUE);
-
-  if(action == GLFW_PRESS){
-    ikp = true;
-    c->getWindow()->setKey(key);
-
-  }
-  if(action == GLFW_RELEASE){
-    ikr = true;
-    c->getWindow()->setKey(key);
-
-  }
+  c = co;
+  setCore(c);
 }
 
 void lua_lang_init::makeDefaultWindow()
@@ -86,7 +69,7 @@ void lua_lang_init::makeDefaultWindow()
     c->getWindow()->setVSync(true); //don't melt the CPU
     c->getGLGraphics()->setViewport(0, 0, 800, 600);
   }
-  glfwSetKeyCallback(c->getWindow()->getWindow(), key_callback);
+  c->getWindow()->initInput();
 }
 
 void lua_lang_init::setMainScript(const char* name)
@@ -94,7 +77,7 @@ void lua_lang_init::setMainScript(const char* name)
   //Look for main.lua and execute it
   int error = luaL_dofile(m_L, name);
   if(error != 0)
-  LOG("Error: Could not load main script " << name << " make sure your " << name << " is in the same folder with simple exe.");
+  LOG("Error: Could not load main script " << name << " make sure your " << name << " is in the same folder with simple executable.");
 
 }
 
@@ -203,7 +186,6 @@ int lua_lang_init::dumbTexture(lua_State *L)
   return 1;
 }
 
-//TODO make this damn thing to work
 int lua_lang_init::dumbShader(lua_State *L)
 {
   luaL_checkinteger(L, 1);
@@ -689,27 +671,13 @@ int lua_lang_init::quit(lua_State* L)
 
 int lua_lang_init::isKeyDown(lua_State* L)
 {
-  int key = c->getWindow()->getKey();
-  luaL_checkinteger(L, 1);
-  int pressedKey = lua_tointeger(L, 1);
-  if(pressedKey == key && ikp){
-    lua_pushboolean(L, 1);
-    ikp = false;
-}else
-    lua_pushboolean(L, 0);
+
   return 1;
 }
 
 int lua_lang_init::isKeyUp(lua_State* L)
 {
-  int key = c->getWindow()->getKey();
-  luaL_checkinteger(L, 1);
-  int pressedKey = lua_tointeger(L, 1);
-  if(pressedKey == key && ikr){
-    lua_pushboolean(L, 1);
-    ikr = false;
-  }else
-    lua_pushboolean(L, 0);
+
   return 1;
 }
 
@@ -805,15 +773,6 @@ int lua_lang_init::initSimple(lua_State* L)
 {
   int i;
 
-  int (*classes[])(lua_State *L) = {
-    NULL,
-  };
-
-  for (i = 0; classes[i]; i++) {
-    classes[i](L);
-    lua_pop(L, 1);
-  }
-
   luaL_Reg reg[] = {
     { "getVersion",	getVersion },
     { "quit", quit },
@@ -852,4 +811,5 @@ void lua_lang_init::registerFunctions()
 void lua_lang_init::dumb()
 {
   lua_close(m_L);
+  SAFE_DELETE(c);
 }

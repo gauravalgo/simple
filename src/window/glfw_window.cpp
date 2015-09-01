@@ -17,8 +17,7 @@ glfw_window::glfw_window():
   m_running(true),
   m_width(0),
   m_vsync(false),
-  m_height(0),
-  m_key(0)
+  m_height(0)
 {
 
 }
@@ -29,15 +28,35 @@ void error_callback(int error, const char* description)
   fputs(description, stderr);
 }
 
-
 static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
   glfwGetCursorPos(window, &xpos, &ypos);
 }
 
+static int m_key;
+
+void glfw_window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+  if (DEBBUG && key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+    glfwSetWindowShouldClose(window, GL_TRUE);
+  if(action == GLFW_PRESS)
+    m_key = key;
+}
+
+void glfw_window::setKey(int value)
+{
+  m_key = value;
+}
+
+int glfw_window::getKey()
+{
+  return m_key;
+}
+
 void glfw_window::initInput()
 {
-
+  glfwSetKeyCallback(window, key_callback);
+  glfwSetCursorPosCallback(window, cursor_position_callback);
 }
 
 void glfw_window::create(const char *title, int width, int height, bool fullscreen)
@@ -58,7 +77,6 @@ void glfw_window::create(const char *title, int width, int height, bool fullscre
   m_running = true;
 
   glfwSetErrorCallback(error_callback);
-  glfwSetCursorPosCallback(window, cursor_position_callback);
 
   if (!window){
     LOG("Error: Could not create window");

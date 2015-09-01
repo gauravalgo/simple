@@ -37,6 +37,7 @@ namespace simple
                   ~lua_lang_init();
             private:
                   lua_State* m_L;
+                  core* m_core;
             public:
                   lua_State* getState(){return m_L;}
                   void setMainScript(const char* name);
@@ -44,8 +45,9 @@ namespace simple
                   void registerFunctions();
                   void dumb();
                   bool callFunction(const char* name);
+                  void setCore(core* c){m_core = c;}
+                  core* getCore(){return m_core;}
                   void makeDefaultWindow();
-                  core* simple_core;
             private:
                   //WINDOW
                   static int makeWindow(lua_State* L);

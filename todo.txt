@@ -1,0 +1,10 @@
+v 0.2.1
+-keyboard
+-mouse
+-lua api like love's
+-clean up
+
+v 0.2.2
+-versatile shaders inside lua
+-sound
+-allow animations inside batch2d
