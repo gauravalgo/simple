@@ -34,6 +34,7 @@ namespace simple
     void calculateFPS();
     void calculateDeltaTime();
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+    static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
   private:
     double m_px;
     double m_py;
@@ -47,6 +48,10 @@ namespace simple
   public:
     int getDownKey(int key);
     int getUpKey(int key);
+
+    int getMousePressed(int v);
+    int getMouseReleased(int v);
+
 
     float getDeltaTime();
     float getFPS();

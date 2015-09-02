@@ -64,6 +64,8 @@ namespace simple
                   static int getPointerX(lua_State* L);
                   static int getPointerY(lua_State* L);
                   static int getPointer(lua_State* L);
+                  static int isPointerPressed(lua_State* L);
+                  static int isPointerReleased(lua_State* L);
                   //GL GRAPHICS
                   static int clearScreen(lua_State* L);
                   static int setViewport(lua_State* L);

@@ -69,6 +69,11 @@ function simple_update()
    if simple.input.isKeyUp("v") then
       print("it works");
    end
+
+   if simple.input.pressed("middle") then
+      print("middle mouse button pressed");
+   end
+
    if simple.input.isKeyDown("w") then
       y = y - 110 * simple.time.delta()
    end

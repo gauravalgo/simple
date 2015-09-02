@@ -13,6 +13,9 @@
 using namespace simple;
 using namespace simple::maths;
 
+#define MAX_KEYS 256
+#define MAX_MOUSE 32
+
 glfw_window::glfw_window():
   m_running(true),
   m_width(0),
@@ -33,21 +36,52 @@ static void cursor_position_callback(GLFWwindow* window, double xpos, double ypo
   glfwGetCursorPos(window, &xpos, &ypos);
 }
 
-static bool m_DownKey[256];
-static bool m_UpKey[256];
+static bool m_DownKey[MAX_KEYS];
+static bool m_UpKey[MAX_KEYS];
+static bool m_mousePressed[MAX_MOUSE];
+static bool m_mouseRelased[MAX_MOUSE];
 
 void glfw_window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-  if (DEBBUG && key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-    glfwSetWindowShouldClose(window, GL_TRUE);
-
   m_DownKey[key] = action != GLFW_RELEASE;
   m_UpKey[key] = action != GLFW_PRESS;
 }
 
+void glfw_window::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+  m_mousePressed[button] = action != GLFW_RELEASE;
+  m_mouseRelased[button] = action != GLFW_PRESS;
+}
+
+void glfw_window::initInput()
+{
+  glfwSetKeyCallback(window, key_callback);
+  glfwSetMouseButtonCallback(window, mouse_button_callback);
+  glfwSetCursorPosCallback(window, cursor_position_callback);
+}
+
+
+int glfw_window::getMousePressed(int v)
+{
+  if(m_mousePressed[v] <= MAX_MOUSE)
+    return m_mousePressed[v];
+  else
+    LOG("You're trying to get an unknow button");
+  return -1;
+}
+
+int glfw_window::getMouseReleased(int v)
+{
+  if(m_mouseRelased[v] <= MAX_MOUSE)
+    return m_mouseRelased[v];
+  else
+    LOG("You're trying to get an unknow button");
+  return -1;
+}
+
 int glfw_window::getDownKey(int key)
 {
-  if(m_DownKey[key] <= 256)
+  if(m_DownKey[key] <= MAX_KEYS)
     return m_DownKey[key];
   else
     LOG("You're trying to get an unknow key");
@@ -56,17 +90,11 @@ int glfw_window::getDownKey(int key)
 
 int glfw_window::getUpKey(int key)
 {
-  if(m_UpKey[key] <= 256)
+  if(m_UpKey[key] <= MAX_KEYS)
     return m_UpKey[key];
   else
     LOG("You're trying to get an unknow key");
   return 0;
-}
-
-void glfw_window::initInput()
-{
-  glfwSetKeyCallback(window, key_callback);
-  glfwSetCursorPosCallback(window, cursor_position_callback);
 }
 
 void glfw_window::create(const char *title, int width, int height, bool fullscreen)

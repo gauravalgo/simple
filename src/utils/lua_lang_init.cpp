@@ -24,6 +24,7 @@
 #include "../graphics/default_shaders.h"
 #include "../maths/mat4.h"
 #include "../input/keyboard.h"
+#include "../input/pointer.h"
 #include "core.h"
 
 using namespace simple;
@@ -46,6 +47,7 @@ static bool default_window;
 
 static core* c;
 static keyboard* k;
+static pointer* point;
 
 void lua_lang_init::create()
 {
@@ -63,6 +65,7 @@ void lua_lang_init::create()
   setCore(c);
 
   k = new keyboard();
+  point = new pointer();
 }
 
 void lua_lang_init::makeDefaultWindow()
@@ -650,6 +653,30 @@ int lua_lang_init::getPointer(lua_State *L)
   return 2;
 }
 
+
+int lua_lang_init::isPointerPressed(lua_State *L)
+{
+  luaL_checkstring(L, 1);
+  const char* button = lua_tostring(L, 1);
+  if(point->isPressed(button))
+    return 1;
+  else
+    return 0;
+  return 0;
+}
+
+int lua_lang_init::isPointerReleased(lua_State *L)
+{
+  luaL_checkstring(L, 1);
+  const char* button = lua_tostring(L, 1);
+  if(point->isReleased(button))
+    return 1;
+  else
+    return 0;
+  return 0;
+}
+
+
 /*** END OF MOUSE *****/
 
 
@@ -704,7 +731,7 @@ int lua_lang_init::isKeyUp(lua_State* L)
 
 static int getVersion(lua_State *L)
 {
-  LOG("Simple - cracking bottles- version 0.2.0");
+  LOG("Simple - cracking bottles- version 0.2.1");
   return 1;
 }
 
@@ -747,6 +774,8 @@ int lua_lang_init::initInput(lua_State *L)
     {"getPointer", getPointer},
     {"isKeyDown", isKeyDown},
     {"isKeyUp", isKeyUp},
+    {"pressed", isPointerPressed},
+    {"released", isPointerReleased},
     {0, 0},
   };
   luaL_newlib(L, reg);
@@ -831,5 +860,6 @@ void lua_lang_init::dumb()
 {
   lua_close(m_L);
   SAFE_DELETE(k);
+  SAFE_DELETE(point);
   SAFE_DELETE(c);
 }
