@@ -21,6 +21,7 @@
 #include <string>
 #include <cassert>
 #include "../utils/definitions.h"
+
 #include <GL/glew.h>
 
 using namespace std;
@@ -89,7 +90,7 @@ namespace simple
       assert(mID != 0);
       glEnable(GL_BLEND);
 
-      glEnable(GL_TEXTURE_2D);
+// glEnable(GL_TEXTURE_2D);
       glActiveTexture(GL_TEXTURE0 + mLayer);
       glBindTexture(GL_TEXTURE_2D, mID);
     }
@@ -100,7 +101,7 @@ namespace simple
       glActiveTexture(GL_TEXTURE0 + mLayer);
       glBindTexture(GL_TEXTURE_2D, 0);
       glDisable(GL_BLEND);
-      glDisable(GL_TEXTURE_2D);
+//    glDisable(GL_TEXTURE_2D);
     }
 
     // Get the OpenGL texture ID

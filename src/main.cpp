@@ -26,17 +26,16 @@ lua_lang_init* lua_init;
 
 void update_simple()
 {
-  //lua_init->callFunction("simple_update");
+  lua_init->callFunction("simple_update");
 }
 
 void render_simple()
 {
-   lua_init->callFunction("simple_draw");
+  lua_init->callFunction("simple_draw");
 }
 
 int main()
 {
-
 
   //Init Simple!
   lua_init = new lua_lang_init();
@@ -71,9 +70,10 @@ void update_em()
     return;
 
   render_simple();
-  update_simple();
   lua_init->getCore()->getWindow()->calculateDeltaTime();
-  //limit fps to 60
+  update_simple();
+
+//limit fps to 60
   if(lua_init->getCore()->getWindow()->getVSync())
     glfwSwapInterval(1);
   glfwGetCursorPos(lua_init->getCore()->getWindow()->getWindow(), &lua_init->getCore()->getWindow()->m_px, &lua_init->getCore()->getWindow()->m_py);

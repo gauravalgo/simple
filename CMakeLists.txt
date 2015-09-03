@@ -25,7 +25,6 @@ src/sound/*.h
 
 src/*.h
 src/*.cpp
-
 )
 
 ## Set version and info
@@ -46,10 +45,6 @@ include_directories(deps/glew/include)
 include_directories(deps/glfw/include)
 include_directories(deps/stb_image)
 
-INCLUDE(FindPkgConfig)
-PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
-INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS})
-
 add_executable(
   simple
   ${SOURCE_FILES}
@@ -65,7 +60,7 @@ include_directories(deps/freetype/include)
 
 #lua
 add_subdirectory(deps/lua)
-set(LUA_INCLUDE_DIR deps/lua/src ${CMAKE_BINARY_DIR}/deps/lua/)
+set(LUA_INCLUDE_DIR deps/lua/ ${CMAKE_BINARY_DIR}/deps/lua/)
 SET(LUA_LIBRARIES lua)
 
 if(APPLE)
@@ -75,7 +70,7 @@ endif()
 
 if(UNIX)
   target_link_libraries(simple dl glfw
-    ${GLFW_LIBRARIES} ${SDL2_LIBRARIES} ${FREETYPE_LIBRARIES} ${LUA_LIBRARIES})
+    ${GLFW_LIBRARIES} ${FREETYPE_LIBRARIES} ${LUA_LIBRARIES})
 endif()
 
 if(MINGW)
