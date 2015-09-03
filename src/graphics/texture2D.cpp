@@ -21,7 +21,7 @@
 #include <string>
 #include <stdlib.h>
 
-#include <stb_image.h>
+#include "../../deps/stb_image/stb_image.h"
 
 #include "../utils/definitions.h"
 

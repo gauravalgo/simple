@@ -30,15 +30,12 @@ namespace simple
     bool isFocused();
     void destroy();
     void initInput();
+    void calculateDeltaTime();
   private:
     void calculateFPS();
-    void calculateDeltaTime();
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
     static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
   private:
-    double m_px;
-    double m_py;
-
     bool m_running;
     int m_width,m_height;
     float m_delta;
@@ -46,6 +43,9 @@ namespace simple
     float m_fps;
     const GLFWvidmode* m_mode;
   public:
+    double m_px;
+    double m_py;
+
     int getDownKey(int key);
     int getUpKey(int key);
 

@@ -1,6 +1,7 @@
 /*************************************************************************
- * GLFW 3.0 - www.glfw.org
- * A library for OpenGL, window and input
+ * GLFW - An OpenGL library
+ * API version: 3.0
+ * WWW:         http://www.glfw.org/
  *------------------------------------------------------------------------
  * Copyright (c) 2002-2006 Marcus Geelnard
  * Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -44,22 +45,21 @@ extern "C" {
  */
 /*! @defgroup error Error handling
  */
+/*! @defgroup gamma Gamma ramp support
+ */
 /*! @defgroup init Initialization and version information
  */
 /*! @defgroup input Input handling
  */
 /*! @defgroup monitor Monitor handling
- *
- *  This is the reference documentation for monitor related functions and types.
- *  For more information, see the @ref monitor.
  */
 /*! @defgroup time Time input
  */
 /*! @defgroup window Window handling
  *
- *  This is the reference documentation for window related functions and types,
- *  including creation, deletion and event polling.  For more information, see
- *  the @ref window.
+ *  This is the reference documentation for the window handling API, including
+ *  creation, deletion and event polling.  For more information, see the
+ *  [article on window handling](@ref window).
  */
 
 
@@ -131,46 +131,15 @@ extern "C" {
  #define GLFW_CALLBACK_DEFINED
 #endif /* CALLBACK */
 
-/* Most GL/glu.h variants on Windows need wchar_t
- * OpenGL/gl.h blocks the definition of ptrdiff_t by glext.h on OS X */
-#if !defined(GLFW_INCLUDE_NONE)
+/* Most <GL/glu.h> variants on Windows need wchar_t */
+#if defined(_WIN32)
  #include <stddef.h>
 #endif
 
-/* Include the chosen client API headers.
- */
-#if defined(__APPLE_CC__)
-  #if defined(GLFW_INCLUDE_GLCOREARB)
-    #include <OpenGL/gl3.h>
-  #elif !defined(GLFW_INCLUDE_NONE)
-    #define GL_GLEXT_LEGACY
-    #include <OpenGL/gl.h>
-  #endif
-  #if defined(GLFW_INCLUDE_GLU)
-    #include <OpenGL/glu.h>
-  #endif
-#else
-  #if defined(GLFW_INCLUDE_GLCOREARB)
-    #include <GL/glcorearb.h>
-  #elif defined(GLFW_INCLUDE_ES1)
-    #include <GLES/gl.h>
-  #elif defined(GLFW_INCLUDE_ES2)
-    #include <GLES2/gl2.h>
-  #elif defined(GLFW_INCLUDE_ES3)
-    #include <GLES3/gl3.h>
-  #elif !defined(GLFW_INCLUDE_NONE)
-    #include <GL/gl.h>
-  #endif
-  #if defined(GLFW_INCLUDE_GLU)
-    #include <GL/glu.h>
-  #endif
-#endif
+
+/* ---------------- GLFW related system specific defines ----------------- */
 
 #if defined(GLFW_DLL) && defined(_GLFW_BUILD_DLL)
- /* GLFW_DLL is defined by users of GLFW when compiling programs that will link
-  * to the DLL version of the GLFW library.  _GLFW_BUILD_DLL is defined by the
-  * GLFW configuration header when compiling the DLL version of the library.
-  */
  #error "You must not have both GLFW_DLL and _GLFW_BUILD_DLL defined"
 #endif
 
@@ -201,6 +170,35 @@ extern "C" {
 
 /* -------------------- END SYSTEM/COMPILER SPECIFIC --------------------- */
 
+/* Include the chosen client API headers.
+ */
+#if defined(__APPLE_CC__)
+  #if defined(GLFW_INCLUDE_GLCOREARB)
+    #include <OpenGL/gl3.h>
+  #elif !defined(GLFW_INCLUDE_NONE)
+    #define GL_GLEXT_LEGACY
+    #include <OpenGL/gl.h>
+  #endif
+  #if defined(GLFW_INCLUDE_GLU)
+    #include <OpenGL/glu.h>
+  #endif
+#else
+  #if defined(GLFW_INCLUDE_GLCOREARB)
+    #include <GL/glcorearb.h>
+  #elif defined(GLFW_INCLUDE_ES1)
+    #include <GLES/gl.h>
+  #elif defined(GLFW_INCLUDE_ES2)
+    #include <GLES2/gl2.h>
+  #elif defined(GLFW_INCLUDE_ES3)
+    #include <GLES3/gl3.h>
+  #elif !defined(GLFW_INCLUDE_NONE)
+    #include <GL/gl.h>
+  #endif
+  #if defined(GLFW_INCLUDE_GLU)
+    #include <GL/glu.h>
+  #endif
+#endif
+
 
 /*************************************************************************
  * GLFW API tokens
@@ -227,7 +225,7 @@ extern "C" {
  *  API changes.
  *  @ingroup init
  */
-#define GLFW_VERSION_REVISION       3
+#define GLFW_VERSION_REVISION       0
 /*! @} */
 
 /*! @name Key and button actions
@@ -792,7 +790,7 @@ typedef void (* GLFWmonitorfun)(GLFWmonitor*,int);
  *
  *  @ingroup monitor
  */
-typedef struct GLFWvidmode
+typedef struct
 {
     /*! The width, in screen coordinates, of the video mode.
      */
@@ -820,9 +818,9 @@ typedef struct GLFWvidmode
  *
  *  @sa glfwGetGammaRamp glfwSetGammaRamp
  *
- *  @ingroup monitor
+ *  @ingroup gamma
  */
-typedef struct GLFWgammaramp
+typedef struct
 {
     /*! An array of value describing the response of the red channel.
      */
@@ -1121,12 +1119,12 @@ GLFWAPI const GLFWvidmode* glfwGetVideoMode(GLFWmonitor* monitor);
 /*! @brief Generates a gamma ramp and sets it for the specified monitor.
  *
  *  This function generates a 256-element gamma ramp from the specified exponent
- *  and then calls @ref glfwSetGammaRamp with it.
+ *  and then calls @ref glfwSetGamma with it.
  *
  *  @param[in] monitor The monitor whose gamma ramp to set.
  *  @param[in] gamma The desired exponent.
  *
- *  @ingroup monitor
+ *  @ingroup gamma
  */
 GLFWAPI void glfwSetGamma(GLFWmonitor* monitor, float gamma);
 
@@ -1140,7 +1138,7 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* monitor, float gamma);
  *  @note The value arrays of the returned ramp are allocated and freed by GLFW.
  *  You should not free them yourself.
  *
- *  @ingroup monitor
+ *  @ingroup gamma
  */
 GLFWAPI const GLFWgammaramp* glfwGetGammaRamp(GLFWmonitor* monitor);
 
@@ -1153,7 +1151,7 @@ GLFWAPI const GLFWgammaramp* glfwGetGammaRamp(GLFWmonitor* monitor);
  *
  *  @note Gamma ramp sizes other than 256 are not supported by all hardware.
  *
- *  @ingroup monitor
+ *  @ingroup gamma
  */
 GLFWAPI void glfwSetGammaRamp(GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 
@@ -1209,16 +1207,10 @@ GLFWAPI void glfwWindowHint(int target, int hint);
  *  attributes of the created window and context, use queries like @ref
  *  glfwGetWindowAttrib and @ref glfwGetWindowSize.
  *
- *  To create a full screen window, you need to specify the monitor to use.  If
- *  no monitor is specified, windowed mode will be used.  Unless you have a way
- *  for the user to choose a specific monitor, it is recommended that you pick
- *  the primary monitor.  For more information on how to retrieve monitors, see
- *  @ref monitor_monitors.
- *
  *  To create the window at a specific position, make it initially invisible
  *  using the `GLFW_VISIBLE` window hint, set its position and then show it.
  *
- *  If a full screen window is active, the screensaver is prohibited from
+ *  If a fullscreen window is active, the screensaver is prohibited from
  *  starting.
  *
  *  @param[in] width The desired width, in screen coordinates, of the window.
@@ -1280,8 +1272,6 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow* window);
  *  @param[in] window The window to query.
  *  @return The value of the close flag.
  *
- *  @remarks This function may be called from secondary threads.
- *
  *  @ingroup window
  */
 GLFWAPI int glfwWindowShouldClose(GLFWwindow* window);
@@ -1294,8 +1284,6 @@ GLFWAPI int glfwWindowShouldClose(GLFWwindow* window);
  *
  *  @param[in] window The window whose flag to change.
  *  @param[in] value The new value.
- *
- *  @remarks This function may be called from secondary threads.
  *
  *  @ingroup window
  */
@@ -1700,7 +1688,7 @@ GLFWAPI void glfwPollEvents(void);
 /*! @brief Waits until events are pending and processes them.
  *
  *  This function puts the calling thread to sleep until at least one event has
- *  been received.  Once one or more events have been received, it behaves as if
+ *  been received.  Once one or more events have been recevied, it behaves as if
  *  @ref glfwPollEvents was called, i.e. the events are processed and the
  *  function then returns immediately.  Processing events will cause the window
  *  and input callbacks associated with those events to be called.
@@ -1853,9 +1841,9 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
  *
  *  @param[in] window The desired window.
  *  @param[in] xpos The desired x-coordinate, relative to the left edge of the
- *  client area.
+ *  client area, or `NULL`.
  *  @param[in] ypos The desired y-coordinate, relative to the top edge of the
- *  client area.
+ *  client area, or `NULL`.
  *
  *  @sa glfwGetCursorPos
  *
@@ -2018,14 +2006,14 @@ GLFWAPI int glfwJoystickPresent(int joy);
  */
 GLFWAPI const float* glfwGetJoystickAxes(int joy, int* count);
 
-/*! @brief Returns the state of all buttons of the specified joystick.
+/*! @brief Returns the values of all buttons of the specified joystick.
  *
- *  This function returns the state of all buttons of the specified joystick.
+ *  This function returns the values of all buttons of the specified joystick.
  *
  *  @param[in] joy The joystick to query.
  *  @param[out] count Where to store the size of the returned array.  This is
  *  set to zero if an error occurred.
- *  @return An array of button states, or `NULL` if the joystick is not present.
+ *  @return An array of axis values, or `NULL` if the joystick is not present.
  *
  *  @note The returned array is allocated and freed by GLFW.  You should not
  *  free it yourself.

@@ -1,5 +1,8 @@
 //========================================================================
-// GLFW 3.0 EGL - www.glfw.org
+// GLFW - An OpenGL library
+// Platform:    EGL
+// API version: 3.0
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -124,10 +127,10 @@ static GLboolean chooseFBConfigs(const _GLFWwndconfig* wndconfig,
         return GL_FALSE;
     }
 
-    nativeConfigs = calloc(nativeCount, sizeof(EGLConfig));
+    nativeConfigs = (EGLConfig*) calloc(nativeCount, sizeof(EGLConfig));
     eglGetConfigs(_glfw.egl.display, nativeConfigs, nativeCount, &nativeCount);
 
-    usableConfigs = calloc(nativeCount, sizeof(_GLFWfbconfig));
+    usableConfigs = (_GLFWfbconfig*) calloc(nativeCount, sizeof(_GLFWfbconfig));
     usableCount = 0;
 
     for (i = 0;  i < nativeCount;  i++)
@@ -207,7 +210,7 @@ static GLboolean chooseFBConfigs(const _GLFWwndconfig* wndconfig,
 //
 int _glfwInitContextAPI(void)
 {
-    _glfw.egl.display = eglGetDisplay((EGLNativeDisplayType)_GLFW_EGL_NATIVE_DISPLAY);
+    _glfw.egl.display = eglGetDisplay(_GLFW_EGL_NATIVE_DISPLAY);
     if (_glfw.egl.display == EGL_NO_DISPLAY)
     {
         _glfwInputError(GLFW_API_UNAVAILABLE,
@@ -243,7 +246,7 @@ void _glfwTerminateContextAPI(void)
 { \
     attribs[index++] = attribName; \
     attribs[index++] = attribValue; \
-    assert((size_t) index < sizeof(attribs) / sizeof(attribs[0])); \
+    assert(index < sizeof(attribs) / sizeof(attribs[0])); \
 }
 
 // Prepare for creation of the OpenGL context
@@ -461,7 +464,7 @@ void _glfwPlatformMakeContextCurrent(_GLFWwindow* window)
         {
             window->egl.surface = eglCreateWindowSurface(_glfw.egl.display,
                                                          window->egl.config,
-                                                         (EGLNativeWindowType)_GLFW_EGL_NATIVE_WINDOW,
+                                                         _GLFW_EGL_NATIVE_WINDOW,
                                                          NULL);
             if (window->egl.surface == EGL_NO_SURFACE)
             {

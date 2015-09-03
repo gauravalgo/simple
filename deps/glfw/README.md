@@ -1,4 +1,4 @@
-# GLFW
+# GLFW 3.0
 
 ## Introduction
 
@@ -6,136 +6,43 @@ GLFW is a free, Open Source, portable library for OpenGL and OpenGL ES
 application development.  It provides a simple, platform-independent API for
 creating windows and contexts, reading input, handling events, etc.
 
-Version 3.0.3 adds fixes for a number of bugs that together affect all supported
-platforms, most notably MinGW compilation issues and cursor mode issues on OS X.
-As this is a patch release, there are no API changes.
+Version 3.0 brings a new API with many new features such as multiple windows
+and contexts, multi-monitor support, EGL and OpenGL ES support, clipboard text
+support, an error description callback, gamma ramp control, layout-independent
+keyboard input and UTF-8 for all strings.
+
+GLFW is now hosted on [GitHub](https://github.com/glfw/glfw).
 
 If you are new to GLFW, you may find the
-[introductory tutorial](http://www.glfw.org/docs/latest/quick.html) for GLFW
-3 useful.  If you have used GLFW 2 in the past, there is a
-[transition guide](http://www.glfw.org/docs/latest/moving.html) for moving to
-the GLFW 3 API.
+[introductory tutorial](http://www.glfw.org/docs/3.0/quick.html) for GLFW
+3 useful.  If
+you have used GLFW 2 in the past, there is a
+[transition guide](http://www.glfw.org/docs/3.0/moving.html) for moving to the
+GLFW 3 API.
 
 
 ## Compiling GLFW
 
+To compile GLFW and the accompanying example programs, you will need the
+[CMake](http://www.cmake.org/) build system.
+
+
 ### Dependencies
 
-To compile GLFW and the accompanying example programs, you will need **CMake**,
-which will generate the project files or makefiles for your particular
-development environment.  If you are on a Unix-like system such as Linux or
-FreeBSD or have a package system like Fink, MacPorts, Cygwin or Homebrew, you
-can simply install its CMake package.  If not, you can get installers for
-Windows and OS X from the [CMake website](http://www.cmake.org/).
+#### X11 dependencies
 
-Additional dependencies are listed below.
-
-
-#### Visual C++ on Windows
-
-The Microsoft Platform SDK that is installed along with Visual C++ contains all
-the necessary headers, link libraries and tools except for CMake.
-
-
-#### MinGW or MinGW-w64 on Windows
-
-These packages contain all the necessary headers, link libraries and tools
-except for CMake.
-
-
-#### MinGW or MinGW-w64 cross-compilation
-
-Both Cygwin and many Linux distributions have MinGW or MinGW-w64 packages.  For
-example, Cygwin has the `mingw64-i686-gcc` and `mingw64-x86_64-gcc` packages
-for 32- and 64-bit version of MinGW-w64, while Debian GNU/Linux and derivatives
-like Ubuntu have the `mingw-w64` package for both.
-
-GLFW has CMake toolchain files in the `CMake/` directory that allow for easy
-cross-compilation of Windows binaries.  To use these files you need to add a
-special parameter when generating the project files or makefiles:
-
-    cmake -DCMAKE_TOOLCHAIN_FILE=<toolchain-file> .
-
-The exact toolchain file to use depends on the prefix used by the MinGW or
-MinGW-w64 binaries on your system.  You can usually see this in the /usr
-directory.  For example, both the Debian/Ubuntu and Cygwin MinGW-w64 packages
-have `/usr/x86_64-w64-mingw32` for the 64-bit compilers, so the correct
-invocation would be:
-
-    cmake -DCMAKE_TOOLCHAIN_FILE=CMake/x86_64-w64-mingw32.cmake .
-
-For more details see the article
-[CMake Cross Compiling](http://www.paraview.org/Wiki/CMake_Cross_Compiling) on
-the CMake wiki.
-
-
-#### Xcode on OS X
-
-Xcode contains all necessary tools except for CMake.  The necessary headers and
-libraries are included in the core OS frameworks.  Xcode can be downloaded from
-the Mac App Store.
-
-
-#### Unix-like systems with X11
-
-To compile GLFW for X11, you need to have the X11 and OpenGL header packages
-installed, as well as the basic development tools like GCC and make.  For
-example, on Ubuntu and other distributions based on Debian GNU/Linux, you need
-to install the `xorg-dev` and `libglu1-mesa-dev` packages.  The former pulls in
-all X.org header packages and the latter pulls in the Mesa OpenGL and GLU
-packages.  Note that using header files and libraries from Mesa during
-compilation *will not* tie your binaries to the Mesa implementation of OpenGL.
-
-
-### Generating with CMake
-
-Once you have all necessary dependencies, it is time to generate the project
-files or makefiles for your development environment.  CMake needs to know two
-paths for this: the path to the source directory and the target path for the
-generated files and compiled binaries.  If these are the same, it is called an
-in-tree build, otherwise it is called an out-of-tree build.
-
-One of several advantages of out-of-tree builds is that you can generate files
-and compile for different development environments using a single source tree.
-
-
-#### Using CMake from the command-line
-
-To make an in-tree build, enter the root directory of the GLFW source tree and
-run CMake.  The current directory is used as target path, while the path
-provided as an argument is used to find the source tree.
-
-    cd <glfw-root-dir>
-    cmake .
-
-To make an out-of-tree build, make another directory, enter it and run CMake
-with the (relative or absolute) path to the root of the source tree as an
-argument.
-
-    cd <glfw-root-dir>
-    mkdir build
-    cd build
-    cmake ..
-
-
-#### Using the CMake GUI
-
-If you are using the GUI version, choose the root of the GLFW source tree as
-source location and the same directory or another, empty directory as the
-destination for binaries.  Choose *Configure*, change any options you wish to,
-*Configure* again to let the changes take effect and then *Generate*.
+To compile GLFW for X11 and GLX, you need to have the X and OpenGL header
+packages installed.  For example, on Ubuntu and other distributions based on
+Debian GNU/Linux, you need to install the `xorg-dev` and `libglu1-mesa-dev`
+packages.  Note that using header files from Mesa *will not* tie your binary to
+the Mesa implementation of OpenGL.
 
 
 ### CMake options
 
-The CMake files for GLFW provide a number of options, although not all are
+There are a number of CMake build options for GLFW, although not all are
 available on all supported platforms.  Some of these are de facto standards
 among CMake users and so have no `GLFW_` prefix.
-
-If you are using the GUI version of CMake, these are listed and can be changed
-from there.  If you are using the command-line version, use the `ccmake` tool.
-Some package systems like Ubuntu and other distributions based on Debian
-GNU/Linux have this tool in a separate `cmake-curses-gui` package.
 
 
 #### Shared options
@@ -154,7 +61,7 @@ along with the library.
 built along with the library.
 
 
-#### OS X specific options
+#### Mac OS X specific options
 
 `GLFW_USE_CHDIR` determines whether `glfwInit` changes the current
 directory of bundled applications to the `Contents/Resources` directory.
@@ -167,16 +74,8 @@ directory of bundled applications to the `Contents/Resources` directory.
 
 #### Windows specific options
 
-`USE_MSVC_RUNTIME_LIBRARY_DLL` determines whether to use the DLL version or the
-static library version of the Visual C++ runtime library.
-
-`GLFW_USE_DWM_SWAP_INTERVAL` determines whether the swap interval is set even
-when DWM compositing is enabled.  This can lead to severe jitter and is not
-usually recommended.
-
-`GLFW_USE_OPTIMUS_HPG` determines whether to export the `NvOptimusEnablement`
-symbol, which forces the use of the high-performance GPU on nVidia Optimus
-systems.
+`USE_MSVC_RUNTIME_LIBRARY_DLL` determines whether to use the DLL version of the
+Visual C++ runtime library.
 
 
 #### EGL specific options
@@ -200,18 +99,186 @@ CMake.
 
 ## Using GLFW
 
-See the [GLFW documentation](http://www.glfw.org/docs/latest/).
+See the [GLFW 3.0 documentation](http://www.glfw.org/docs/3.0/).
 
 
-## Changelog
+## Changes for version 3.0
 
- - [Win32] Bugfix: `_WIN32_WINNT` was not set to Windows XP or later
- - [Win32] Bugfix: Legacy MinGW needs `WINVER` and `UNICODE` before `stddef.h`
- - [Cocoa] Bugfix: Cursor was not visible in normal mode in full screen
- - [Cocoa] Bugfix: Cursor was not actually hidden in hidden mode
- - [Cocoa] Bugfix: Cursor modes were not applied to inactive windows
- - [X11] Bugfix: Events for mouse buttons 4 and above were not reported
- - [X11] Bugfix: CMake 2.8.7 does not set `X11_Xinput_LIB` even when found
+ - Added `GLFWmonitor` and updated monitor-related functions to take a monitor
+   handle
+ - Added `glfwGetMonitors` and `glfwGetPrimaryMonitor` for enumerating available
+   monitors
+ - Added `glfwGetMonitorPos`, `glfwGetMonitorPhysicalSize` and
+   `glfwGetMonitorName` for retrieving monitor properties
+ - Added `glfwSetMonitorCallback` and `GLFWmonitorfun` for notification of
+   changes in the set of available monitors
+ - Added `GLFWwindow` and updated window-related functions and callbacks to take
+   a window handle
+ - Added `glfwSetWindowShouldClose` and `glfwWindowShouldClose` for setting and
+   retrieving the window close flag
+ - Added `glfwGetWindowPos` for retrieving the position of a window
+ - Added `glfwDefaultWindowHints` for resetting all window hints to their
+   default values
+ - Added `glfwMakeContextCurrent` for making the context of the specified window
+   current
+ - Added `glfwSetErrorCallback`, `GLFWerrorfun` and error type tokens for
+   receiving error notifications
+ - Added `glfwSetWindowUserPointer` and `glfwGetWindowUserPointer` for
+   per-window user pointers
+ - Added `glfwGetVersionString` for determining which code paths were enabled at
+   compile time
+ - Added `glfwGetWindowMonitor` for querying the monitor, if any, of the
+   specified window
+ - Added `glfwGetFramebufferSize` and `glfwSetFramebufferSizeCallback` for
+   receiving the current size, in pixels, of the framebuffer
+ - Added `glfwSetWindowPosCallback` and `GLFWwindowposfun` for receiving window
+   position events
+ - Added `glfwSetWindowFocusCallback` and `GLFWwindowfocusfun` for receiving
+   window focus events
+ - Added `glfwSetWindowIconifyCallback` and `GLFWwindowiconifyfun` for receiving
+   window iconification events
+ - Added `glfwGetClipboardString` and `glfwSetClipboardString` for interacting
+   with the system clipboard
+ - Added `glfwGetJoystickName` for retrieving the name of a joystick
+ - Added `glfwGetCurrentContext` for retrieving the window whose OpenGL context
+   is current
+ - Added `GLFW_SRGB_CAPABLE` for requesting sRGB capable framebuffers
+ - Added `GLFW_CLIENT_API` and its values `GLFW_OPENGL_API` and
+   `GLFW_OPENGL_ES_API` for selecting client API
+ - Added `GLFW_CONTEXT_ROBUSTNESS` and values `GLFW_NO_ROBUSTNESS`,
+   `GLFW_NO_RESET_NOTIFICATION` and `GLFW_LOSE_CONTEXT_ON_RESET` for
+   `GL_ARB_robustness` support
+ - Added `GLFW_OPENGL_REVISION` to make up for removal of `glfwGetGLVersion`
+ - Added `GLFW_INCLUDE_GLCOREARB` macro for including `GL/glcorearb.h` instead of
+   `GL/gl.h`
+ - Added `GLFW_INCLUDE_ES1` macro for telling the GLFW header to use `GLES/gl.h`
+   instead of `GL/gl.h`
+ - Added `GLFW_INCLUDE_ES2` macro for telling the GLFW header to use
+   `GLES2/gl2.h` instead of `GL/gl.h`
+ - Added `GLFW_INCLUDE_NONE` macro for telling the GLFW header to not include
+   any client API header
+ - Added `GLFW_VISIBLE` window hint and parameter for controlling and polling
+   window visibility
+ - Added `GLFW_REPEAT` key action for repeated keys
+ - Added scancode parameter to key callback
+ - Added `refreshRate` member to `GLFWvidmode` struct
+ - Added key modifier parameter to key and mouse button callbacks
+ - Added `windows` simple multi-window test program
+ - Added `sharing` simple OpenGL object sharing test program
+ - Added `modes` video mode enumeration and setting test program
+ - Added `threads` simple multi-threaded rendering test program
+ - Added `glfw3native.h` header and platform-specific functions for explicit
+   access to native display, window and context handles
+ - Added `glfwSetGamma`, `glfwSetGammaRamp` and `glfwGetGammaRamp` functions and
+   `GLFWgammaramp` type for monitor gamma ramp control
+ - Added window parameter to `glfwSwapBuffers`
+ - Changed buffer bit depth parameters of `glfwOpenWindow` to window hints
+ - Changed `glfwCreateWindow` and `glfwSetWindowTitle` to use UTF-8 encoded
+   strings
+ - Changed `glfwGetProcAddress` to return a (generic) function pointer
+ - Changed `glfwGetVideoModes` to return a dynamic, unlimited number of video
+   modes for the specified monitor
+ - Changed cursor position to double-precision floating-point
+ - Changed default cursor mode for fullscreen to normal
+ - Renamed header directory `GL` to `GLFW`
+ - Renamed `glfw.h` to `glfw3.h` to avoid conflicts with 2.x series
+ - Renamed `glfwOpenWindowHint` to `glfwWindowHint`
+ - Renamed `glfwGetWindowParam` to `glfwGetWindowAttrib`
+ - Renamed `GLFW_ACTIVE` to `GLFW_FOCUSED`
+ - Renamed `GLFW_FSAA_SAMPLES` to `GLFW_SAMPLES`
+ - Renamed `GLFW_WINDOW_NO_RESIZE` to `GLFW_RESIZABLE`
+ - Renamed `GLFW_BUILD_DLL` to `_GLFW_BUILD_DLL`
+ - Renamed `version` test to `glfwinfo`
+ - Renamed `GLFW_NO_GLU` to `GLFW_INCLUDE_GLU` and made it disabled by default
+ - Renamed `glfwGetJoystickPos` to `glfwGetJoystickAxes` to match
+   `glfwGetJoystickButtons`
+ - Renamed mouse position functions to cursor position equivalents
+ - Replaced `glfwOpenWindow` and `glfwCloseWindow` with `glfwCreateWindow` and
+   `glfwDestroyWindow`
+ - Replaced `glfwGetDesktopMode` width `glfwGetVideoMode`
+ - Replaced ad hoc build system with CMake
+ - Replaced layout-dependent key codes with single, platform-independent set
+   based on US layout
+ - Replaced mouse wheel interface with two-dimensional, floating point scrolling
+   interface
+ - Replaced `glfwEnable` and `glfwDisable` with `glfwGetInputMode` and
+   `glfwSetInputMode`
+ - Replaced `joystick` test with graphical version
+ - Replaced automatic closing of windows with the window close flag
+ - Removed the `GLFW_KEY_REPEAT` input option
+ - Removed event auto-polling and the `GLFW_AUTO_POLL_EVENTS` window enable
+ - Removed the Win32 port .def files
+ - Removed the entire threading API
+ - Removed the entire image loading API
+ - Removed deprecated Carbon port
+ - Removed registering `glfwTerminate` with `atexit`
+ - Removed `glfwSleep` function
+ - Removed `glfwGetNumberOfProcessors` function
+ - Removed `glfwGetGLVersion` function
+ - Removed `GLFW_OPENED` window parameter
+ - Removed `GLFW_WINDOW` and `GLFW_FULLSCREEN`
+ - Removed nonsensical key actions for Unicode character input
+ - Removed `GLFWCALL` and `GLFWAPIENTRY` macros for stdcall calling convention
+ - Removed `GLFW_ACCELERATED` window parameter
+ - Removed default framebuffer attributes from `glfwGetWindowParam`
+ - Bugfix: The default OpenGL version in the `glfwinfo` test was set to 1.1
+ - Bugfix: The OpenGL profile and forward-compatibility window parameters were
+           not saved after context creation
+ - Bugfix: The FSAA test did not check for the availability of
+           `GL_ARB_multisample`
+ - Bugfix: Cursor centering upon leaving captured cursor mode was reported
+           before the mode was changed to non-captured
+ - [Cocoa] Added support for OpenGL 3.2 core profile in 10.7 Lion and above
+ - [Cocoa] Added support for high-DPI (Retina) monitors
+ - [Cocoa] Added support for joysticks
+ - [Cocoa] Postponed menu creation to first window creation
+ - [Cocoa] Replaced `NSDate` time source with `mach_absolute_time`
+ - [Cocoa] Replaced all deprecated CoreGraphics calls with non-deprecated
+           counterparts
+ - [Cocoa] Bugfix: The `NSOpenGLPFAFullScreen` pixel format attribute caused
+                   creation to fail on some machines
+ - [Cocoa] Bugfix: `glfwCreateWindow` did not properly enforce the
+                   forward-compatible and context profile hints
+ - [Cocoa] Bugfix: The loop condition for saving video modes used the wrong
+                   index variable
+ - [Cocoa] Bugfix: The OpenGL framework was not retrieved, making
+                   `glfwGetProcAddress` crash
+ - [Cocoa] Bugfix: `glfwInit` changed the current directory for unbundled
+                   executables
+ - [Cocoa] Bugfix: The `GLFW_WINDOW_NO_RESIZE` window parameter was always zero
+ - [Cocoa] Bugfix: The cursor position incorrectly rounded during conversion
+ - [Cocoa] Bugfix: Cursor positioning led to nonsensical results for fullscreen
+                   windows
+ - [Cocoa] Bugfix: The GLFW window was flagged as restorable
+ - [X11] Added support for the `GLX_EXT_swap_control` and
+         `GLX_MESA_swap_control` extensions as alternatives to
+         `GLX_SGI_swap_control`
+ - [X11] Added the POSIX `CLOCK_MONOTONIC` time source as the preferred method
+ - [X11] Added dependency on libm, where present
+ - [X11] Added support for the `_NET_WM_NAME` and `_NET_WM_ICON_NAME` EWMH
+         window properties
+ - [X11] Made client-side RandR and Xf86VidMode extensions required
+ - [X11] Bugfix: Some window properties required by the ICCCM were not set
+ - [X11] Bugfix: Calling `glXCreateContextAttribsARB` with an unavailable OpenGL
+                 version caused the application to terminate with a `BadMatch`
+                 Xlib error
+ - [X11] Bugfix: A synchronization point necessary for jitter-free locked cursor
+                 mode was incorrectly removed
+ - [X11] Bugfix: The window size hints were not updated when calling
+                 `glfwSetWindowSize` on a non-resizable window
+ - [Win32] Added support for high-DPI monitors
+ - [Win32] Changed port to use Unicode mode only
+ - [Win32] Removed explicit support for versions of Windows older than Windows
+           XP
+ - [Win32] Bugfix: Window activation and iconification did not work as expected
+ - [Win32] Bugfix: Software rasterizer pixel formats were not discarded by the
+                   `WGL_ARB_pixel_format` code path
+ - [Win32] Bugfix: The array for WGL context attributes was too small and could
+                   overflow
+ - [Win32] Bugfix: Alt+F4 hot key was not translated into `WM_CLOSE`
+ - [Win32] Bugfix: The `GLFW_WINDOW_NO_RESIZE` window parameter was always zero
+ - [Win32] Bugfix: A test was missing for whether all available pixel formats
+                   had been disqualified
 
 
 ## Contact
@@ -225,11 +292,11 @@ If you have questions related to the use of GLFW, we have a
 channel `#glfw` on [Freenode](http://freenode.net/).
 
 If you have a bug to report, a patch to submit or a feature you'd like to
-request, please file it in the
-[issue tracker](https://github.com/glfw/glfw/issues) on GitHub.
+request, please file it in one of the
+[issue trackers](https://sourceforge.net/p/glfw/_list/tickets) on SF.net.
 
 Finally, if you're interested in helping out with the development of GLFW or
-porting it to your favorite platform, we have an occasionally active
+porting it to your favorite platform, we have a
 [developer's mailing list](https://lists.stacken.kth.se/mailman/listinfo/glfw-dev),
 or you could join us on `#glfw`.
 
@@ -241,13 +308,10 @@ skills.
 
  - Bobyshev Alexander
  - artblanc
- - arturo
  - Matt Arsenault
  - Keith Bauer
  - John Bartholomew
- - Niklas Behrens
  - Niklas Bergström
- - Doug Binks
  - blanco
  - Lambert Clara
  - Noel Cower
@@ -262,7 +326,6 @@ skills.
  - Stefan Gustavson
  - Sylvain Hellegouarch
  - heromyth
- - Paul Holden
  - Toni Jovanoski
  - Osman Keskin
  - Cameron King
@@ -274,17 +337,14 @@ skills.
  - Martins Mozeiko
  - Tristam MacDonald
  - Hans Mackowiak
- - Kyle McDonald
  - David Medlock
  - Jonathan Mercier
  - Marcel Metz
  - Kenneth Miller
- - Bruce Mitchener
  - Jeff Molofee
  - Jon Morton
- - Pierre Moulon
  - Julian Møller
- - Ozzy
+ - Ozzy at Orkysquad
  - Peoro
  - Braden Pellett
  - Arturo J. Pérez
@@ -300,7 +360,6 @@ skills.
  - Bradley Smith
  - Julian Squires
  - Johannes Stein
- - Justin Stoecker
  - Nathan Sweet
  - TTK-Bandit
  - Sergey Tikhomirov

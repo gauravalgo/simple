@@ -1,5 +1,8 @@
 //========================================================================
-// GLFW 3.0 WGL - www.glfw.org
+// GLFW - An OpenGL library
+// Platform:    Win32/WGL
+// API version: 3.0
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -169,7 +172,7 @@ static GLboolean choosePixelFormat(_GLFWwindow* window,
         return GL_FALSE;
     }
 
-    usableConfigs = calloc(nativeCount, sizeof(_GLFWfbconfig));
+    usableConfigs = (_GLFWfbconfig*) calloc(nativeCount, sizeof(_GLFWfbconfig));
     usableCount = 0;
 
     for (i = 0;  i < nativeCount;  i++)
@@ -273,13 +276,9 @@ static GLboolean choosePixelFormat(_GLFWwindow* window,
     }
 
     closest = _glfwChooseFBConfig(desired, usableConfigs, usableCount);
-    if (!closest)
-    {
-        free(usableConfigs);
-        return GL_FALSE;
-    }
+    if (closest)
+        *result = closest->wgl;
 
-    *result = closest->wgl;
     free(usableConfigs);
 
     return GL_TRUE;
@@ -294,13 +293,6 @@ static GLboolean choosePixelFormat(_GLFWwindow* window,
 //
 int _glfwInitContextAPI(void)
 {
-    _glfw.wgl.opengl32.instance = LoadLibrary(L"opengl32.dll");
-    if (!_glfw.wgl.opengl32.instance)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to load opengl32.dll");
-        return GL_FALSE;
-    }
-
     _glfw.wgl.current = TlsAlloc();
     if (_glfw.wgl.current == TLS_OUT_OF_INDEXES)
     {
@@ -320,16 +312,13 @@ void _glfwTerminateContextAPI(void)
 {
     if (_glfw.wgl.hasTLS)
         TlsFree(_glfw.wgl.current);
-
-    if (_glfw.wgl.opengl32.instance)
-        FreeLibrary(_glfw.wgl.opengl32.instance);
 }
 
 #define setWGLattrib(attribName, attribValue) \
 { \
     attribs[index++] = attribName; \
     attribs[index++] = attribValue; \
-    assert((size_t) index < sizeof(attribs) / sizeof(attribs[0])); \
+    assert(index < sizeof(attribs) / sizeof(attribs[0])); \
 }
 
 // Prepare for creation of the OpenGL context
@@ -529,7 +518,7 @@ int _glfwAnalyzeContext(const _GLFWwindow* window,
             !window->wgl.ARB_create_context_profile ||
             !window->wgl.EXT_create_context_es2_profile)
         {
-            _glfwInputError(GLFW_API_UNAVAILABLE,
+            _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                             "WGL: OpenGL ES requested but "
                             "WGL_ARB_create_context_es2_profile is unavailable");
             return _GLFW_RECREATION_IMPOSSIBLE;
@@ -597,14 +586,12 @@ void _glfwPlatformSwapInterval(int interval)
 {
     _GLFWwindow* window = _glfwPlatformGetCurrentContext();
 
-#if !defined(_GLFW_USE_DWM_SWAP_INTERVAL)
     if (_glfwIsCompositionEnabled())
     {
         // Don't enabled vsync when desktop compositing is enabled, as it leads
         // to frame jitter
         return;
     }
-#endif
 
     if (window->wgl.EXT_swap_control)
         window->wgl.SwapIntervalEXT(interval);
@@ -641,11 +628,7 @@ int _glfwPlatformExtensionSupported(const char* extension)
 
 GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
 {
-    const GLFWglproc proc = (GLFWglproc) wglGetProcAddress(procname);
-    if (proc)
-        return proc;
-
-    return (GLFWglproc) GetProcAddress(_glfw.wgl.opengl32.instance, procname);
+    return (GLFWglproc) wglGetProcAddress(procname);
 }
 
 

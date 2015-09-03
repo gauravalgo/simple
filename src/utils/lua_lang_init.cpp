@@ -33,10 +33,14 @@ using namespace simple::graphics;
 using namespace simple::maths;
 using namespace simple::input;
 
+#ifdef EMSCRIPTEN
+# include <emscripten.h>
+#endif
+
 extern "C" {
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
+#include "../../deps/lua/lua.h"
+#include "../../deps/lua/lualib.h"
+#include "../../deps/lua/lauxlib.h"
 }
 
 lua_lang_init::lua_lang_init(){}
@@ -81,19 +85,19 @@ void lua_lang_init::makeDefaultWindow()
 
 void lua_lang_init::setMainScript(const char* name)
 {
-  //Look for main.lua and execute it
+  // //Look for main.lua and execute it
   int error = luaL_dofile(m_L, name);
   if(error != 0)
-  LOG("Error: Could not load main script " << name << " make sure your " << name << " is in the same folder with simple executable.");
+  LOG("Error: Could not load main script " << name << " make sure your " << name << " is in the same folder with simple's executable.");
 
 }
 
 bool lua_lang_init::callFunction(const char* name)
 {
-  lua_getglobal(m_L, name);
-  if(!lua_isfunction(m_L, 1)){
+   lua_getglobal(m_L, name);
+  //if(!lua_isfunction(m_L, 1)){
     //LOG("Error: function " << name << " should have been created in your main.lua file!");
-  }
+  //}
   lua_call(m_L, 0, 0);
 
   return true;
@@ -436,8 +440,15 @@ int lua_lang_init::createShader(lua_State *L)
 int lua_lang_init::createDefaultShader(lua_State* L)
 {
   shader* s = new shader();
+
   default_shaders df;
-  s->create(df.texture_vertex.c_str(), df.texture_fragment.c_str());
+
+#ifndef EMSCRIPTEN
+     s->create(df.gl_texture_vertex.c_str(), df.gl_texture_fragment.c_str());
+#endif
+#ifdef EMSCRIPTEN
+     s->create(df.gl_es_texture_vertex.c_str(), df.gl_es_texture_fragment.c_str());
+#endif
 
   pushPointer(L, s);
   return 1;
@@ -853,7 +864,6 @@ void lua_lang_init::registerFunctions()
   lua_register(m_L, "simple_dumpTexture", dumbTexture);
   lua_register(m_L, "simple_dumpShader", dumbShader);
   lua_register(m_L, "simple_dumpBatch", dumbBatch);
-
 }
 
 void lua_lang_init::dumb()

@@ -1,5 +1,8 @@
 //========================================================================
-// GLFW 3.0 OS X - www.glfw.org
+// GLFW - An OpenGL library
+// Platform:    Cocoa/NSOpenGL
+// API Version: 3.0
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
@@ -81,17 +84,18 @@ int _glfwPlatformInit(void)
     changeToResourcesDirectory();
 #endif
 
+    _glfwInitTimer();
+
+    _glfwInitJoysticks();
+
+    if (!_glfwInitContextAPI())
+        return GL_FALSE;
+
     _glfw.ns.eventSource = CGEventSourceCreate(kCGEventSourceStateHIDSystemState);
     if (!_glfw.ns.eventSource)
         return GL_FALSE;
 
     CGEventSourceSetLocalEventsSuppressionInterval(_glfw.ns.eventSource, 0.0);
-
-    if (!_glfwInitContextAPI())
-        return GL_FALSE;
-
-    _glfwInitTimer();
-    _glfwInitJoysticks();
 
     return GL_TRUE;
 }
@@ -114,9 +118,8 @@ void _glfwPlatformTerminate(void)
     [_glfw.ns.cursor release];
     _glfw.ns.cursor = nil;
 
-    free(_glfw.ns.clipboardString);
-
     _glfwTerminateJoysticks();
+
     _glfwTerminateContextAPI();
 }
 

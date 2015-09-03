@@ -1,5 +1,8 @@
 //========================================================================
-// GLFW 3.0 X11 - www.glfw.org
+// GLFW - An OpenGL library
+// Platform:    X11/GLX
+// API version: 3.0
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -48,7 +51,7 @@ static int translateKey(int keyCode)
     // Note: This way we always force "NumLock = ON", which is intentional
     // since the returned key code should correspond to a physical
     // location.
-    keySym = XkbKeycodeToKeysym(_glfw.x11.display, keyCode, 0, 1);
+    keySym = XkbKeycodeToKeysym(_glfw.x11.display, keyCode, 1, 0);
     switch (keySym)
     {
         case XK_KP_0:           return GLFW_KEY_KP_0;
@@ -417,9 +420,20 @@ static void detectEWMH(void)
 
 // Initialize X11 display and look for supported X11 extensions
 //
-static GLboolean initExtensions(void)
+static GLboolean initDisplay(void)
 {
     Bool supported;
+
+    _glfw.x11.display = XOpenDisplay(NULL);
+    if (!_glfw.x11.display)
+    {
+        _glfwInputError(GLFW_API_UNAVAILABLE, "X11: Failed to open X display");
+        return GL_FALSE;
+    }
+
+    _glfw.x11.screen = DefaultScreen(_glfw.x11.display);
+    _glfw.x11.root = RootWindow(_glfw.x11.display, _glfw.x11.screen);
+    _glfw.x11.context = XUniqueContext();
 
     // Find or create window manager atoms
     _glfw.x11.WM_STATE = XInternAtom(_glfw.x11.display, "WM_STATE", False);
@@ -550,7 +564,7 @@ static Cursor createNULLCursor(void)
     XColor col;
     Cursor cursor;
 
-    _glfwGrabXErrorHandler();
+    // TODO: Add error checks
 
     cursormask = XCreatePixmap(_glfw.x11.display, _glfw.x11.root, 1, 1, 1);
     xgc.function = GXclear;
@@ -564,14 +578,6 @@ static Cursor createNULLCursor(void)
                                  &col, &col, 0, 0);
     XFreePixmap(_glfw.x11.display, cursormask);
     XFreeGC(_glfw.x11.display, gc);
-
-    _glfwReleaseXErrorHandler();
-
-    if (cursor == None)
-    {
-        _glfwInputXError(GLFW_PLATFORM_ERROR,
-                         "X11: Failed to create null cursor");
-    }
 
     return cursor;
 }
@@ -587,47 +593,6 @@ static void terminateDisplay(void)
     }
 }
 
-// X error handler
-//
-static int errorHandler(Display *display, XErrorEvent* event)
-{
-    _glfw.x11.errorCode = event->error_code;
-    return 0;
-}
-
-
-//////////////////////////////////////////////////////////////////////////
-//////                       GLFW internal API                      //////
-//////////////////////////////////////////////////////////////////////////
-
-// Install the X error handler
-//
-void _glfwGrabXErrorHandler(void)
-{
-    _glfw.x11.errorCode = Success;
-    XSetErrorHandler(errorHandler);
-}
-
-// Remove the X error handler
-//
-void _glfwReleaseXErrorHandler(void)
-{
-    // Synchronize to make sure all commands are processed
-    XSync(_glfw.x11.display, False);
-    XSetErrorHandler(NULL);
-}
-
-// Report X error
-//
-void _glfwInputXError(int error, const char* message)
-{
-    char buffer[8192];
-    XGetErrorText(_glfw.x11.display, _glfw.x11.errorCode,
-                  buffer, sizeof(buffer));
-
-    _glfwInputError(error, "%s: %s", message, buffer);
-}
-
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -637,28 +602,20 @@ int _glfwPlatformInit(void)
 {
     XInitThreads();
 
-    _glfw.x11.display = XOpenDisplay(NULL);
-    if (!_glfw.x11.display)
-    {
-        _glfwInputError(GLFW_API_UNAVAILABLE, "X11: Failed to open X display");
-        return GL_FALSE;
-    }
-
-    _glfw.x11.screen = DefaultScreen(_glfw.x11.display);
-    _glfw.x11.root = RootWindow(_glfw.x11.display, _glfw.x11.screen);
-    _glfw.x11.context = XUniqueContext();
-
-    if (!initExtensions())
+    if (!initDisplay())
         return GL_FALSE;
 
-    _glfw.x11.cursor = createNULLCursor();
+    _glfwInitGammaRamp();
 
     if (!_glfwInitContextAPI())
         return GL_FALSE;
 
+    _glfw.x11.cursor = createNULLCursor();
+
+    if (!_glfwInitJoysticks())
+        return GL_FALSE;
+
     _glfwInitTimer();
-    _glfwInitJoysticks();
-    _glfwInitGammaRamp();
 
     return GL_TRUE;
 }
@@ -671,11 +628,14 @@ void _glfwPlatformTerminate(void)
         _glfw.x11.cursor = (Cursor) 0;
     }
 
-    free(_glfw.x11.selection.string);
-
     _glfwTerminateJoysticks();
+
     _glfwTerminateContextAPI();
+
     terminateDisplay();
+
+    if (_glfw.x11.selection.string)
+        free(_glfw.x11.selection.string);
 }
 
 const char* _glfwPlatformGetVersionString(void)

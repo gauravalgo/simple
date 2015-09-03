@@ -1,5 +1,8 @@
 //========================================================================
-// GLFW 3.0 Win32 - www.glfw.org
+// GLFW - An OpenGL library
+// Platform:    Win32
+// API version: 3.0
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
@@ -47,7 +50,7 @@ void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
     GetDeviceGammaRamp(dc, values);
     DeleteDC(dc);
 
-    _glfwAllocGammaArrays(ramp, 256);
+    _glfwAllocGammaRamp(ramp, 256);
 
     memcpy(ramp->red,   values +   0, 256 * sizeof(unsigned short));
     memcpy(ramp->green, values + 256, 256 * sizeof(unsigned short));

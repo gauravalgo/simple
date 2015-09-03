@@ -18,9 +18,7 @@
 #define LUA_LANG_INIT_H
 
 extern "C" {
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
+#include "../../deps/lua/lua.h"
 }
 
 #include "../window/glfw_window.h"

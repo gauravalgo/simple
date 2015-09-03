@@ -1,5 +1,8 @@
 //========================================================================
-// GLFW 3.0 - www.glfw.org
+// GLFW - An OpenGL library
+// Platform:    Any
+// API version: 3.0
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -155,7 +158,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     if (width <= 0 || height <= 0)
     {
         _glfwInputError(GLFW_INVALID_VALUE, "Invalid window size");
-        return NULL;
+        return GL_FALSE;
     }
 
     // Set up desired framebuffer config
@@ -193,9 +196,9 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
 
     // Check the OpenGL bits of the window config
     if (!_glfwIsValidContextConfig(&wndconfig))
-        return NULL;
+        return GL_FALSE;
 
-    window = calloc(1, sizeof(_GLFWwindow));
+    window = (_GLFWwindow*) calloc(1, sizeof(_GLFWwindow));
     window->next = _glfw.windowListHead;
     _glfw.windowListHead = window;
 
@@ -226,7 +229,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     {
         glfwDestroyWindow((GLFWwindow*) window);
         glfwMakeContextCurrent((GLFWwindow*) previous);
-        return NULL;
+        return GL_FALSE;
     }
 
     glfwMakeContextCurrent((GLFWwindow*) window);
@@ -236,7 +239,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     {
         glfwDestroyWindow((GLFWwindow*) window);
         glfwMakeContextCurrent((GLFWwindow*) previous);
-        return NULL;
+        return GL_FALSE;
     }
 
     // Verify the context against the requested parameters
@@ -244,7 +247,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     {
         glfwDestroyWindow((GLFWwindow*) window);
         glfwMakeContextCurrent((GLFWwindow*) previous);
-        return NULL;
+        return GL_FALSE;
     }
 
     // Clearing the front buffer to black to avoid garbage pixels left over
@@ -281,7 +284,6 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.redBits     = 8;
     _glfw.hints.greenBits   = 8;
     _glfw.hints.blueBits    = 8;
-    _glfw.hints.alphaBits   = 8;
     _glfw.hints.depthBits   = 24;
     _glfw.hints.stencilBits = 8;
 }
@@ -468,7 +470,10 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow* handle, int width, int height)
     _GLFW_REQUIRE_INIT();
 
     if (window->iconified)
+    {
+        // TODO: Figure out if this is an error
         return;
+    }
 
     if (window->monitor)
     {
@@ -601,63 +606,91 @@ GLFWAPI GLFWwindowposfun glfwSetWindowPosCallback(GLFWwindow* handle,
                                                   GLFWwindowposfun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
+    GLFWwindowposfun previous;
+
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(window->callbacks.pos, cbfun);
-    return cbfun;
+
+    previous = window->callbacks.pos;
+    window->callbacks.pos = cbfun;
+    return previous;
 }
 
 GLFWAPI GLFWwindowsizefun glfwSetWindowSizeCallback(GLFWwindow* handle,
                                                     GLFWwindowsizefun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
+    GLFWwindowsizefun previous;
+
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(window->callbacks.size, cbfun);
-    return cbfun;
+
+    previous = window->callbacks.size;
+    window->callbacks.size = cbfun;
+    return previous;
 }
 
 GLFWAPI GLFWwindowclosefun glfwSetWindowCloseCallback(GLFWwindow* handle,
                                                       GLFWwindowclosefun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
+    GLFWwindowclosefun previous;
+
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(window->callbacks.close, cbfun);
-    return cbfun;
+
+    previous = window->callbacks.close;
+    window->callbacks.close = cbfun;
+    return previous;
 }
 
 GLFWAPI GLFWwindowrefreshfun glfwSetWindowRefreshCallback(GLFWwindow* handle,
                                                           GLFWwindowrefreshfun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
+    GLFWwindowrefreshfun previous;
+
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(window->callbacks.refresh, cbfun);
-    return cbfun;
+
+    previous = window->callbacks.refresh;
+    window->callbacks.refresh = cbfun;
+    return previous;
 }
 
 GLFWAPI GLFWwindowfocusfun glfwSetWindowFocusCallback(GLFWwindow* handle,
                                                       GLFWwindowfocusfun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
+    GLFWwindowfocusfun previous;
+
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(window->callbacks.focus, cbfun);
-    return cbfun;
+
+    previous = window->callbacks.focus;
+    window->callbacks.focus = cbfun;
+    return previous;
 }
 
 GLFWAPI GLFWwindowiconifyfun glfwSetWindowIconifyCallback(GLFWwindow* handle,
                                                           GLFWwindowiconifyfun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
+    GLFWwindowiconifyfun previous;
+
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(window->callbacks.iconify, cbfun);
-    return cbfun;
+
+    previous = window->callbacks.iconify;
+    window->callbacks.iconify = cbfun;
+    return previous;
 }
 
 GLFWAPI GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* handle,
                                                               GLFWframebuffersizefun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
+    GLFWframebuffersizefun previous;
+
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(window->callbacks.fbsize, cbfun);
-    return cbfun;
+
+    previous = window->callbacks.fbsize;
+    window->callbacks.fbsize = cbfun;
+    return previous;
 }
 
 GLFWAPI void glfwPollEvents(void)

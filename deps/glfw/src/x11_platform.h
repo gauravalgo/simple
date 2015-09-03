@@ -1,5 +1,8 @@
 //========================================================================
-// GLFW 3.0 X11 - www.glfw.org
+// GLFW - An OpenGL library
+// Platform:    X11
+// API version: 3.0
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -83,10 +86,6 @@ typedef struct _GLFWwindowX11
     GLboolean       cursorGrabbed;    // True if cursor is currently grabbed
     GLboolean       cursorHidden;     // True if cursor is currently hidden
 
-    // Cached position and size used to filter out duplicate events
-    int             width, height;
-    int             xpos, ypos;
-
     // The last received cursor position, regardless of source
     double          cursorPosX, cursorPosY;
     // The last position the cursor was warped to by GLFW
@@ -134,9 +133,6 @@ typedef struct _GLFWlibraryX11
     // True if window manager supports EWMH
     GLboolean       hasEWMH;
 
-    // Error code received by the X error handler
-    int             errorCode;
-
     struct {
         GLboolean   available;
         int         eventBase;
@@ -173,7 +169,7 @@ typedef struct _GLFWlibraryX11
     int             keyCodeLUT[256];
 
     struct {
-        int         count;
+        GLboolean   changed;
         int         timeout;
         int         interval;
         int         blanking;
@@ -238,7 +234,7 @@ void _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor);
 
 // Joystick input
-void _glfwInitJoysticks(void);
+int  _glfwInitJoysticks(void);
 void _glfwTerminateJoysticks(void);
 
 // Unicode support
@@ -255,10 +251,5 @@ unsigned long _glfwGetWindowProperty(Window window,
                                      Atom property,
                                      Atom type,
                                      unsigned char** value);
-
-// X11 error handler
-void _glfwGrabXErrorHandler(void);
-void _glfwReleaseXErrorHandler(void);
-void _glfwInputXError(int error, const char* message);
 
 #endif // _x11_platform_h_

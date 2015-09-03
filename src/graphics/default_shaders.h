@@ -29,10 +29,17 @@ namespace simple
             class default_shaders
             {
             public:
-                  static string font_fragment;
-                  static string font_vertex;
-                  static string texture_fragment;
-                  static string texture_vertex;
+                  //OPENGL 2.1
+                  static string gl_font_fragment;
+                  static string gl_font_vertex;
+                  static string gl_texture_fragment;
+                  static string gl_texture_vertex;
+                  //OPENGL ES 2.0
+                  static string gl_es_font_fragment;
+                  static string gl_es_font_vertex;
+                  static string gl_es_texture_fragment;
+                  static string gl_es_texture_vertex;
+
             };
       }
 }

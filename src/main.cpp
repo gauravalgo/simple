@@ -1,101 +1,83 @@
-/*******************************************************************************
- * Copyright 2015 See AUTHORS file.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- ******************************************************************************/
 
-#include <iostream>
+/*
+#define NO_SDL_GLEXT
+#include <GL/glew.h>
+#include <GL/gl.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_opengl.h>
+
+#include <SDL.h>
+*/
+
+#ifdef EMSCRIPTEN
+# include <emscripten.h>
+#endif
 
 #include "utils/definitions.h"
 #include "utils/lua_lang_init.h"
 #include "utils/core.h"
 
-#include <stdlib.h>
-
-#include <GLFW/glfw3.h>
-#include "window/glfw_window.h"
-
-using std::string;
-
 using namespace simple;
 using namespace simple::lang;
 
-#include <ft2build.h>
-#include FT_FREETYPE_H
-
-FT_Library ft;
+void update_em();
 
 lua_lang_init* lua_init;
 
-void init()
+void update_simple()
+{
+  //lua_init->callFunction("simple_update");
+}
+
+void render_simple()
+{
+   lua_init->callFunction("simple_draw");
+}
+
+int main()
 {
 
-  //Init Lua!
+
+  //Init Simple!
   lua_init = new lua_lang_init();
   lua_init->create();
   lua_init->registerFunctions();
-  lua_init->setMainScript("main.lua");
+  lua_init->setMainScript("res/main.lua");
   lua_init->callFunction("simple_init");
   lua_init->makeDefaultWindow();
 
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  //f = new font();
-  // f->load(ft, m_font_shader, "res/font.ttf");
-  //f->setFontSize(16);
-  //f->setColor(m_shader,.2f,.8,.5,1);
-
+#ifndef EMSCRIPTEN
+  while(lua_init->getCore()->getWindow()->getRunning())
+  {
+    render_simple();
+    update_simple();
+    lua_init->getCore()->getWindow()->update();
+  }
+#endif
+#ifdef EMSCRIPTEN
+  emscripten_set_main_loop(update_em, 0, 0);
+#endif
+  //lua_init->callFunction("simple_dumb");
+  //lua_init->dumb();
+  return 1;
 }
 
-
-void render ()
+void update_em()
 {
+  if(!lua_init->getCore()->getWindow()->getRunning())
+    return;
 
-  lua_init->callFunction("simple_draw");
+  render_simple();
+  update_simple();
+  lua_init->getCore()->getWindow()->calculateDeltaTime();
+  //limit fps to 60
+  if(lua_init->getCore()->getWindow()->getVSync())
+    glfwSwapInterval(1);
+  glfwGetCursorPos(lua_init->getCore()->getWindow()->getWindow(), &lua_init->getCore()->getWindow()->m_px, &lua_init->getCore()->getWindow()->m_py);
 
-  /*
-  m_font_shader->bind();
-  f->begin();
-  f->setColor(m_shader, 0.2f, 0.4f, 0.3345f, 1);
-  f->draw("Hello World", 100, 100, 1, 1);
-  f->end();
-  m_font_shader->unbind();
-  m_shader->bind();
-  */
- }
-
-void update()
-{
-  lua_init->callFunction("simple_update");
-  lua_init->getCore()->getWindow()->update();
-}
-
-int main()
-{
-  if(FT_Init_FreeType(&ft)){
-    LOG("Error: Could not init freetype lib!");
-    return 1;
-  }
-
-  init();
-
-  while(lua_init->getCore()->getWindow()->getRunning()){
-    render();
-    update();
-
-  }
-  lua_init->callFunction("simple_dumb");
-  lua_init->dumb();
-  return 0;
+  glfwSwapBuffers(lua_init->getCore()->getWindow()->getWindow());
+  glfwPollEvents();
 }

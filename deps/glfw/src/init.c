@@ -1,5 +1,8 @@
 //========================================================================
-// GLFW 3.0 - www.glfw.org
+// GLFW - An OpenGL library
+// Platform:    Any
+// API version: 3.0
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -130,7 +133,7 @@ GLFWAPI int glfwInit(void)
     _glfw.monitors = _glfwPlatformGetMonitors(&_glfw.monitorCount);
     if (_glfw.monitors == NULL)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR, "No monitors found");
+        _glfwErrorCallback(GLFW_PLATFORM_ERROR, "No monitors found");
         _glfwPlatformTerminate();
         return GL_FALSE;
     }
@@ -149,8 +152,6 @@ GLFWAPI void glfwTerminate(void)
 
     if (!_glfwInitialized)
         return;
-
-    memset(&_glfw.callbacks, 0, sizeof(_glfw.callbacks));
 
     // Close all remaining windows
     while (_glfw.windowListHead)
@@ -191,7 +192,8 @@ GLFWAPI const char* glfwGetVersionString(void)
 
 GLFWAPI GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun cbfun)
 {
-    _GLFW_SWAP_POINTERS(_glfwErrorCallback, cbfun);
-    return cbfun;
+    GLFWerrorfun previous = _glfwErrorCallback;
+    _glfwErrorCallback = cbfun;
+    return previous;
 }
 

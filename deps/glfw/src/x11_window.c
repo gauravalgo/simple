@@ -1,5 +1,8 @@
 //========================================================================
-// GLFW 3.0 X11 - www.glfw.org
+// GLFW - An OpenGL library
+// Platform:    X11
+// API version: 3.0
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -288,9 +291,6 @@ static GLboolean createWindow(_GLFWwindow* window,
     XRRSelectInput(_glfw.x11.display, window->x11.handle,
                    RRScreenChangeNotifyMask);
 
-    _glfwPlatformGetWindowPos(window, &window->x11.xpos, &window->x11.ypos);
-    _glfwPlatformGetWindowSize(window, &window->x11.width, &window->x11.height);
-
     return GL_TRUE;
 }
 
@@ -358,7 +358,7 @@ static void showCursor(_GLFWwindow* window)
 //
 static void enterFullscreenMode(_GLFWwindow* window)
 {
-    if (_glfw.x11.saver.count == 0)
+    if (!_glfw.x11.saver.changed)
     {
         // Remember old screen saver settings
         XGetScreenSaver(_glfw.x11.display,
@@ -370,9 +370,9 @@ static void enterFullscreenMode(_GLFWwindow* window)
         // Disable screen saver
         XSetScreenSaver(_glfw.x11.display, 0, 0, DontPreferBlanking,
                         DefaultExposures);
-    }
 
-    _glfw.x11.saver.count++;
+        _glfw.x11.saver.changed = GL_TRUE;
+    }
 
     _glfwSetVideoMode(window->monitor, &window->videoMode);
 
@@ -452,9 +452,7 @@ static void leaveFullscreenMode(_GLFWwindow* window)
 {
     _glfwRestoreVideoMode(window->monitor);
 
-    _glfw.x11.saver.count--;
-
-    if (_glfw.x11.saver.count == 0)
+    if (_glfw.x11.saver.changed)
     {
         // Restore old screen saver settings
         XSetScreenSaver(_glfw.x11.display,
@@ -462,6 +460,8 @@ static void leaveFullscreenMode(_GLFWwindow* window)
                         _glfw.x11.saver.interval,
                         _glfw.x11.saver.blanking,
                         _glfw.x11.saver.exposure);
+
+        _glfw.x11.saver.changed = GL_FALSE;
     }
 
     if (_glfw.x11.hasEWMH &&
@@ -502,7 +502,8 @@ static void processEvent(XEvent *event)
         window = _glfwFindWindowByHandle(event->xany.window);
         if (window == NULL)
         {
-            // This is an event for a window that has already been destroyed
+            // This is either an event for a destroyed GLFW window or an event
+            // of a type not currently supported by GLFW
             return;
         }
     }
@@ -513,12 +514,11 @@ static void processEvent(XEvent *event)
         {
             const int key = translateKey(event->xkey.keycode);
             const int mods = translateState(event->xkey.state);
-            const int character = translateChar(&event->xkey);
 
             _glfwInputKey(window, key, event->xkey.keycode, GLFW_PRESS, mods);
 
-            if (character != -1)
-                _glfwInputChar(window, character);
+            if (!(mods & GLFW_MOD_CONTROL) && !(mods & GLFW_MOD_ALT))
+                _glfwInputChar(window, translateChar(&event->xkey));
 
             break;
         }
@@ -553,16 +553,6 @@ static void processEvent(XEvent *event)
             else if (event->xbutton.button == Button7)
                 _glfwInputScroll(window, 1.0, 0.0);
 
-            else
-            {
-                // Additional buttons after 7 are treated as regular buttons
-                // We subtract 4 to fill the gap left by scroll input above
-                _glfwInputMouseClick(window,
-                                     event->xbutton.button - 4,
-                                     GLFW_PRESS,
-                                     mods);
-            }
-
             break;
         }
 
@@ -588,15 +578,6 @@ static void processEvent(XEvent *event)
             {
                 _glfwInputMouseClick(window,
                                      GLFW_MOUSE_BUTTON_RIGHT,
-                                     GLFW_RELEASE,
-                                     mods);
-            }
-            else if (event->xbutton.button > Button7)
-            {
-                // Additional buttons after 7 are treated as regular buttons
-                // We subtract 4 to fill the gap left by scroll input above
-                _glfwInputMouseClick(window,
-                                     event->xbutton.button - 4,
                                      GLFW_RELEASE,
                                      mods);
             }
@@ -654,31 +635,17 @@ static void processEvent(XEvent *event)
 
         case ConfigureNotify:
         {
-            if (event->xconfigure.width != window->x11.width ||
-                event->xconfigure.height != window->x11.height)
-            {
-                _glfwInputFramebufferSize(window,
-                                          event->xconfigure.width,
-                                          event->xconfigure.height);
+            _glfwInputFramebufferSize(window,
+                                      event->xconfigure.width,
+                                      event->xconfigure.height);
 
-                _glfwInputWindowSize(window,
-                                     event->xconfigure.width,
-                                     event->xconfigure.height);
+            _glfwInputWindowSize(window,
+                                 event->xconfigure.width,
+                                 event->xconfigure.height);
 
-                window->x11.width = event->xconfigure.width;
-                window->x11.height = event->xconfigure.height;
-            }
-
-            if (event->xconfigure.x != window->x11.xpos ||
-                event->xconfigure.y != window->x11.ypos)
-            {
-                _glfwInputWindowPos(window,
-                                    event->xconfigure.x,
-                                    event->xconfigure.y);
-
-                window->x11.xpos = event->xconfigure.x;
-                window->x11.ypos = event->xconfigure.y;
-            }
+            _glfwInputWindowPos(window,
+                                event->xconfigure.x,
+                                event->xconfigure.y);
 
             break;
         }
@@ -1001,17 +968,6 @@ void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
     XTranslateCoordinates(_glfw.x11.display, window->x11.handle, _glfw.x11.root,
                           0, 0, &x, &y, &child);
 
-    if (child != None)
-    {
-        int left, top;
-
-        XTranslateCoordinates(_glfw.x11.display, window->x11.handle, child,
-                              0, 0, &left, &top, &child);
-
-        x -= left;
-        y -= top;
-    }
-
     if (xpos)
         *xpos = x;
     if (ypos)
@@ -1037,36 +993,34 @@ void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
+    if (!window->resizable)
+    {
+        // Update window size restrictions to match new window size
+
+        XSizeHints* hints = XAllocSizeHints();
+
+        hints->flags |= (PMinSize | PMaxSize);
+        hints->min_width  = hints->max_width  = width;
+        hints->min_height = hints->max_height = height;
+
+        XSetWMNormalHints(_glfw.x11.display, window->x11.handle, hints);
+        XFree(hints);
+    }
+
     if (window->monitor)
     {
-        _glfwSetVideoMode(window->monitor, &window->videoMode);
-
         if (window->x11.overrideRedirect)
         {
             GLFWvidmode mode;
             _glfwPlatformGetVideoMode(window->monitor, &mode);
             XResizeWindow(_glfw.x11.display, window->x11.handle,
-                          mode.width, mode.height);
+                          window->videoMode.width, window->videoMode.height);
         }
+
+        _glfwSetVideoMode(window->monitor, &window->videoMode);
     }
     else
-    {
-        if (!window->resizable)
-        {
-            // Update window size restrictions to match new window size
-
-            XSizeHints* hints = XAllocSizeHints();
-
-            hints->flags |= (PMinSize | PMaxSize);
-            hints->min_width  = hints->max_width  = width;
-            hints->min_height = hints->max_height = height;
-
-            XSetWMNormalHints(_glfw.x11.display, window->x11.handle, hints);
-            XFree(hints);
-        }
-
         XResizeWindow(_glfw.x11.display, window->x11.handle, width, height);
-    }
 
     XFlush(_glfw.x11.display);
 }
@@ -1122,12 +1076,24 @@ void _glfwPlatformPollEvents(void)
         processEvent(&event);
     }
 
-    _GLFWwindow* window = _glfw.focusedWindow;
-    if (window && window->cursorMode == GLFW_CURSOR_DISABLED)
+    // Check whether the cursor has moved inside an focused window that has
+    // captured the cursor (because then it needs to be re-centered)
+
+    _GLFWwindow* window;
+    window = _glfw.focusedWindow;
+    if (window)
     {
-        int width, height;
-        _glfwPlatformGetWindowSize(window, &width, &height);
-        _glfwPlatformSetCursorPos(window, width / 2, height / 2);
+        if (window->cursorMode == GLFW_CURSOR_DISABLED)
+        {
+            int width, height;
+            _glfwPlatformGetWindowSize(window, &width, &height);
+            _glfwPlatformSetCursorPos(window, width / 2, height / 2);
+
+            // NOTE: This is a temporary fix.  It works as long as you use
+            //       offsets accumulated over the course of a frame, instead of
+            //       performing the necessary actions per callback call.
+            XFlush(_glfw.x11.display);
+        }
     }
 }
 

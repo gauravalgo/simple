@@ -1,5 +1,8 @@
 //========================================================================
-// GLFW 3.0 X11 - www.glfw.org
+// GLFW - An OpenGL library
+// Platform:    X11
+// API version: 3.0
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -77,8 +80,8 @@ static int openJoystickDevice(int joy, const char* path)
     ioctl(fd, JSIOCGBUTTONS, &buttonCount);
     _glfw.x11.joystick[joy].buttonCount = (int) buttonCount;
 
-    _glfw.x11.joystick[joy].axes = calloc(axisCount, sizeof(float));
-    _glfw.x11.joystick[joy].buttons = calloc(buttonCount, 1);
+    _glfw.x11.joystick[joy].axes = (float*) calloc(axisCount, sizeof(float));
+    _glfw.x11.joystick[joy].buttons = (unsigned char*) calloc(buttonCount, 1);
 
     _glfw.x11.joystick[joy].present = GL_TRUE;
 #endif // __linux__
@@ -156,11 +159,10 @@ static void pollJoystickEvents(void)
 
 // Initialize joystick interface
 //
-void _glfwInitJoysticks(void)
+int _glfwInitJoysticks(void)
 {
 #ifdef __linux__
-    int joy = 0;
-    size_t i;
+    int i, joy = 0;
     regex_t regex;
     DIR* dir;
     const char* dirs[] =
@@ -172,7 +174,7 @@ void _glfwInitJoysticks(void)
     if (regcomp(&regex, "^js[0-9]\\+$", 0) != 0)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "X11: Failed to compile regex");
-        return;
+        return GL_FALSE;
     }
 
     for (i = 0;  i < sizeof(dirs) / sizeof(dirs[0]);  i++)
@@ -201,6 +203,8 @@ void _glfwInitJoysticks(void)
 
     regfree(&regex);
 #endif // __linux__
+
+    return GL_TRUE;
 }
 
 // Close all opened joystick handles

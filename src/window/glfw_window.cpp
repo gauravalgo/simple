@@ -10,6 +10,10 @@
 #include "../utils/core.h"
 #include "../maths/vec2.h"
 
+#ifdef EMSCRIPTEN
+# include <emscripten.h>
+#endif
+
 using namespace simple;
 using namespace simple::maths;
 
@@ -63,7 +67,7 @@ void glfw_window::initInput()
 
 int glfw_window::getMousePressed(int v)
 {
-  if(m_mousePressed[v] <= MAX_MOUSE)
+  if(v <= MAX_MOUSE)
     return m_mousePressed[v];
   else
     LOG("You're trying to get an unknow button");
@@ -72,7 +76,7 @@ int glfw_window::getMousePressed(int v)
 
 int glfw_window::getMouseReleased(int v)
 {
-  if(m_mouseRelased[v] <= MAX_MOUSE)
+  if(v <= MAX_MOUSE)
     return m_mouseRelased[v];
   else
     LOG("You're trying to get an unknow button");
@@ -81,7 +85,7 @@ int glfw_window::getMouseReleased(int v)
 
 int glfw_window::getDownKey(int key)
 {
-  if(m_DownKey[key] <= MAX_KEYS)
+  if(key <= MAX_KEYS)
     return m_DownKey[key];
   else
     LOG("You're trying to get an unknow key");
@@ -90,7 +94,7 @@ int glfw_window::getDownKey(int key)
 
 int glfw_window::getUpKey(int key)
 {
-  if(m_UpKey[key] <= MAX_KEYS)
+  if(key <= MAX_KEYS)
     return m_UpKey[key];
   else
     LOG("You're trying to get an unknow key");
@@ -103,60 +107,75 @@ void glfw_window::create(const char *title, int width, int height, bool fullscre
   if (!glfwInit())
     LOG("Error: GLFW(window) could not be inited");
 
+#ifndef EMSCRIPTEN
   m_mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+#endif
 
-  if(fullscreen)
-     window = glfwCreateWindow(width, height, title, glfwGetPrimaryMonitor(), NULL);
-   else
-      window = glfwCreateWindow(width, height, title, NULL, NULL);
+#ifndef EMSCRIPTEN
+  if(fullscreen){
+    window = glfwCreateWindow(width, height, title, glfwGetPrimaryMonitor(), NULL);
 
-  m_width = width;
-  m_height = height;
-  m_running = true;
+  }else{
+    window = glfwCreateWindow(width,height,title,NULL,NULL);
+  }
+#endif
 
-  glfwSetErrorCallback(error_callback);
+#ifdef EMSCRIPTEN
+    window = glfwCreateWindow(width, height, "hey", NULL, NULL);
+#endif
 
-  if (!window){
+    m_width = width;
+    m_height = height;
+    m_running = true;
+
+#ifndef EMSCRIPTEN
+    glfwSetErrorCallback(error_callback);
+#endif
+    if (!window){
     LOG("Error: Could not create window");
     glfwTerminate();
   }
-  glfwMakeContextCurrent(window);
-
-  GLenum res = glewInit();
-  if(res != GLEW_OK){
+#ifndef EMSCRIPTEN
+    glfwMakeContextCurrent(window);
+#endif
+    GLenum res = glewInit();
+    if(res != GLEW_OK){
     std::cerr << "Glew(opengl) failed to initialize! You're doomed ^.^" << std::endl;
   }
 
-  if(DEBBUG)
-    LOG("GLFW: Window & GLEW inited");
-}
+    if(DEBBUG){
+    int major, minor, rev;
+    glfwGetVersion(&major, &minor, &rev);
+    LOG("GLFW version: " << major << "." << minor << "." << rev << " inited.");
+  }
+  }
 
-double currentTick, startTick = glfwGetTime();
-unsigned int numFrame = 0;
+    double currentTick, startTick = glfwGetTime();
+    unsigned int numFrame = 0;
 
-float glfw_window::getFPS()
-{
-  return m_fps;
-}
+    float glfw_window::getFPS()
+    {
+    return m_fps;
+  }
 
-void glfw_window::calculateFPS()
-{
-  ++numFrame;
-  currentTick = glfwGetTime() ;
+    void glfw_window::calculateFPS()
+    {
+    ++numFrame;
+    currentTick = glfwGetTime() ;
 
-  if (currentTick - startTick >= 1.0){
-      startTick += 1.0;
-      m_fps = numFrame;
-      //std::cout << "fps: " << m_fps << ", ft: " << 1000.0f / m_fps << "ms" << std::endl;
-      numFrame = 0;
-    }
-}
+    if (currentTick - startTick >= 1.0){
+    startTick += 1.0;
+    m_fps = numFrame;
+    //std::cout << "fps: " << m_fps << ", ft: " << 1000.0f / m_fps << "ms" << std::endl;
+    numFrame = 0;
+  }
+  }
 
-float deltaTime;
-double currentFrameTime = glfwGetTime();
-double lastFrameTime = currentFrameTime;
-void glfw_window::calculateDeltaTime()
-{
+    float deltaTime;
+    double currentFrameTime = glfwGetTime();
+    double lastFrameTime = currentFrameTime;
+    void glfw_window::calculateDeltaTime()
+    {
     //update stuff
     currentFrameTime = glfwGetTime();
     deltaTime = currentFrameTime - lastFrameTime;
@@ -164,96 +183,100 @@ void glfw_window::calculateDeltaTime()
 
     setDeltaTime(deltaTime);
     calculateFPS();
-}
+  }
 
-void glfw_window::update()
-{
-  if(!m_running)
-    return;
+    void glfw_window::update()
+    {
+    if(!m_running)
+      return;
 
-  calculateDeltaTime();
+    calculateDeltaTime();
 
-  //limit fps to 60
-  if(m_vsync)
-     glfwSwapInterval(1);
+    //limit fps to 60
+    if(m_vsync)
+      glfwSwapInterval(1);
 
-  glfwGetCursorPos(window, &m_px, &m_py); //keep track of the current position of the pointer
-  if(glfwWindowShouldClose(window)){
+    glfwGetCursorPos(window, &m_px, &m_py); //keep track of the current position of the pointer
+#ifndef EMSCRIPTEN
+    if(glfwWindowShouldClose(window)){
     LOG("GLFW: closing");
     destroy();
   }
-  glfwSwapBuffers(window);
-  glfwPollEvents();
-}
+#endif
+    glfwSwapBuffers(window);
+    glfwPollEvents();
+  }
 
-double glfw_window::getTicks()
-{
-  return glfwGetTime();
-}
+    double glfw_window::getTicks()
+    {
+    return glfwGetTime();
+  }
 
-float glfw_window::getDeltaTime()
-{
-  return m_delta;
-}
+    float glfw_window::getDeltaTime()
+    {
+    return m_delta;
+  }
 
-bool glfw_window::isFocused()
-{
-  return glfwGetWindowAttrib(window, GLFW_FOCUSED);
-}
+    bool glfw_window::isFocused()
+    {
+    return glfwGetWindowAttrib(window, GLFW_FOCUSED);
+  }
 
-float glfw_window::getPointX()
-{
-  return (float) m_px;
-}
+    float glfw_window::getPointX()
+    {
+    return (float) m_px;
+  }
 
-float glfw_window::getPointY()
-{
-  return (float) m_py;
-}
+    float glfw_window::getPointY()
+    {
+    return (float) m_py;
+  }
 
-vec2 glfw_window::getPointerPosition()
-{
-  return vec2(m_px,m_py);
-}
+    vec2 glfw_window::getPointerPosition()
+    {
+    return vec2(m_px,m_py);
+  }
 
-vec2 glfw_window::getMonitorSize()
-{
-  int ww = (m_mode->width);
-  int wh = (m_mode->height);
-  return vec2(ww, wh);
-}
+    vec2 glfw_window::getMonitorSize()
+    {
+    int ww = (m_mode->width);
+    int wh = (m_mode->height);
+    return vec2(ww, wh);
+  }
 
 //This is more likely to be used when you have > 1 windows
-void glfw_window::setVisible(bool visible)
-{
-  if(visible)
-    glfwShowWindow(window);
-  else
-    glfwHideWindow(window);
+    void glfw_window::setVisible(bool visible)
+    {
+    if(visible)
+      glfwShowWindow(window);
+    else
+      glfwHideWindow(window);
 
-}
+  }
 
-void glfw_window::setTitle(const char *title)
-{
-  glfwSetWindowTitle(window, title);
-}
+    void glfw_window::setTitle(const char *title)
+    {
+    glfwSetWindowTitle(window, title);
+  }
 
-void glfw_window::setPosition(int x, int y)
-{
-  if(x == -1 && y == -1) //find the center!
-    glfwSetWindowPos(window, (getMonitorSize().x - m_width)*.5f, (getMonitorSize().y - m_height)*.5f);
-  else if(x == -1) //find the x center
-    glfwSetWindowPos(window, (getMonitorSize().x - m_width)*.5f, y);
-  else if(y == -1) //find the y center
-    glfwSetWindowPos(window, x, (getMonitorSize().y - m_height)*.5f);
-  else //let it be :)
-    glfwSetWindowPos(window, x, y);
-}
+    void glfw_window::setPosition(int x, int y)
+    {
+    if(x == -1 && y == -1) //find the center!
+      glfwSetWindowPos(window, (getMonitorSize().x - m_width)*.5f, (getMonitorSize().y - m_height)*.5f);
+    else if(x == -1) //find the x center
+      glfwSetWindowPos(window, (getMonitorSize().x - m_width)*.5f, y);
+    else if(y == -1) //find the y center
+      glfwSetWindowPos(window, x, (getMonitorSize().y - m_height)*.5f);
+    else //let it be :)
+      glfwSetWindowPos(window, x, y);
+  }
 
-void glfw_window::destroy()
-{
-  glfwSetWindowShouldClose(window, GL_TRUE);
-  glfwDestroyWindow(window);
-  glfwTerminate();
-  m_running = false;
-}
+    void glfw_window::destroy()
+    {
+#ifndef EMSCRIPTEN
+    glfwSetWindowShouldClose(window, GL_TRUE);
+    glfwDestroyWindow(window);
+#endif
+    glfwTerminate();
+    m_running = false;
+  }

@@ -1,5 +1,8 @@
 //========================================================================
-// GLFW 3.0 - www.glfw.org
+// GLFW - An OpenGL framework
+// Platform:    Any
+// API version: 3.0
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -141,8 +144,8 @@ void _glfwInputMonitorChange(void)
                 window->monitor = NULL;
         }
 
-        if (_glfw.callbacks.monitor)
-            _glfw.callbacks.monitor((GLFWmonitor*) monitors[i], GLFW_DISCONNECTED);
+        if (_glfw.monitorCallback)
+            _glfw.monitorCallback((GLFWmonitor*) monitors[i], GLFW_DISCONNECTED);
     }
 
     // Find and report newly connected monitors (not in the old list)
@@ -163,8 +166,8 @@ void _glfwInputMonitorChange(void)
         if (j < monitorCount)
             continue;
 
-        if (_glfw.callbacks.monitor)
-            _glfw.callbacks.monitor((GLFWmonitor*) _glfw.monitors[i], GLFW_CONNECTED);
+        if (_glfw.monitorCallback)
+            _glfw.monitorCallback((GLFWmonitor*) _glfw.monitors[i], GLFW_CONNECTED);
     }
 
     _glfwDestroyMonitors(monitors, monitorCount);
@@ -177,7 +180,7 @@ void _glfwInputMonitorChange(void)
 
 _GLFWmonitor* _glfwCreateMonitor(const char* name, int widthMM, int heightMM)
 {
-    _GLFWmonitor* monitor = calloc(1, sizeof(_GLFWmonitor));
+    _GLFWmonitor* monitor = (_GLFWmonitor*) calloc(1, sizeof(_GLFWmonitor));
     monitor->name = strdup(name);
     monitor->widthMM = widthMM;
     monitor->heightMM = heightMM;
@@ -190,8 +193,8 @@ void _glfwDestroyMonitor(_GLFWmonitor* monitor)
     if (monitor == NULL)
         return;
 
-    _glfwFreeGammaArrays(&monitor->originalRamp);
-    _glfwFreeGammaArrays(&monitor->currentRamp);
+    _glfwFreeGammaRamp(&monitor->originalRamp);
+    _glfwFreeGammaRamp(&monitor->currentRamp);
 
     free(monitor->modes);
     free(monitor->name);
@@ -325,9 +328,12 @@ GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* handle)
 
 GLFWAPI GLFWmonitorfun glfwSetMonitorCallback(GLFWmonitorfun cbfun)
 {
+    GLFWmonitorfun previous;
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(_glfw.callbacks.monitor, cbfun);
-    return cbfun;
+
+    previous = _glfw.monitorCallback;
+    _glfw.monitorCallback = cbfun;
+    return previous;
 }
 
 GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* handle, int* count)

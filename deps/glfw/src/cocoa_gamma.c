@@ -1,5 +1,8 @@
 //========================================================================
-// GLFW 3.0 OS X - www.glfw.org
+// GLFW - An OpenGL library
+// Platform:    Cocoa
+// API version: 3.0
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
@@ -40,7 +43,7 @@
 void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
 {
     uint32_t i, size = CGDisplayGammaTableCapacity(monitor->ns.displayID);
-    CGGammaValue* values = calloc(size * 3, sizeof(CGGammaValue));
+    CGGammaValue* values = (CGGammaValue*) malloc(size * 3 * sizeof(CGGammaValue));
 
     CGGetDisplayTransferByTable(monitor->ns.displayID,
                                 size,
@@ -49,7 +52,7 @@ void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
                                 values + size * 2,
                                 &size);
 
-    _glfwAllocGammaArrays(ramp, size);
+    _glfwAllocGammaRamp(ramp, size);
 
     for (i = 0; i < size; i++)
     {
@@ -64,7 +67,7 @@ void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
 void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 {
     int i;
-    CGGammaValue* values = calloc(ramp->size * 3, sizeof(CGGammaValue));
+    CGGammaValue* values = (CGGammaValue*) malloc(ramp->size * 3 * sizeof(CGGammaValue));
 
     for (i = 0;  i < ramp->size;  i++)
     {

@@ -1,5 +1,8 @@
 //========================================================================
-// GLFW 3.0 WGL - www.glfw.org
+// GLFW - An OpenGL library
+// Platform:    WGL
+// API version: 3.0
+// WWW:         http://www.glfw.org/
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -74,13 +77,8 @@ typedef struct _GLFWcontextWGL
 //------------------------------------------------------------------------
 typedef struct _GLFWlibraryWGL
 {
-    GLboolean       hasTLS;
-    DWORD           current;
-
-    // opengl32.dll
-    struct {
-        HINSTANCE   instance;
-    } opengl32;
+    GLboolean   hasTLS;
+    DWORD       current;
 
 } _GLFWlibraryWGL;
 
