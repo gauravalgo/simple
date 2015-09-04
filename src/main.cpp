@@ -27,7 +27,6 @@ lua_lang_init* lua_init;
 void update_simple()
 {
   lua_init->callFunction("simple_update");
-  lua_init->pushFloat(22);
 }
 
 void render_simple()

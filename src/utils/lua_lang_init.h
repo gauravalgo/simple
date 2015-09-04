@@ -49,7 +49,6 @@ namespace simple
                   void setCore(core* c){m_core = c;}
                   core* getCore(){return m_core;}
                   void makeDefaultWindow();
-                  void pushFloat(float value);
             private:
                   //WINDOW
                   static int makeWindow(lua_State* L);

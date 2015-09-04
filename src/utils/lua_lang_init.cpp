@@ -95,11 +95,6 @@ void lua_lang_init::setMainScript(const char* name)
 
 }
 
-void lua_lang_init::pushFloat(float value)
-{
-  lua_pushnumber(m_L, value);
-}
-
 bool lua_lang_init::callFunction(std::string name)
 {
   lua_getglobal(m_L, name.c_str());
