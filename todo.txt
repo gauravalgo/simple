@@ -1,10 +1,13 @@
-v 0.2.1
--keyboard
--mouse
--lua api like love's
--clean up
+v 0.2.
+-keyboard -done
+-mouse -done
+-lua api like love's -done
+-clean up - done
+-emscripten - done
+-window & mac build system -wip
+-emscripten build system -wip
 
 v 0.2.2
--versatile shaders inside lua
+-versatile shaders inside lua 
 -sound
 -allow animations inside batch2d
