@@ -24,6 +24,9 @@ extern "C" {
 #include "../window/glfw_window.h"
 #include "core.h"
 
+#include <iostream>
+#include <string>
+
 namespace simple
 {
       namespace lang
@@ -42,10 +45,11 @@ namespace simple
                   void create();
                   void registerFunctions();
                   void dumb();
-                  bool callFunction(const char* name);
+                  bool callFunction(std::string name);
                   void setCore(core* c){m_core = c;}
                   core* getCore(){return m_core;}
                   void makeDefaultWindow();
+                  void pushFloat(float value);
             private:
                   //WINDOW
                   static int makeWindow(lua_State* L);

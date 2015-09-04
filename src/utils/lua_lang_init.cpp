@@ -43,6 +43,9 @@ extern "C" {
 #include "../../deps/lua/lauxlib.h"
 }
 
+#include <iostream>
+#include <string>
+
 lua_lang_init::lua_lang_init(){}
 lua_lang_init::~lua_lang_init(){}
 
@@ -88,18 +91,27 @@ void lua_lang_init::setMainScript(const char* name)
   // //Look for main.lua and execute it
   int error = luaL_dofile(m_L, name);
   if(error != 0)
-  LOG("Error: Could not load main script " << name << " make sure your " << name << " is in the same folder with simple's executable.");
+    LOG("Error: Could not load main script " << name << " make sure your " << name << " is in the same folder with simple's executable.");
 
 }
 
-bool lua_lang_init::callFunction(const char* name)
+void lua_lang_init::pushFloat(float value)
 {
-   lua_getglobal(m_L, name);
-  //if(!lua_isfunction(m_L, 1)){
-    //LOG("Error: function " << name << " should have been created in your main.lua file!");
-  //}
-  lua_call(m_L, 0, 0);
+  lua_pushnumber(m_L, value);
+}
 
+bool lua_lang_init::callFunction(std::string name)
+{
+  lua_getglobal(m_L, name.c_str());
+  //if(!lua_isfunction(m_L, 1)){
+  //LOG("Error: function " << name << " should have been created in your main.lua file!");
+  //}
+  if(name == "simple_update"){
+    lua_pushnumber(m_L,c->getWindow()->getDeltaTime());
+    lua_call(m_L, 1, 0);
+  }else{
+    lua_call(m_L, 0, 0);
+  }
   return true;
 }
 
@@ -444,10 +456,10 @@ int lua_lang_init::createDefaultShader(lua_State* L)
   default_shaders df;
 
 #ifndef EMSCRIPTEN
-     s->create(df.gl_texture_vertex.c_str(), df.gl_texture_fragment.c_str());
+  s->create(df.gl_texture_vertex.c_str(), df.gl_texture_fragment.c_str());
 #endif
 #ifdef EMSCRIPTEN
-     s->create(df.gl_es_texture_vertex.c_str(), df.gl_es_texture_fragment.c_str());
+  s->create(df.gl_es_texture_vertex.c_str(), df.gl_es_texture_fragment.c_str());
 #endif
 
   pushPointer(L, s);
@@ -720,7 +732,7 @@ int lua_lang_init::isKeyDown(lua_State* L)
   luaL_checkstring(L, 1);
   const char* key = lua_tostring(L, 1);
   if(k->isKeyDown(key))
-   return 1;
+    return 1;
   else
     return 0;
   return 0;

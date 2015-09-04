@@ -3,29 +3,29 @@ cmake_minimum_required(VERSION 2.8)
 project(simple)
 
 FILE(
-GLOB SOURCE_FILES
-src/maths/*.h
-src/maths/*.cpp
+  GLOB SOURCE_FILES
+  src/maths/*.h
+  src/maths/*.cpp
 
-src/graphics/*.cpp
-src/graphics/*.c
-src/graphics/*.h
+  src/graphics/*.cpp
+  src/graphics/*.c
+  src/graphics/*.h
 
-src/window/*.cpp
-src/window/*.h
+  src/window/*.cpp
+  src/window/*.h
 
-src/utils/*.cpp
-src/utils/*.h
+  src/utils/*.cpp
+  src/utils/*.h
 
-src/input/*.cpp
-src/input/*.h
+  src/input/*.cpp
+  src/input/*.h
 
-src/sound/*.cpp
-src/sound/*.h
+  src/sound/*.cpp
+  src/sound/*.h
 
-src/*.h
-src/*.cpp
-)
+  src/*.h
+  src/*.cpp
+  )
 
 ## Set version and info
 set(simple_major_version 0)
@@ -50,7 +50,7 @@ add_executable(
   ${SOURCE_FILES}
   deps/glew/src/glew.c
   deps/stb_image/stb_image.c
-)
+  )
 
 #freetype
 add_subdirectory(deps/freetype)
@@ -73,7 +73,34 @@ if(UNIX)
     ${GLFW_LIBRARIES} ${FREETYPE_LIBRARIES} ${LUA_LIBRARIES})
 endif()
 
-if(MINGW)
+IF(WIN32)
+  FIND_PACKAGE(OpenGL REQUIRED)
+
+  LINK_DIRECTORIES("$ENV{DXSDK_DIR}/Lib/$ENV{PROCESSOR_ARCHITECTURE}")
+  SET(SDL_BUILDING_LIBRARY ON)
+  SET(USE_NETWORKING FALSE)
+
+  IF(SSE2_TRUE)
+    SET(SSE_FLAG /arch:SSE2)
+  ELSEIF(SSE_TRUE)
+    SET(SSE_FLAG /arch:SSE)
+  ENDIF()
+
+  SET(flag_var "/MD")
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /EHsc /nologo /GR /FC /DWIN32 /D_MBCS")
+  SET(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /Z7 /W4 /Od /MDd /D_DEBUG /D__Debug__")
+  SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /W1 /O2 /Ot /MD /DNDEBUG /fp:fast ${SSE_FLAG}")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  /EHsc /nologo /GR /FC /DWIN32 /D_MBCS")
+  SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Z7 /W4 /Od /MDd /D_DEBUG /D__Debug__")
+  SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /W1 /O2 /Ot /MD /DNDEBUG /fp:fast ${SSE_FLAG}")
+
+
+  SET(FREETYPE_LIBRARY "freetype")
+  SET(GLFW_LIBRARY "glfw")
+  SET(OPENAL_LIBRARY "OpenAL32")
+ENDIF(WIN32)
+
+if(WIN32)
   target_link_libraries(simple ws2_32.lib glfw
     ${GLFW_LIBRARIES} ${FREETYPE_LIBRARIES} ${LUA_LIBRARIES})
 endif()

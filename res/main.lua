@@ -45,16 +45,14 @@ function simple_draw()
 end
 
 local timer = 2;
-function simple_update()
-
-
-  rotation = rotation + 108 * simple.time.delta();
+function simple_update(delta)
+  rotation = rotation + 108 * delta;
 
   if simple.input.isKeyDown("d") then
-     x = x + 120 * simple.time.delta();
+     x = x + 120 * delta;
   end
   if simple.input.isKeyDown("a") then
-     x = x - 120 * simple.time.delta();
+     x = x - 120 * delta;
   end
 end
 

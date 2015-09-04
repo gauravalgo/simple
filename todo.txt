@@ -1,13 +1,20 @@
-v 0.2.
+v 0.2.1
 -keyboard -done
 -mouse -done
 -lua api like love's -done
 -clean up - done
 -emscripten - done
--window & mac build system -wip
--emscripten build system -wip
+-window & mac build system -done
+-emscripten build system -done
 
 v 0.2.2
 -versatile shaders inside lua 
 -sound
--allow animations inside batch2d
+-allow animations inside lua using batch2d class
+
+v 0.3.0
+-find bugs and get ride of them
+-start making samples
+-youtube tutorials
+-test emscripten on windows and mac(that should 99% work)?
+-???
