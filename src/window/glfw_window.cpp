@@ -190,8 +190,6 @@ void glfw_window::create(const char *title, int width, int height, bool fullscre
     if(!m_running)
       return;
 
-    calculateDeltaTime();
-
     //limit fps to 60
     if(m_vsync)
       glfwSwapInterval(1);

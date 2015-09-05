@@ -58,6 +58,11 @@ set(FREETYPE_INCLUDE_DIR deps/freetype/include)
 set(FREETYPE_LIBRARIES freetype)
 include_directories(deps/freetype/include)
 
+#openal
+add_subdirectory(deps/openal)
+set(OPENAL_INCLUDE_DIR deps/openal/include)
+set(OPENAL_LIBRARIES "${OPENAL_LIBRARY}")
+
 #lua
 add_subdirectory(deps/lua)
 set(LUA_INCLUDE_DIR deps/lua/ ${CMAKE_BINARY_DIR}/deps/lua/)
@@ -65,12 +70,12 @@ SET(LUA_LIBRARIES lua)
 
 if(APPLE)
   target_link_libraries(simple glfw
-    ${GLFW_LIBRARIES} ${FREETYPE_LIBRARIES} ${LUA_LIBRARIES})
+    ${GLFW_LIBRARIES} openal ${OPENAL_LIBRARIES} ${FREETYPE_LIBRARIES} ${LUA_LIBRARIES})
 endif()
 
 if(UNIX)
   target_link_libraries(simple dl glfw
-    ${GLFW_LIBRARIES} ${FREETYPE_LIBRARIES} ${LUA_LIBRARIES})
+    ${GLFW_LIBRARIES} openal ${OPENAL_LIBRARIES} ${FREETYPE_LIBRARIES} ${LUA_LIBRARIES})
 endif()
 
 IF(WIN32)
@@ -102,5 +107,5 @@ ENDIF(WIN32)
 
 if(WIN32)
   target_link_libraries(simple ws2_32.lib glfw
-    ${GLFW_LIBRARIES} ${FREETYPE_LIBRARIES} ${LUA_LIBRARIES})
+    ${GLFW_LIBRARIES} openal ${OPENAL_LIBRARIES} ${FREETYPE_LIBRARIES} ${LUA_LIBRARIES})
 endif()
