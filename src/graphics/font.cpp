@@ -29,14 +29,18 @@ using namespace simple::graphics;
 
 #include "shader.h"
 
-font::font()
-{
-  
-}
+font::font():
+  r(1),
+  g(1),
+  b(1),
+  a(1)
+{}
 
 font::~font()
 {
+  // Destroy FreeType once we're finished
   FT_Done_Face(face);
+  //FT_Done_FreeType(ft);
 }
 
 /// Holds all state information relevant to a character as loaded using FreeType
@@ -50,7 +54,7 @@ std::map<GLchar, Character> Characters;
 GLuint vbo;
 
 uint tex;
-void font::load(FT_Library ft, shader* s, const char* fontPath)
+void font::load(FT_Library ft, shader* s, const char* fontPath, float size)
 {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -60,7 +64,7 @@ void font::load(FT_Library ft, shader* s, const char* fontPath)
   }
 
   // Set size to load glyphs as
-  FT_Set_Pixel_Sizes(face, 0, 24);
+  FT_Set_Pixel_Sizes(face, 0, size);
 
   // Disable byte-alignment restriction
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -104,9 +108,6 @@ void font::load(FT_Library ft, shader* s, const char* fontPath)
     Characters.insert(std::pair<GLchar, Character>(c, character));
   }
   glBindTexture(GL_TEXTURE_2D, 0);
-  // Destroy FreeType once we're finished
-  FT_Done_Face(face);
-  FT_Done_FreeType(ft);
 
   m_co = glGetAttribLocation(s->getProgram(), "position");
   glEnableVertexAttribArray(m_co);
@@ -121,10 +122,9 @@ void font::load(FT_Library ft, shader* s, const char* fontPath)
   glVertexAttribPointer(m_tex_attribute, 2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(6*sizeof(float)));
 }
 
-void font::draw(std::string text, shader* s, float x, float y, float sx, float sy, float r, float g, float b)
+void font::draw(std::string text, shader* s, float x, float y, float sx, float sy, float r, float g, float b, float a)
 {
   glUseProgram(s->getProgram());
-  //glUniform3f(glGetUniformLocation(s->getProgram(), "Color"), r, g, b);
   glActiveTexture(GL_TEXTURE0);
 
   // Iterate through all characters
@@ -138,17 +138,18 @@ void font::draw(std::string text, shader* s, float x, float y, float sx, float s
 
     GLfloat w = ch.Size.x * sx;
     GLfloat h = ch.Size.y * sy;
+    float scale = 1.0f / 255.0f;
     // Update VBO for each character
     GLfloat vertices[6][8] = {
-      { xpos,     ypos - h,   1,1,1,1, 0.0, 0.0 },
-      { xpos,     ypos,       1,1,1,1, 0.0, 1.0 },
-      { xpos + w, ypos,       1,1,1,1, 1.0, 1.0 },
+      { xpos,     ypos - h,   scale * r, scale * g, scale * b, scale * a, 0.0, 0.0 },
+      { xpos,     ypos,       scale * r, scale * g, scale * b, scale * a, 0.0, 1.0 },
+      { xpos + w, ypos,       scale * r, scale * g, scale * b, scale * a, 1.0, 1.0 },
 
-      { xpos,     ypos - h,   1,1,1,1, 0.0, 0.0 },
-      { xpos + w, ypos,       1,1,1,1, 1.0, 1.0 },
-      { xpos + w, ypos - h,   1,1,1,1, 1.0, 0.0 }
+      { xpos,     ypos - h,   scale * r, scale * g, scale * b, scale * a, 0.0, 0.0 },
+      { xpos + w, ypos,       scale * r, scale * g, scale * b, scale * a, 1.0, 1.0 },
+      { xpos + w, ypos - h,   scale * r, scale * g, scale * b, scale * a, 1.0, 0.0 }
     };
-    //glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
     // Render glyph texture over quad
     glBindTexture(GL_TEXTURE_2D, ch.TextureID);
     glBufferData(GL_ARRAY_BUFFER, sizeof vertices, vertices, GL_DYNAMIC_DRAW);

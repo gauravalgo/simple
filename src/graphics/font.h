@@ -38,10 +38,11 @@ namespace simple
       int m_coord;
       int m_tex;
       uint m_co;
-      uint m_unitex; 
+      uint m_unitex;
+      float r,g,b,a;
     public:
-      void load(FT_Library ft, shader* s, const char* fontPath);
-      void draw(std::string text, shader* s, float x, float y, float sx, float sy, float r, float g, float b);
+      void load(FT_Library ft, shader* s, const char* fontPath, float size);
+      void draw(std::string text, shader* s, float x, float y, float sx, float sy, float r, float g, float b, float a);
       void setFontSize(int size);
       void begin();
       void end();

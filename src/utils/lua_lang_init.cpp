@@ -378,8 +378,8 @@ int lua_lang_init::clearScreen(lua_State* L)
   float g = lua_tonumber(L, 2);
   float b = lua_tonumber(L, 3);
   float a = lua_tonumber(L, 4);
-
-  c->getGLGraphics()->clearScreen(r, g, b, a);
+  float scale = 1.0f / 255.0f;
+  c->getGLGraphics()->clearScreen(scale * r, scale * g, scale * b, scale * a);
 
   return 1;
 }
@@ -476,7 +476,10 @@ int lua_lang_init::createDefaultShader(lua_State* L)
     s->create(df.gl_font_vertex.c_str(), df.gl_font_fragment.c_str());
 #endif
 #ifdef EMSCRIPTEN
-  s->create(df.gl_es_texture_vertex.c_str(), df.gl_es_texture_fragment.c_str());
+  if(type == "texture")
+    s->create(df.gl_es_texture_vertex.c_str(), df.gl_es_texture_fragment.c_str());
+  else if (type == "font")
+    s->create(df.gl_es_font_vertex.c_str(), df.gl_es_font_fragment.c_str());
 #endif
 
   pushPointer(L, s);
@@ -570,26 +573,16 @@ int lua_lang_init::createFont(lua_State *L)
     LOG("Error: Could not init freetype lib!");
     return 0;
   }
+  float size = 16;
+  if(lua_isnumber(L, 3)){
+    size = lua_tonumber(L, 3);
+  }
+
   if(s == getShader(shID)){
     f = new font();
-    f->load(freetype, s, path);
+    f->load(freetype, s, path, size);
     pushPointer(L, f);
   }
-  return 1;
-}
-
-int lua_lang_init::setFontSize(lua_State *L)
-{
-  font* f;
-  luaL_checkinteger(L, 1);
-  luaL_checknumber(L, 2);
-
-  lua_Integer fID = lua_tointeger(L, 1);
-  lua_Integer size = lua_tonumber(L, 2);
-
-  f = getFont(fID);
-  if(f == getFont(fID))
-    f->setFontSize(size);
   return 1;
 }
 
@@ -608,6 +601,9 @@ int lua_lang_init::drawFont(lua_State *L)
   luaL_checknumber(L, 9);
   luaL_checknumber(L, 10);
 
+  float a = 1;
+  if(lua_isnumber(L, 11))
+    a = lua_tonumber(L, 11);
 
   lua_Integer fID = lua_tointeger(L, 1);
   lua_Integer sID = lua_tointeger(L, 2);
@@ -622,8 +618,9 @@ int lua_lang_init::drawFont(lua_State *L)
 
   f = getFont(fID);
   s = getShader(sID);
+
   if(f == getFont(fID) && s == getShader(sID))
-    f->draw(text, s, x, y, sx, sy, r, g, b);
+    f->draw(text, s, x, y, sx, sy, r, g, b, a);
   return 1;
 }
 
@@ -927,7 +924,6 @@ int lua_lang_init::initMath(lua_State *L)
   return 1;
 }
 
-
 int lua_lang_init::initGraphics(lua_State *L)
 {
   luaL_Reg reg[] = {
@@ -948,7 +944,6 @@ int lua_lang_init::initGraphics(lua_State *L)
     {"setViewport", setViewport},
     {"drawFont", drawFont},
     {"beginFont", beginFont},
-    {"setFontSize", setFontSize},
     {"newFont", createFont},
     {"endFont", endFont},
     {0, 0},
