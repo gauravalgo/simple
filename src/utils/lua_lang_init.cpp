@@ -537,7 +537,7 @@ int lua_lang_init::setOrthoView(lua_State *L)
     // s->bind();
     s->sendUniformLocation("proj", projection);
   }
-    return 1;
+  return 1;
 }
 
 //TODO later
@@ -653,8 +653,12 @@ int lua_lang_init::createBatch(lua_State *L)
   isObjectError(L, 1, "makeBatch -> shader");
   lua_Integer shID = lua_tointeger(L, 1);
   s = getShader(shID);
+  int limit = 9000;
+  if(lua_isinteger(L, 2))
+    limit = lua_tointeger(L, 2);
+
   if(s == getShader(shID)){
-    batch = new batch2d(s, 9000);
+    batch = new batch2d(s, limit);
     batch->create();
     pushPointer(L, batch);
   }
@@ -694,51 +698,55 @@ int lua_lang_init::drawBatch(lua_State *L)
     luaL_checknumber(L, 3);
     luaL_checknumber(L, 4);
     luaL_checknumber(L, 5);
-
     float x = lua_tonumber(L, 2);
     float y = lua_tonumber(L, 3);
     float w = lua_tonumber(L, 4);
     float h = lua_tonumber(L, 5);
 
     float rotation = 0;
-    if(lua_isnumber(L, 6)){
-      luaL_checknumber(L, 6);
+    if(lua_isnumber(L, 6))
       rotation = lua_tonumber(L, 6);
-    }
-    if(rotation == 0){
-      batch->draw(x, y, w, h);
-    }else{
-      float originX = w * 0.5f;
-      float originY = h * 0.5f;
-      if(lua_isnumber(L, 7) && lua_isnumber(L, 8)){
-        luaL_checknumber(L, 7);
-        luaL_checknumber(L, 8);
+    float originX = w * 0.5f;
+    if(lua_isnumber(L, 7))
+      originX = lua_tonumber(L, 7);
+    float originY = h * 0.5f;
+     if(lua_isnumber(L, 8))
+       originY = lua_tonumber(L, 8);
+     float srcX = 0;
+     if(lua_tonumber(L, 9))
+      srcX = lua_tonumber(L, 9);
+     float srcY = 0;
+     if(lua_tonumber(L, 10))
+      srcY = lua_tonumber(L, 10);
+     float srcWidth = w;
+     if(lua_tonumber(L,11))
+       srcWidth = lua_tonumber(L, 11);
+     float srcHeight = h;
+     if(lua_tonumber(L,12))
+       srcHeight = lua_tonumber(L, 12);
+     bool flipX = false;
+     if(lua_toboolean(L, 13))
+       flipX = lua_toboolean(L, 13);
+     bool flipY = false;
+     if(lua_toboolean(L, 14))
+       flipY = lua_toboolean(L, 14);
+     float r = 1;
+     if(lua_tonumber(L,15))
+       r = (1.0f/255.0f)*lua_tonumber(L, 15);
+     float g = 1;
+     if(lua_tonumber(L,16))
+       g = (1.0f/255.0f)*lua_tonumber(L, 16);
+     float b = 1;
+     if(lua_tonumber(L,17))
+       b = (1.0f/255.0f)*lua_tonumber(L, 17);
+     float a = 1;
+     if(lua_tonumber(L,18))
+       a = (1.0f/255.0f)*lua_tonumber(L, 18);
 
-        originX = lua_tonumber(L, 7);
-        originY = lua_tonumber(L, 8);
-      }
-      float r = 1;
-      float g = 1;
-      float b = 1;
-      float a = 1;
-      if(lua_isnumber(L, 9) && lua_isnumber(L, 10) && lua_isnumber(L, 11)){
-        luaL_checknumber(L, 9);
-        luaL_checknumber(L, 10);
-        luaL_checknumber(L, 11);
-        if(lua_isnumber(L, 12)){
-          luaL_checknumber(L, 12);
-          a = lua_tonumber(L, 12);
-        }
+     batch->draw(x, y, w, h, rotation, originX, originY, srcX, srcY, srcWidth, srcHeight, flipX, flipY, r, g, b, a);
+}
 
-        r = lua_tonumber(L, 9);
-        g = lua_tonumber(L, 10);
-        b = lua_tonumber(L, 11);
-      }
-      batch->draw(x, y, w, h, rotation, originX, originY, r, g, b, a);
-    }
-  }
-
-  return 1;
+return 1;
 }
 
 int lua_lang_init::endBatch(lua_State* L)
