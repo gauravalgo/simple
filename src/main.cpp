@@ -1,14 +1,3 @@
-
-/*
-#define NO_SDL_GLEXT
-#include <GL/glew.h>
-#include <GL/gl.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_opengl.h>
-
-#include <SDL.h>
-*/
-
 #ifdef EMSCRIPTEN
 # include <emscripten.h>
 #endif
@@ -24,6 +13,11 @@ void update_em();
 
 lua_lang_init* lua_init;
 
+void playsound()
+{
+
+}
+
 void update_simple()
 {
   lua_init->getCore()->getWindow()->calculateDeltaTime();
@@ -37,7 +31,7 @@ void render_simple()
 
 int main()
 {
-
+  playsound();
   //Init Simple!
   lua_init = new lua_lang_init();
   lua_init->create();
@@ -49,12 +43,17 @@ int main()
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+
 #ifndef EMSCRIPTEN
   while(lua_init->getCore()->getWindow()->getRunning())
   {
     render_simple();
     update_simple();
     lua_init->getCore()->getWindow()->update();
+    GLenum err = GL_NO_ERROR;
+    while((err = glGetError()) != GL_NO_ERROR){
+      LOG("OpenGL error: " << err);
+    }
   }
 #endif
 #ifdef EMSCRIPTEN
@@ -73,6 +72,11 @@ void update_em()
   render_simple();
   lua_init->getCore()->getWindow()->calculateDeltaTime();
   update_simple();
+
+  GLenum err = GL_NO_ERROR;
+  while((err = glGetError()) != GL_NO_ERROR){
+    LOG("OpenGL error: " << err);
+  }
 
 //limit fps to 60
   if(lua_init->getCore()->getWindow()->getVSync())

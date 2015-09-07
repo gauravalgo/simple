@@ -50,6 +50,7 @@ add_executable(
   ${SOURCE_FILES}
   deps/glew/src/glew.c
   deps/stb_image/stb_image.c
+  deps/stb_vorbis.c
   )
 
 #freetype

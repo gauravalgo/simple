@@ -109,9 +109,6 @@ void shader::create(const char* vertexShaderFilename,
       glDeleteShader(m_vertexShaderID);
       glDeleteShader(m_fragmentShaderID);
     }
-
-  glUseProgram(m_program);
-  
   if (DEBBUG)
     LOG("Shader compiled and ready to be used!");
 }
@@ -131,7 +128,7 @@ void shader::bind()
 
 void shader::unbind()
 {
-  glUseProgram(0);
+  // glUseProgram(0);
 }
 
 

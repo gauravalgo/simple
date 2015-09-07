@@ -75,6 +75,12 @@ namespace simple
                   static int loadTexture(lua_State* L);
                   static int bindTexture(lua_State* L);
                   static int unBindTexture(lua_State* L);
+                  //-Font
+                  static int createFont(lua_State* L);
+                  static int drawFont(lua_State* L);
+                  static int beginFont(lua_State* L);
+                  static int endFont(lua_State* L);
+                  static int setFontSize(lua_State* L);
                   //-Batch
                   static int createBatch(lua_State* L);
                   static int drawBatch(lua_State* L);

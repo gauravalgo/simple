@@ -9,16 +9,17 @@ using namespace std;
 
 string default_shaders::gl_font_fragment =
         "#version 130\n"
-        "in vec4 Color;"
+        "uniform vec3 Color;"
         "in vec2 Texcoords;"
         "uniform sampler2D tex;"
         "void main(void) {"
-        "gl_FragColor = texture2D(tex,Texcoords).r * Color;"
+        "vec4 sampled = vec4(1.0, 1.0, 1.0, texture(tex, Texcoords).r);"
+        "gl_FragColor = vec4(Color, 1.0) * sampled;"
         "}";
 
 string default_shaders::gl_font_vertex =
         "#version 130\n"
-        "in vec2 position;"
+        "in vec4 position;"
         "in vec4 color;"
         "in vec2 texcoords;"
 
@@ -29,8 +30,8 @@ string default_shaders::gl_font_vertex =
 
         "void main(void) {"
         "Color = color;"
-        "Texcoords = texcoords;"
-        "gl_Position = proj *  vec4(position, 0.0f, 1.0f);"
+        "gl_Position = proj *  vec4(position.xy, 0.0f, 1.0f);"
+        "Texcoords = position.zw;"
         "}";
 
 string default_shaders::gl_es_texture_fragment =

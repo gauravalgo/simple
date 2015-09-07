@@ -250,8 +250,7 @@ void batch2d::draw(float x, float y, float width, float height, float rotation, 
     return;
   }
 
-
-  if(rotation != 0){
+if(rotation != 0){
     _cos = cos(RADIANS(rotation));
     _sin = sin(RADIANS(rotation));
 
@@ -677,6 +676,7 @@ void batch2d::draw(float x, float y, float width, float height, float* textureco
 void batch2d::renderMesh()
 {
   if(m_numSprite > 0){
+    glUseProgram(m_shader->getProgram());
     glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_DYNAMIC_DRAW);
     // m_texture->bind();
     glDrawElements(GL_TRIANGLES, m_numSprite * 6, GL_UNSIGNED_SHORT, 0);
@@ -687,7 +687,6 @@ void batch2d::renderMesh()
 void batch2d::begin()
 {
   glDepthMask(false);
-
   m_index = 0;
   m_numSprite = 0;
 

@@ -19,7 +19,7 @@ namespace simple
   public:
     GLFWwindow* window;
   public:
-    void create(const char* title, int width, int height, bool fullscreen);
+    void create(const char* title, int width, int height, bool fullscreen, bool resizable);
     void update();
     void setDeltaTime(float dt){m_delta = dt;}
     //@parm x: -1 = find center @parm y: -1 = find center
@@ -31,6 +31,7 @@ namespace simple
     void destroy();
     void initInput();
     void calculateDeltaTime();
+    void setResizable(bool value);
   private:
     void calculateFPS();
     static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);

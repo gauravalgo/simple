@@ -19,6 +19,7 @@
 #include "../window/glfw_window.h"
 #include "../graphics/gl_graphics.h"
 #include "../graphics/texture2D.h"
+#include "../graphics/font.h"
 #include "../graphics/batch2d.h"
 #include "../graphics/shader.h"
 #include "../graphics/default_shaders.h"
@@ -36,6 +37,9 @@ using namespace simple::input;
 #ifdef EMSCRIPTEN
 # include <emscripten.h>
 #endif
+
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 extern "C" {
 #include "../../deps/lua/lua.h"
@@ -79,7 +83,7 @@ void lua_lang_init::makeDefaultWindow()
 {
   //Did the user forgot to make his own window?
   if(default_window){
-    c->getWindow()->create("Simple - No Title!", 800, 600, false);
+    c->getWindow()->create("Simple - No Title!", 800, 600, false, false);
     c->getWindow()->setVSync(true); //don't melt the CPU
     c->getGLGraphics()->setViewport(0, 0, 800, 600);
   }
@@ -173,6 +177,15 @@ static batch2d* getBatch(LUA_INTEGER batch)
   return (batch2d*)batch;
 }
 
+static font* getFont(LUA_INTEGER value)
+{
+  if(value == 0){
+    LOG("Font: " << value << "does not exist");
+    return NULL;
+  }
+  return (font*)value;
+}
+
 static shader* getShader(LUA_INTEGER value)
 {
   if(value == 0){
@@ -248,17 +261,20 @@ int lua_lang_init::makeWindow(lua_State* L)
   int width = lua_tonumber(L,2);
   int height = lua_tonumber(L, 3);
   bool fullscreen = false;
-  int x = -1; //set a default position for our window
+  bool resizable = false;
+  int x = -1;
   int y = -1;
   //Optional
-  if(lua_isnumber(L, 4)){
+  if(lua_isnumber(L, 4))
     fullscreen = lua_tonumber(L, 4);
-  }
+  if(lua_isnumber(L, 5))
+    resizable = lua_tonumber(L, 5);
+
   if(lua_isnumber(L, 5) && lua_isnumber(L, 6)){
     x = lua_tonumber(L, 5);
     y = lua_tonumber(L, 6);
   }
-  c->getWindow()->create(title, width, height, fullscreen);
+  c->getWindow()->create(title, width, height, fullscreen, resizable);
   c->getWindow()->setPosition(x, y);
   return 1;
 }
@@ -450,8 +466,14 @@ int lua_lang_init::createDefaultShader(lua_State* L)
 
   default_shaders df;
 
+  luaL_checkinteger(L, 1);
+  int type = luaL_checkinteger(L, 1);
+
 #ifndef EMSCRIPTEN
-  s->create(df.gl_texture_vertex.c_str(), df.gl_texture_fragment.c_str());
+  if (type == 1)
+    s->create(df.gl_texture_vertex.c_str(), df.gl_texture_fragment.c_str());
+  else if(type == 2)
+    s->create(df.gl_font_vertex.c_str(), df.gl_font_fragment.c_str());
 #endif
 #ifdef EMSCRIPTEN
   s->create(df.gl_es_texture_vertex.c_str(), df.gl_es_texture_fragment.c_str());
@@ -529,6 +551,99 @@ int lua_lang_init::sendShaderUniformLocation(lua_State *L)
     s->sendUniformLocation(location, data);
   }
 
+  return 1;
+}
+
+int lua_lang_init::createFont(lua_State *L)
+{
+  font* f;
+  shader* s;
+  isObjectError(L, 1, "makeBatch -> shader");
+  lua_Integer shID = lua_tointeger(L, 1);
+  s = getShader(shID);
+  luaL_checkstring(L, 2);
+  const char* path = lua_tostring(L, 2);
+  FT_Library freetype;
+  if(FT_Init_FreeType(&freetype)){
+    LOG("Error: Could not init freetype lib!");
+    return 0;
+  }
+  if(s == getShader(shID)){
+    f = new font();
+    f->load(freetype, s, path);
+    pushPointer(L, f);
+  }
+  return 1;
+}
+
+int lua_lang_init::setFontSize(lua_State *L)
+{
+  font* f;
+  luaL_checkinteger(L, 1);
+  luaL_checknumber(L, 2);
+
+  lua_Integer fID = lua_tointeger(L, 1);
+  lua_Integer size = lua_tonumber(L, 2);
+
+  f = getFont(fID);
+  if(f == getFont(fID))
+    f->setFontSize(size);
+  return 1;
+}
+
+int lua_lang_init::drawFont(lua_State *L)
+{
+  font* f;
+  shader* s;
+  luaL_checkinteger(L, 1);
+  luaL_checkinteger(L, 2);
+  luaL_checkstring(L, 3);
+  luaL_checknumber(L, 4);
+  luaL_checknumber(L, 5);
+  luaL_checknumber(L, 6);
+  luaL_checknumber(L, 7);
+  luaL_checknumber(L, 8);
+  luaL_checknumber(L, 9);
+  luaL_checknumber(L, 10);
+
+
+  lua_Integer fID = lua_tointeger(L, 1);
+  lua_Integer sID = lua_tointeger(L, 2);
+  const char* text = lua_tostring(L, 3);
+  float x = lua_tonumber(L, 4);
+  float y = lua_tonumber(L, 5);
+  float sx = lua_tonumber(L, 6);
+  float sy = lua_tonumber(L, 7);
+  float r = lua_tonumber(L, 8);
+  float g = lua_tonumber(L, 9);
+  float b = lua_tonumber(L, 10);
+
+  f = getFont(fID);
+  s = getShader(sID);
+  if(f == getFont(fID) && s == getShader(sID))
+    f->draw(text, s, x, y, sx, sy, r, g, b);
+  return 1;
+}
+
+int lua_lang_init::beginFont(lua_State *L)
+{
+  font* f;
+  luaL_checkinteger(L, 1);
+  lua_Integer fID = lua_tointeger(L, 1);
+  f = getFont(fID);
+  if(f == getFont(fID))
+    f->begin();
+  return 1;
+}
+
+int lua_lang_init::endFont(lua_State *L)
+{
+  font* f;
+  luaL_checkinteger(L, 1);
+  lua_Integer fID = lua_tointeger(L, 1);
+  f = getFont(fID);
+  if(f == getFont(fID))
+    f->end();
   return 1;
 }
 
@@ -829,6 +944,11 @@ int lua_lang_init::initGraphics(lua_State *L)
     {"drawBatch", drawBatch},
     {"clearScreen", clearScreen},
     {"setViewport", setViewport},
+    {"drawFont", drawFont},
+    {"beginFont", beginFont},
+    {"setFontSize", setFontSize},
+    {"newFont", createFont},
+    {"endFont", endFont},
     {0, 0},
   };
   luaL_newlib(L, reg);

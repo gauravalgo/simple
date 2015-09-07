@@ -19,8 +19,9 @@
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
-
 #include "shader.h"
+#include <iostream>
+#include <string>
 
 namespace simple
 {
@@ -32,7 +33,7 @@ namespace simple
       font();
       ~font();
     private:
-      FT_Face m_face;
+      FT_Face face;
       FT_GlyphSlot m_glyph;
       int m_coord;
       int m_tex;
@@ -40,9 +41,8 @@ namespace simple
       uint m_unitex; 
     public:
       void load(FT_Library ft, shader* s, const char* fontPath);
-      void draw(const char* text, float x, float y, float sx, float sy);
+      void draw(std::string text, shader* s, float x, float y, float sx, float sy, float r, float g, float b);
       void setFontSize(int size);
-      void setColor(shader* s, float r, float g, float b, float a);
       void begin();
       void end();
     };
