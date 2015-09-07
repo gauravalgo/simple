@@ -29,10 +29,14 @@ void render_simple()
   lua_init->callFunction("simple_draw");
 }
 
+uint m_vbo;
+uint m_ebo;
+
 int main()
 {
   playsound();
   //Init Simple!
+
   lua_init = new lua_lang_init();
   lua_init->create();
   lua_init->registerFunctions();
@@ -60,7 +64,9 @@ int main()
   emscripten_set_main_loop(update_em, 0, 0);
 #endif
   //lua_init->callFunction("simple_dumb");
-  //lua_init->dumb();
+  glDeleteBuffers(1, &m_vbo);
+  glDeleteBuffers(1, &m_ebo);
+  lua_init->dumb();
   return 1;
 }
 

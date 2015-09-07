@@ -123,12 +123,12 @@ void shader::bind()
 {
   if(m_program == 0)
     LOG("Error: shader, create method must be called first!");
-  glUseProgram(m_program);
+   glUseProgram(getProgram());
 }
 
 void shader::unbind()
 {
-  // glUseProgram(0);
+  // glUseProgram(0); wrong
 }
 
 

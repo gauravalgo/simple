@@ -466,13 +466,13 @@ int lua_lang_init::createDefaultShader(lua_State* L)
 
   default_shaders df;
 
-  luaL_checkinteger(L, 1);
-  int type = luaL_checkinteger(L, 1);
+  luaL_checkstring(L, 1);
+  std::string type = luaL_checkstring(L, 1);
 
 #ifndef EMSCRIPTEN
-  if (type == 1)
+  if (type == "texture")
     s->create(df.gl_texture_vertex.c_str(), df.gl_texture_fragment.c_str());
-  else if(type == 2)
+  else if(type == "font")
     s->create(df.gl_font_vertex.c_str(), df.gl_font_fragment.c_str());
 #endif
 #ifdef EMSCRIPTEN
@@ -530,9 +530,11 @@ int lua_lang_init::setOrthoView(lua_State *L)
   int shid = lua_tointeger(L, 7);
 
   s = getShader(shid);
-  if(s == getShader(shid))
+  if(s == getShader(shid)){
+    // s->bind();
     s->sendUniformLocation("proj", projection);
-  return 1;
+  }
+    return 1;
 }
 
 //TODO later
@@ -864,7 +866,7 @@ int lua_lang_init::isKeyUp(lua_State* L)
 
 static int getVersion(lua_State *L)
 {
-  LOG("Simple - cracking bottles- version 0.2.1");
+  LOG("simple - cracking bottles- version 0.2.1");
   return 1;
 }
 

@@ -49,13 +49,12 @@ batch2d::~batch2d()
   glDisableVertexAttribArray(m_tex_attribute);
   glDisableVertexAttribArray(m_position_attribute);
   glDisableVertexAttribArray(m_color_attribute);
-  glDeleteBuffers(1, &m_vbo);
-  glDeleteBuffers(1, &m_ebo);
 }
 
 void batch2d::create()
 {
-  glGenBuffers(2, &m_vbo);
+
+  glGenBuffers(1, &m_vbo);
   glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_STATIC_DRAW);
 
@@ -89,7 +88,6 @@ void batch2d::create()
   glGenBuffers(2, &m_ebo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_indices), m_indices, GL_STATIC_DRAW);
-
 }
 
 void batch2d::draw( float x, float y, float width, float height)
@@ -245,12 +243,14 @@ void batch2d::draw(float x, float y, float width, float height, float rotation)
 
 void batch2d::draw(float x, float y, float width, float height, float rotation, float originX, float originY)
 {
+
   if(m_numSprite >= m_SIZE){
     LOG("Error: You're trying to draw more than " << m_SIZE << " sprites!");
     return;
   }
 
-if(rotation != 0){
+
+  if(rotation != 0){
     _cos = cos(RADIANS(rotation));
     _sin = sin(RADIANS(rotation));
 
@@ -676,7 +676,10 @@ void batch2d::draw(float x, float y, float width, float height, float* textureco
 void batch2d::renderMesh()
 {
   if(m_numSprite > 0){
-    glUseProgram(m_shader->getProgram());
+    //glUseProgram(m_shader->getProgram());
+    // glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+
     glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_DYNAMIC_DRAW);
     // m_texture->bind();
     glDrawElements(GL_TRIANGLES, m_numSprite * 6, GL_UNSIGNED_SHORT, 0);

@@ -105,22 +105,26 @@ void font::load(FT_Library ft, shader* s, const char* fontPath)
   }
   glBindTexture(GL_TEXTURE_2D, 0);
   // Destroy FreeType once we're finished
-  //FT_Done_Face(face);
-  //FT_Done_FreeType(ft);
-
-
-  glGenBuffers(1, &vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  FT_Done_Face(face);
+  FT_Done_FreeType(ft);
 
   m_co = glGetAttribLocation(s->getProgram(), "position");
   glEnableVertexAttribArray(m_co);
-  glVertexAttribPointer(m_co, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+  glVertexAttribPointer(m_co, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
+
+  uint m_color_attribute = glGetAttribLocation(s->getProgram(), "color");
+  glEnableVertexAttribArray(m_color_attribute);
+  glVertexAttribPointer(m_color_attribute, 4, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(2*sizeof(float)));
+
+  uint m_tex_attribute = glGetAttribLocation(s->getProgram(), "texcoords");
+  glEnableVertexAttribArray(m_tex_attribute);
+  glVertexAttribPointer(m_tex_attribute, 2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(6*sizeof(float)));
 }
-const char *p;
+
 void font::draw(std::string text, shader* s, float x, float y, float sx, float sy, float r, float g, float b)
 {
   glUseProgram(s->getProgram());
-  glUniform3f(glGetUniformLocation(s->getProgram(), "Color"), r, g, b);
+  //glUniform3f(glGetUniformLocation(s->getProgram(), "Color"), r, g, b);
   glActiveTexture(GL_TEXTURE0);
 
   // Iterate through all characters
@@ -135,15 +139,16 @@ void font::draw(std::string text, shader* s, float x, float y, float sx, float s
     GLfloat w = ch.Size.x * sx;
     GLfloat h = ch.Size.y * sy;
     // Update VBO for each character
-    GLfloat vertices[6][4] = {
-      { xpos,     ypos - h,   0.0, 0.0 },
-      { xpos,     ypos,       0.0, 1.0 },
-      { xpos + w, ypos,       1.0, 1.0 },
+    GLfloat vertices[6][8] = {
+      { xpos,     ypos - h,   1,1,1,1, 0.0, 0.0 },
+      { xpos,     ypos,       1,1,1,1, 0.0, 1.0 },
+      { xpos + w, ypos,       1,1,1,1, 1.0, 1.0 },
 
-      { xpos,     ypos - h,   0.0, 0.0 },
-      { xpos + w, ypos,       1.0, 1.0 },
-      { xpos + w, ypos - h,   1.0, 0.0 }
+      { xpos,     ypos - h,   1,1,1,1, 0.0, 0.0 },
+      { xpos + w, ypos,       1,1,1,1, 1.0, 1.0 },
+      { xpos + w, ypos - h,   1,1,1,1, 1.0, 0.0 }
     };
+    //glBindBuffer(GL_ARRAY_BUFFER, vbo);
     // Render glyph texture over quad
     glBindTexture(GL_TEXTURE_2D, ch.TextureID);
     glBufferData(GL_ARRAY_BUFFER, sizeof vertices, vertices, GL_DYNAMIC_DRAW);
@@ -151,6 +156,7 @@ void font::draw(std::string text, shader* s, float x, float y, float sx, float s
     // Render quad
     glDrawArrays(GL_TRIANGLES, 0, 6);
     x += (ch.Advance >> 6) * sx;
+
   }
 }
 

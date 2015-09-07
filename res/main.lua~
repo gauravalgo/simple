@@ -11,8 +11,8 @@ local font;
 function simple_init()
    simple.window.create("Simple - A new era", width, height)
 
-   shader = simple.graphics.newDefaultShader("texture")
-   font_shader = simple.graphics.newDefaultShader("font")
+   shader = simple.graphics.newDefaultShader(1)
+   font_shader = simple.graphics.newDefaultShader(2)
 
    image = simple.graphics.loadTexture("res/test.png")
 
@@ -20,8 +20,12 @@ function simple_init()
    simple.getVersion()
 
    font = simple.graphics.newFont(font_shader, "res/vera.ttf")
-   --simple.graphics.setFontSize(font, 12);
+   simple.graphics.setFontSize(font, 12);
 
+
+   --W,H = simple.window.getSize()
+   --print(W .. " " .. H)
+   print("SIMPLE_INIT")
 end
 local x = 100
 local y = 100
@@ -31,12 +35,11 @@ local h = 32;
 local originX = w / 2
 local originY = h / 2
 function simple_draw()
-
    simple.graphics.clearScreen(.4,.5,.2,1)
    simple.graphics.setViewport(0, 0, width, height);
 
    simple.graphics.bindShader(shader)
-   simple.math.setOrtho(0, width, height, 0, 0, 100, shader)
+   simple.math.setOrtho(0,width,height, 0, 0, 100, shader)
    simple.graphics.beginBatch(batch)
    simple.graphics.bindTexture(image)
    simple.graphics.drawBatch(batch, 70, 300, w, h, 0, originX, originY)
@@ -46,11 +49,14 @@ function simple_draw()
    simple.graphics.unBindTexture(image)
    simple.graphics.endBatch(batch)
 
+   simple.graphics.unBindShader(shader)
+
    simple.graphics.bindShader(font_shader)
-   simple.math.setOrtho(0, width, height, 0, 0, 100, font_shader)
+   simple.math.setOrtho(0,width,height, 0, 0, 100, font_shader)
    simple.graphics.beginFont(font);
    simple.graphics.drawFont(font, font_shader, "Hello World", 100, 100, 1, 1, .9, .8, .87)
    simple.graphics.endFont(font);
+   simple.graphics.unBindShader(font_shader)
 end
 
 local timer = 2;
