@@ -67,6 +67,8 @@ class batch2d
     float fx2;
     float fy2;
 
+    float u,v,u2,v2;
+    float texWidth,texHeight;
 
     unsigned int m_vbo;
     unsigned int m_ebo;

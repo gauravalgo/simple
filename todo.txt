@@ -9,9 +9,9 @@ v 0.2.1
 
 v 0.2.2
 -fonts inside lua - done
--versatile shaders inside lua -wip 
+-versatile shaders inside lua -done
 -sound(openal) 
--allow animations inside lua using batch2d class -wip 
+-allow animations inside lua using batch2d class -done
 
 v 0.3.0
 -find bugs and get ride of them

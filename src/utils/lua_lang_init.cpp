@@ -455,7 +455,6 @@ int lua_lang_init::createShader(lua_State *L)
   const char* vertex = lua_tostring(L, 1);
   const char* fragment = lua_tostring(L, 2);
   s->create(vertex, fragment);
-
   pushPointer(L, s);
   return 1;
 }
@@ -871,7 +870,7 @@ int lua_lang_init::isKeyUp(lua_State* L)
 
 static int getVersion(lua_State *L)
 {
-  LOG("simple - cracking bottles- version 0.2.1");
+  LOG("simple - cracking bottles- version 0.2.2");
   return 1;
 }
 

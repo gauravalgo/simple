@@ -29,7 +29,7 @@ namespace simple {
   typedef unsigned char uchar;
   
 #define DEBBUG 1
-#define VERSION "0.2.1"
+#define VERSION "0.2.2"
   
 #define PI (atan(1) * 4)
 #define RADIANS(deg)  ((deg) * PI / 180)

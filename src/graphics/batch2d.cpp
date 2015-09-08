@@ -143,109 +143,9 @@ void batch2d::draw( float x, float y, float width, float height)
 }
 
 void batch2d::draw(float x, float y, float width, float height, float rotation, float originX, float originY)
-{
+{}
 
-  if(m_numSprite >= m_SIZE){
-    LOG("Error: You're trying to draw more than " << m_SIZE << " sprites!");
-    return;
-  }
-
-
-  if(rotation != 0){
-    _cos = cos(RADIANS(rotation));
-    _sin = sin(RADIANS(rotation));
-
-    fx = -originX;
-    fy = -originY;
-    fx2 = width - originX;
-    fy2 = height - originY;
-
-    p1x = fx;
-    p1y = fy;
-    p2x = fx;
-    p2y = fy2;
-    p3x = fx2;
-    p3y = fy2;
-    p4x = fx2;
-    p4y = fy;
-
-    px1 = p1x * _cos - p1y * _sin;
-    py1 = p1x * _sin + p1y * _cos;
-
-    px2 = p2x * _cos - p2y * _sin;
-    py2 = p2x * _sin + p2y * _cos;
-
-    px3 = p3x * _cos - p3y * _sin;
-    py3 = p3x * _sin + p3y * _cos;
-
-    px4 = px1 + (px3 - px2);
-    py4 = py3 - (py2 - py1);
-
-  }else{
-    px1 = -width + x;
-    py1 = -height + y;
-
-    px2 = width + x;
-    py2 = -height + y;
-
-    px3 = width + x;
-    py3 = height + y;
-
-    px4 = -width + x;
-    py4 = height + y;
-  }
-
-  px1 += x + originX;
-  py1 += y + originY;
-  px2 += x + originX;
-  py2 += y + originY;
-  px3 += x + originX;
-  py3 += y + originY;
-  px4 += x + originX;
-  py4 += y + originY;
-
-  float u = 16 * 1/16;
-  float v = (0 + 16) * 1/16;
-  float u2 = (16 + 16) * 1/16;
-  float v2 = 0 * 1/16;
-
-  m_vertices[m_index++] = 0;
-  m_vertices[m_index++] = py1;
-  m_vertices[m_index++] = 1;
-  m_vertices[m_index++] = 1;
-  m_vertices[m_index++] = 1;
-  m_vertices[m_index++] = 1;
-  m_vertices[m_index++] = u;
-  m_vertices[m_index++] = v;
-  m_vertices[m_index++] = px2;
-  m_vertices[m_index++] = py2;
-  m_vertices[m_index++] = 1;
-  m_vertices[m_index++] = 1;
-  m_vertices[m_index++] = 1;
-  m_vertices[m_index++] = 1;
-  m_vertices[m_index++] = u;
-  m_vertices[m_index++] = v2;
-  m_vertices[m_index++] = px3;
-  m_vertices[m_index++] = py3;
-  m_vertices[m_index++] = 1;
-  m_vertices[m_index++] = 1;
-  m_vertices[m_index++] = 1;
-  m_vertices[m_index++] = 1;
-  m_vertices[m_index++] = u2;
-  m_vertices[m_index++] = v2;
-  m_vertices[m_index++] = px4;
-  m_vertices[m_index++] = py4;
-  m_vertices[m_index++] = 1;
-  m_vertices[m_index++] = 1;
-  m_vertices[m_index++] = 1;
-  m_vertices[m_index++] = 1;
-  m_vertices[m_index++] = u2;
-  m_vertices[m_index++] = v;
-
-  m_numSprite++;
-}
-
-void batch2d::draw(float x, float y, float width, float height,float rotation,float originX,float originY,int srcX, int srcY, int srcWidth,int srcHeight, bool flipX, bool flipY, float r, float g, float b, float a)
+void batch2d::draw(float x, float y, float width, float height, float rotation, float originX, float originY, int srcX, int srcY, int srcWidth, int srcHeight, bool flipX, bool flipY, float r, float g, float b, float a)
 {
   if(m_numSprite >= m_SIZE){
     LOG("Error: You're trying to draw more than " << m_SIZE << " sprites!");
@@ -305,11 +205,10 @@ void batch2d::draw(float x, float y, float width, float height,float rotation,fl
   px4 += x + originX;
   py4 += y + originY;
 
-  float u,v,u2,v2;
-
   if(srcX >= 0 || srcY >= 0){
-    float texWidth = 1.0f / width;
-    float texHeight = 1.0f / height;
+    //convert to pixel coordonates
+    texWidth = 1.0f / width;
+    texHeight = 1.0f / height;
     u = srcX * texWidth;
     v = (srcY + srcHeight) * texHeight;
     u2 = (srcX + srcWidth) * texWidth;
@@ -324,8 +223,7 @@ void batch2d::draw(float x, float y, float width, float height,float rotation,fl
       v = v2;
       v2 = tmp;
     }
-  }else
-  {
+  }else{
     u = 0;
     v = 0;
     u2 = 1;
