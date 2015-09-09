@@ -45,11 +45,6 @@ int main()
   lua_init->callFunction("simple_init");
   lua_init->makeDefaultWindow();
 
-  ogg_player* ogg = new ogg_player();
-  ogg->create("res/mus1.ogg");
-  ogg->setLooping(false);
-  ogg->play(.2f, 1);
-
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -71,7 +66,6 @@ int main()
 #endif
   //lua_init->callFunction("simple_dumb");
   lua_init->dumb();
-  SAFE_DELETE(ogg);
   return 1;
 }
 

@@ -99,11 +99,12 @@ namespace simple
                   static int quit(lua_State* L);
                   static int isKeyDown(lua_State* L);
                   static int isKeyUp(lua_State* L);
-                  //static int getVersion(lua_State* L);
                   static int dumbBatch(lua_State* L);
                   static int dumbTexture(lua_State* L);
                   static int dumbShader(lua_State* L);
-
+                  //Sound
+                  static int loadSound(lua_State* L);
+                  static int playSound(lua_State* L);
                   //Init modules
                   static int initSimple(lua_State* L);
 
@@ -112,6 +113,7 @@ namespace simple
                   static int initTime(lua_State* L);
                   static int initInput(lua_State* L);
                   static int initMath(lua_State* L);
+                  static int initSound(lua_State* L);
 
             };
       }

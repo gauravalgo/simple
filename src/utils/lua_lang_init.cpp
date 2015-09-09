@@ -26,6 +26,7 @@
 #include "../maths/mat4.h"
 #include "../input/keyboard.h"
 #include "../input/pointer.h"
+#include "../sound/ogg_player.h"
 #include "core.h"
 
 using namespace simple;
@@ -33,6 +34,7 @@ using namespace simple::lang;
 using namespace simple::graphics;
 using namespace simple::maths;
 using namespace simple::input;
+using namespace simple::sound;
 
 #ifdef EMSCRIPTEN
 # include <emscripten.h>
@@ -194,6 +196,16 @@ static shader* getShader(LUA_INTEGER value)
   }
 
   return (shader*)value;
+}
+
+static ogg_player* getOGG(LUA_INTEGER value)
+{
+  if(value == 0){
+    LOG("ogg: " << value << " does not exist!");
+    return NULL;
+  }
+
+  return (ogg_player*)value;
 }
 
 static mat4* getMatrix4(LUA_INTEGER value)
@@ -404,13 +416,49 @@ int lua_lang_init::setViewport(lua_State *L)
 
 /*** END OF MATHS *****/
 
+/*** SOUND *****/
+
+int lua_lang_init::loadSound(lua_State *L)
+{
+  ogg_player* ogg_p = new ogg_player();
+  luaL_checkstring(L, 1);
+  const char* path = lua_tostring(L, 1);
+  ogg_p->create(path);
+
+  pushPointer(L, ogg_p);
+  return 1;
+}
+
+int lua_lang_init::playSound(lua_State *L)
+{
+  ogg_player* ogg;
+  luaL_checkinteger(L, 1);
+  lua_Integer id = lua_tonumber(L, 1);
+  float volume = 1.0f;
+  float pitch = 1.0f;
+  if(lua_isnumber(L, 2)){
+    luaL_checknumber(L, 2);
+    volume = lua_tonumber(L, 2);
+  }
+  if(lua_isnumber(L, 3)){
+    luaL_checknumber(L, 3);
+    pitch = lua_tonumber(L, 3);
+  }
+  ogg = getOGG(id);
+  if(ogg == getOGG(id))
+    ogg->play(volume, pitch);
+  return 1;
+}
+
+/*** END OF SOUND *****/
+
 
 /*** GRAPHICS *****/
 
 int lua_lang_init::loadTexture(lua_State *L)
 {
   texture2D* tex = new texture2D();
-
+  luaL_checkstring(L, 1);
   const char* path = lua_tostring(L, 1);
   isStringError(L, 1, "loadTexture -> file path");
   tex->create(path);
@@ -931,6 +979,17 @@ int lua_lang_init::initMath(lua_State *L)
   return 1;
 }
 
+int lua_lang_init::initSound(lua_State *L)
+{
+  luaL_Reg reg[] = {
+    {"newSound", loadSound},
+    {"play", playSound},
+    {0, 0},
+  };
+  luaL_newlib(L, reg);
+  return 1;
+}
+
 int lua_lang_init::initGraphics(lua_State *L)
 {
   luaL_Reg reg[] = {
@@ -977,6 +1036,7 @@ int lua_lang_init::initSimple(lua_State* L)
     { "time", initTime },
     { "input", initInput },
     { "math", initMath },
+    { "sound", initSound },
     { 0, 0 },
   };
 
