@@ -96,7 +96,7 @@ function simple_update(delta)
    if simple.input.isKeyDown("w") then
       y = y - 120 * delta;
    end
-   print(simple.time.getFPS());
+   --print(simple.time.getFPS());
 end
 
 function simple_dumb()

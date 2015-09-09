@@ -23,7 +23,7 @@
 
 namespace simple
 {
-  class file
+  class file_system
   {
   public:
     file();

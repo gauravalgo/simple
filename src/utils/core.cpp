@@ -19,44 +19,45 @@
 #include "../window/glfw_window.h"
 #include "definitions.h"
 #include "../input/keyboard.h"
+#include "../sound/openal_context.h"
 
 using namespace simple;
 using namespace simple::graphics;
 using namespace simple::input;
-
+using namespace simple::sound;
 
 /*
  *Global holder of important classes
  */
-
 core::core()
-{
-  
-}
+{}
 
 core::~core()
 {
-
+  SAFE_DELETE(m_openal_context);
+  SAFE_DELETE(m_graphics);
+  SAFE_DELETE(m_window);
 }
 
 void core::create()
 {
   m_window = new glfw_window();
   m_graphics = new gl_graphics();
-  // m_keyboard = new keyboard();
+  m_openal_context = new openal_context();
+  m_openal_context->create();
+}
+
+openal_context* core::getOpenAL()
+{
+  return m_openal_context;
 }
 
 glfw_window* core::getWindow()
 {
-    return m_window;
+  return m_window;
 }
 
 gl_graphics* core::getGLGraphics()
 {
-    return m_graphics;
+  return m_graphics;
 }
-/*
-keyboard* core::getKeyboard()
-{
-  return m_keyboard;
-}*/

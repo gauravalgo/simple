@@ -14,33 +14,29 @@
  * limitations under the License.
  ******************************************************************************/
 
-#ifndef CORE_H
-#define CORE_H
+#ifndef FILE_SYSTEM_H
+#define FILE_SYSTEM_H
 
-#include "../window/glfw_window.h"
-#include "../graphics/gl_graphics.h"
-#include "../sound/openal_context.h"
+#include <iostream>
+
+#include "../utils/definitions.h"
 
 namespace simple
 {
-  using namespace simple::graphics;
-  using namespace simple::sound;
-
-  class core
+  class file_system
   {
   public:
-    core();
-    ~core();
+    file_system();
+    ~file_system();
   private:
-    glfw_window* m_window;
-    gl_graphics* m_graphics;
-    openal_context* m_openal_context;
+    FILE* m_file;
+    int f;
   public:
-    void create();
-
-    openal_context* getOpenAL();
-    glfw_window* getWindow();
-    gl_graphics* getGLGraphics();
+    void open(const char* path, const char* mode);
+    size_t read(void* dest, size_t size, size_t count);
+    size_t write(const void * str, size_t size, size_t count);
+    int close();
   };
 }
+
 #endif

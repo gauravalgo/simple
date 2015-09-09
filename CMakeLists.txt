@@ -25,6 +25,7 @@ FILE(
 
   src/*.h
   src/*.cpp
+
   )
 
 ## Set version and info
@@ -44,13 +45,14 @@ add_subdirectory(deps/glfw)
 include_directories(deps/glew/include)
 include_directories(deps/glfw/include)
 include_directories(deps/stb_image)
+include_directories(deps/stb_vorbis)
 
 add_executable(
   simple
   ${SOURCE_FILES}
   deps/glew/src/glew.c
   deps/stb_image/stb_image.c
-  deps/stb_vorbis.c
+  deps/stb_vorbis/stb_vorbis.c
   )
 
 #freetype

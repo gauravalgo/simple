@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-#include "file.h"
+#include "file_system.h"
 
 using namespace simple;
 
@@ -22,23 +22,23 @@ using namespace simple;
 #include <iostream>
 #include <stdio.h>
 
-file::file()
+file_system::file_system()
 {
   
 }
 
-file::~file()
+file_system::~file_system()
 {
 
 }
 
-void file::open(const char* path, const char* mode)
+void file_system::open(const char* path, const char* mode)
 {
   close();
-  file::m_file = fopen(path,mode);
+  file_system::m_file = fopen(path,mode);
 }
 
-int file::close()
+int file_system::close()
 {
   int v = 0;
   if(m_file){
@@ -48,14 +48,14 @@ int file::close()
   return v;
 }
 
-size_t file::read(void* dest, size_t size, size_t count)
+size_t file_system::read(void* dest, size_t size, size_t count)
 {
   if(m_file)
-    return fread(dest,size,count,m_file);
+    return fread(dest, size, count, m_file);
   return 0;
 }
 
-size_t file::write(const void * str, size_t size, size_t count)
+size_t file_system::write(const void * str, size_t size, size_t count)
 {
   if(m_file)
     return fwrite(str, size, count, m_file);

@@ -5,18 +5,23 @@
 #include "utils/definitions.h"
 #include "utils/lua_lang_init.h"
 #include "utils/core.h"
+#include "utils/file_system.h"
+#include "sound/openal_context.h"
+#include "sound/ogg_player.h"
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#include "../deps/stb_vorbis/stb_vorbis.h"
 
 using namespace simple;
 using namespace simple::lang;
+using namespace simple::sound;
 
 void update_em();
 
 lua_lang_init* lua_init;
-
-void playsound()
-{
-
-}
 
 void update_simple()
 {
@@ -29,20 +34,21 @@ void render_simple()
   lua_init->callFunction("simple_draw");
 }
 
-uint m_vbo;
-uint m_ebo;
-
 int main()
 {
-  playsound();
-  //Init Simple!
 
+  //Init Simple!
   lua_init = new lua_lang_init();
   lua_init->create();
   lua_init->registerFunctions();
   lua_init->setMainScript("res/main.lua");
   lua_init->callFunction("simple_init");
   lua_init->makeDefaultWindow();
+
+  ogg_player* ogg = new ogg_player();
+  ogg->create("res/mus1.ogg");
+  ogg->setLooping(false);
+  ogg->play(.2f, 1);
 
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -64,9 +70,8 @@ int main()
   emscripten_set_main_loop(update_em, 0, 0);
 #endif
   //lua_init->callFunction("simple_dumb");
-  glDeleteBuffers(1, &m_vbo);
-  glDeleteBuffers(1, &m_ebo);
   lua_init->dumb();
+  SAFE_DELETE(ogg);
   return 1;
 }
 
