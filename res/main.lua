@@ -40,7 +40,7 @@ function simple_init()
    shader = simple.graphics.newShader(gl_texture_vertex,gl_texture_fragment);
    font_shader = simple.graphics.newDefaultShader("font")
 
-   image = simple.graphics.loadTexture("res/test3.png")
+   image = simple.graphics.newImage("res/test3.png")
 
    batch = simple.graphics.newBatch(shader, 17000)
    simple.getVersion()

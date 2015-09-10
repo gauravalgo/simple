@@ -10,12 +10,12 @@ v 0.2.1
 v 0.2.2
 -fonts inside lua - done
 -versatile shaders inside lua -done
--sound(openal) 
+-sound(openal) -done
 -allow animations inside lua using batch2d class -done
 
 v 0.3.0
 -find bugs and get ride of them
--start making samples
+-start making samples -wip
 -youtube tutorials
 -test emscripten on windows and mac(that should 99% work)?
 -???

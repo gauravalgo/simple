@@ -774,7 +774,7 @@ int lua_lang_init::drawBatch(lua_State *L)
      bool flipX = false;
      if(lua_toboolean(L, 13))
        flipX = lua_toboolean(L, 13);
-     bool flipY = false;
+     bool flipY = true;
      if(lua_toboolean(L, 14))
        flipY = lua_toboolean(L, 14);
      float r = 1;
@@ -993,7 +993,7 @@ int lua_lang_init::initSound(lua_State *L)
 int lua_lang_init::initGraphics(lua_State *L)
 {
   luaL_Reg reg[] = {
-    {"loadTexture", loadTexture},
+    {"newImage", loadTexture},
     {"bindTexture", bindTexture},
     {"unBindTexture", unBindTexture},
     {"newShader", createShader},

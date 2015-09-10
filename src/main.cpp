@@ -36,13 +36,12 @@ void render_simple()
 
 int main()
 {
-
   //Init Simple!
   lua_init = new lua_lang_init();
   lua_init->create();
   lua_init->registerFunctions();
   lua_init->setMainScript("res/main.lua");
-  lua_init->callFunction("simple_init");
+  lua_init->callFunction("simple_load");
   lua_init->makeDefaultWindow();
 
   glEnable(GL_BLEND);

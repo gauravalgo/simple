@@ -183,17 +183,17 @@ void batch2d::draw(float x, float y, float width, float height, float rotation, 
     py4 = py3 - (py2 - py1);
 
   }else{
-    px1 = -width + x;
-    py1 = -height + y;
+    px1 = -srcWidth + x;
+    py1 = -srcHeight + y;
 
-    px2 = +width + x;
-    py2 = -height + y;
+    px2 = +srcWidth + x;
+    py2 = -srcHeight + y;
 
-    px3 = width + x;
-    py3 = height + y;
+    px3 = srcWidth + x;
+    py3 = srcHeight + y;
 
-    px4 = -width + x;
-    py4 = height + y;
+    px4 = -srcWidth + x;
+    py4 = srcHeight + y;
   }
 
   px1 += x + originX;
