@@ -23,15 +23,24 @@ void update_em();
 
 lua_lang_init* lua_init;
 
-void update_simple()
-{
-  lua_init->getCore()->getWindow()->calculateDeltaTime();
-  lua_init->callFunction("simple_update");
-}
-
-void render_simple()
-{
-  lua_init->callFunction("simple_draw");
+int checkLuaErrors(lua_State* state) {
+  lua_Debug debug;
+  int level = 0;
+  int count = 0;
+  lua_pushstring(state, "\n\nStack trace:\n");
+  while(lua_getstack(state, level, &debug)) {
+    lua_getinfo(state, "Sl", &debug);
+    if(strcmp(debug.what, "C")) {
+      lua_pushstring(state, debug.short_src);
+      lua_pushstring(state, ":");
+      lua_pushnumber(state, debug.currentline);
+      lua_pushstring(state, "\n");
+      ++count;
+    }
+    ++level;
+  }
+  lua_concat(state, 4*count+2);
+  return 1;
 }
 
 int main()
@@ -41,18 +50,30 @@ int main()
   lua_init->create();
   lua_init->registerFunctions();
   lua_init->setMainScript("res/main.lua");
-  lua_init->callFunction("simple_load");
+  lua_getglobal(lua_init->getState(), "simple");
+  lua_pushstring(lua_init->getState(), "load");
+  lua_rawget(lua_init->getState(), -2);
+  lua_call(lua_init->getState(), 0, 0);
+
   lua_init->makeDefaultWindow();
 
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-
 #ifndef EMSCRIPTEN
   while(lua_init->getCore()->getWindow()->getRunning())
   {
-    render_simple();
-    update_simple();
+    lua_init->getCore()->getWindow()->calculateDeltaTime();
+
+    lua_pushstring(lua_init->getState(), "update");
+    lua_rawget(lua_init->getState(), -2);
+    lua_pushnumber(lua_init->getState(),lua_init->getCore()->getWindow()->getDeltaTime());
+    lua_call(lua_init->getState(), 1, 0);
+
+    lua_pushstring(lua_init->getState(), "draw");
+    lua_rawget(lua_init->getState(), -2);
+    lua_call(lua_init->getState(), 0, 0);
+
     lua_init->getCore()->getWindow()->update();
     GLenum err = GL_NO_ERROR;
     while((err = glGetError()) != GL_NO_ERROR){
@@ -73,9 +94,9 @@ void update_em()
   if(!lua_init->getCore()->getWindow()->getRunning())
     return;
 
-  render_simple();
+  //render_simple();
   lua_init->getCore()->getWindow()->calculateDeltaTime();
-  update_simple();
+  //update_simple();
 
   GLenum err = GL_NO_ERROR;
   while((err = glGetError()) != GL_NO_ERROR){

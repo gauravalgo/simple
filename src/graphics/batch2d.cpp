@@ -155,12 +155,13 @@ void batch2d::draw(float x, float y, float width, float height, float rotation, 
   if(rotation != 0){
     _cos = cos(RADIANS(rotation));
     _sin = sin(RADIANS(rotation));
-
+    //corners calculation
     fx = -originX;
     fy = -originY;
     fx2 = width - originX;
     fy2 = height - originY;
 
+//coreners assigment
     p1x = fx;
     p1y = fy;
     p2x = fx;
@@ -169,7 +170,7 @@ void batch2d::draw(float x, float y, float width, float height, float rotation, 
     p3y = fy2;
     p4x = fx2;
     p4y = fy;
-
+    //rotate each corner
     px1 = p1x * _cos - p1y * _sin;
     py1 = p1x * _sin + p1y * _cos;
 
@@ -196,39 +197,39 @@ void batch2d::draw(float x, float y, float width, float height, float rotation, 
     py4 = srcHeight + y;
   }
 
-  px1 += x + originX;
-  py1 += y + originY;
-  px2 += x + originX;
-  py2 += y + originY;
-  px3 += x + originX;
-  py3 += y + originY;
-  px4 += x + originX;
-  py4 += y + originY;
+  px1 += (x + originX);
+  py1 += (y + originY);
+  px2 += (x + originX);
+  py2 += (y + originY);
+  px3 += (x + originX);
+  py3 += (y + originY);
+  px4 += (x + originX);
+  py4 += (y + originY);
 
-  if(srcX >= 0 || srcY >= 0){
-    //convert to pixel coordonates
-    texWidth = 1.0f / width;
-    texHeight = 1.0f / height;
-    u = srcX * texWidth;
-    v = (srcY + srcHeight) * texHeight;
-    u2 = (srcX + srcWidth) * texWidth;
-    v2 = srcY * texHeight;
-    if (flipX) {
-      float tmp = u;
-      u = u2;
-      u2 = tmp;
-    }
-    if (flipY) {
-      float tmp = v;
-      v = v2;
-      v2 = tmp;
-    }
-  }else{
-    u = 0;
-    v = 0;
-    u2 = 1;
-    v2 = 1;
+  //if(srcX >= 0 || srcY >= 0){
+  //convert pixel's coordonates to shader's coordonates
+  texWidth = 1.0f / width;
+  texHeight = 1.0f / height;
+  u = srcX * texWidth;
+  v = (srcY + srcHeight) * texHeight;
+  u2 = (srcX + srcWidth) * texWidth;
+  v2 = srcY * texHeight;
+  if (flipX) {
+    float tmp = u;
+    u = u2;
+    u2 = tmp;
   }
+  if (flipY) {
+    float tmp = v;
+    v = v2;
+    v2 = tmp;
+  }
+  //}else{
+  //u = 0;
+  //v = 0;
+  // u2 = 1;
+  //v2 = 1;
+  //}
   m_vertices[m_index++] = px1;
   m_vertices[m_index++] = py1;
   m_vertices[m_index++] = r;
@@ -556,14 +557,8 @@ void batch2d::draw(float x, float y, float width, float height, float* textureco
 void batch2d::renderMesh()
 {
   if(m_numSprite > 0){
-    //glUseProgram(m_shader->getProgram());
-    // glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-
     glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_DYNAMIC_DRAW);
-    // m_texture->bind();
     glDrawElements(GL_TRIANGLES, m_numSprite * 6, GL_UNSIGNED_SHORT, 0);
-
   }
 }
 
@@ -572,7 +567,6 @@ void batch2d::begin()
   glDepthMask(false);
   m_index = 0;
   m_numSprite = 0;
-
 }
 
 void batch2d::end()

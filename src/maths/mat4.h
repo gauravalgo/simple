@@ -358,7 +358,6 @@ namespace simple {
 
     inline mat4 mat4::setOrtho(float left, float right, float bottom, float top, float near, float far)
     {
-      //BUG Y invert ?
       float x_orth = 2.0f / (right - left);
       float y_orth = 2.0f / (top - bottom);
       float z_orth = -2.0f / (near - far);

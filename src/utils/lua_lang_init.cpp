@@ -103,16 +103,6 @@ void lua_lang_init::setMainScript(const char* name)
 
 bool lua_lang_init::callFunction(std::string name)
 {
-  lua_getglobal(m_L, name.c_str());
-  //if(!lua_isfunction(m_L, 1)){
-  //LOG("Error: function " << name << " should have been created in your main.lua file!");
-  //}
-  if(name == "simple_update"){
-    lua_pushnumber(m_L,c->getWindow()->getDeltaTime());
-    lua_call(m_L, 1, 0);
-  }else{
-    lua_call(m_L, 0, 0);
-  }
   return true;
 }
 
@@ -124,7 +114,6 @@ static bool checkArguments(lua_State* L, int number)
 }
 
 //Errors handling
-
 static bool isObjectError(lua_State *L, int spot, const char* what)
 {
   if(!lua_isnumber(L, spot)){
@@ -1051,6 +1040,7 @@ void lua_lang_init::registerFunctions()
 {
 
   luaL_requiref(m_L, "simple", initSimple, 1);
+
 
   lua_register(m_L, "simple_dumpTexture", dumbTexture);
   lua_register(m_L, "simple_dumpShader", dumbShader);
