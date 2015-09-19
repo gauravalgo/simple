@@ -770,6 +770,33 @@ src/utils/lua_lang_init.cpp.s:
 	$(MAKE) -f CMakeFiles/simple.dir/build.make CMakeFiles/simple.dir/src/utils/lua_lang_init.cpp.s
 .PHONY : src/utils/lua_lang_init.cpp.s
 
+src/utils/register_graphics.o: src/utils/register_graphics.cpp.o
+
+.PHONY : src/utils/register_graphics.o
+
+# target to build an object file
+src/utils/register_graphics.cpp.o:
+	$(MAKE) -f CMakeFiles/simple.dir/build.make CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o
+.PHONY : src/utils/register_graphics.cpp.o
+
+src/utils/register_graphics.i: src/utils/register_graphics.cpp.i
+
+.PHONY : src/utils/register_graphics.i
+
+# target to preprocess a source file
+src/utils/register_graphics.cpp.i:
+	$(MAKE) -f CMakeFiles/simple.dir/build.make CMakeFiles/simple.dir/src/utils/register_graphics.cpp.i
+.PHONY : src/utils/register_graphics.cpp.i
+
+src/utils/register_graphics.s: src/utils/register_graphics.cpp.s
+
+.PHONY : src/utils/register_graphics.s
+
+# target to generate assembly for a file
+src/utils/register_graphics.cpp.s:
+	$(MAKE) -f CMakeFiles/simple.dir/build.make CMakeFiles/simple.dir/src/utils/register_graphics.cpp.s
+.PHONY : src/utils/register_graphics.cpp.s
+
 src/window/glfw_window.o: src/window/glfw_window.cpp.o
 
 .PHONY : src/window/glfw_window.o
@@ -873,6 +900,9 @@ help:
 	@echo "... src/utils/lua_lang_init.o"
 	@echo "... src/utils/lua_lang_init.i"
 	@echo "... src/utils/lua_lang_init.s"
+	@echo "... src/utils/register_graphics.o"
+	@echo "... src/utils/register_graphics.i"
+	@echo "... src/utils/register_graphics.s"
 	@echo "... src/window/glfw_window.o"
 	@echo "... src/window/glfw_window.i"
 	@echo "... src/window/glfw_window.s"

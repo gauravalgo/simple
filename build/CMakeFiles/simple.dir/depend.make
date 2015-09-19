@@ -163,7 +163,37 @@ CMakeFiles/simple.dir/src/utils/lua_lang_init.cpp.o: ../src/utils/core.h
 CMakeFiles/simple.dir/src/utils/lua_lang_init.cpp.o: ../src/utils/definitions.h
 CMakeFiles/simple.dir/src/utils/lua_lang_init.cpp.o: ../src/utils/lua_lang_init.cpp
 CMakeFiles/simple.dir/src/utils/lua_lang_init.cpp.o: ../src/utils/lua_lang_init.h
+CMakeFiles/simple.dir/src/utils/lua_lang_init.cpp.o: ../src/utils/register_graphics.h
 CMakeFiles/simple.dir/src/utils/lua_lang_init.cpp.o: ../src/window/glfw_window.h
+
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../deps/freetype/include/freetype/config/ftheader.h
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../deps/freetype/include/ft2build.h
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../deps/glew/include/GL/glew.h
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../deps/glfw/include/GLFW/glfw3.h
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../deps/lua/lauxlib.h
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../deps/lua/lua.h
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../deps/lua/luaconf.h
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../deps/lua/lualib.h
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../src/graphics/batch2d.h
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../src/graphics/default_shaders.h
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../src/graphics/font.h
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../src/graphics/gl_graphics.h
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../src/graphics/mesh.h
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../src/graphics/shader.h
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../src/graphics/texture2D.h
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../src/input/keyboard.h
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../src/input/pointer.h
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../src/maths/mat4.h
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../src/maths/vec2.h
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../src/maths/vec3.h
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../src/maths/vec4.h
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../src/sound/ogg_player.h
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../src/sound/openal_context.h
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../src/utils/core.h
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../src/utils/definitions.h
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../src/utils/register_graphics.cpp
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../src/utils/register_graphics.h
+CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../src/window/glfw_window.h
 
 CMakeFiles/simple.dir/src/window/glfw_window.cpp.o: ../deps/glew/include/GL/glew.h
 CMakeFiles/simple.dir/src/window/glfw_window.cpp.o: ../deps/glfw/include/GLFW/glfw3.h

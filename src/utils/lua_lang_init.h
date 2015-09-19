@@ -108,8 +108,6 @@ namespace simple
                   static int AudioMetatableFuncs[];
                   static int WindowMetatableFuncs[];
 
-                  static int regMetatableGraphics(lua_State* state);
-
                   static int makeTypeMetatable(lua_State* state, luaL_Reg const* funcs);
                   static void registerModule(lua_State* state, char const* moduleName, luaL_Reg* funcs);
             };

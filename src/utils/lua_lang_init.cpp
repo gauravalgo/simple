@@ -14,6 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 #include "lua_lang_init.h"
+#include "register_graphics.h"
 
 #include "../utils/definitions.h"
 #include "../window/glfw_window.h"
@@ -62,6 +63,8 @@ static core* c;
 static keyboard* k;
 static pointer* point;
 
+static register_graphics* regGraphics;
+
 void lua_lang_init::create()
 {
   m_L = luaL_newstate();
@@ -79,6 +82,8 @@ void lua_lang_init::create()
 
   k = new keyboard();
   point = new pointer();
+
+  regGraphics = new register_graphics();
 }
 
 void lua_lang_init::makeDefaultWindow()
@@ -629,24 +634,6 @@ int lua_lang_init::window_register(lua_State* state)
   return 1;
 }
 
-int lua_lang_init::regMetatableGraphics(lua_State *state)
-{
-  luaL_Reg GraphicsMetatableFuncs[] = {
-    {"bindTexture",   bindTexture},
-    {"unBindTexture", unBindTexture},
-    {"bindShader", bindShader},
-    {"unBindShader", unBindShader},
-    {"renderMesh", renderMesh},
-    {"beginBatch", beginBatch},
-    {"endBatch", endBatch},
-    {"drawBatch", drawBatch},
-    {"beginFont", beginFont},
-    {"endFont", endFont},
-    {NULL, NULL}
-  };
-  return 1;
-}
-
 int lua_lang_init::initSimple(lua_State* L)
 {
   int i;
@@ -661,7 +648,7 @@ int lua_lang_init::initSimple(lua_State* L)
 
   struct { char *name; int (*fn)(lua_State *L); } mods[] = {
     { "window", window_register  },
-    { "graphics", graphics_register  },
+    { "graphics", regGraphics->registerModule  },
     //{ "timer", timer_register },
     // { "input", input_register },
     // { "math", math_register },
@@ -684,7 +671,9 @@ void lua_lang_init::registerFunctions()
 void lua_lang_init::dumb()
 {
   lua_close(m_L);
+
   SAFE_DELETE(k);
   SAFE_DELETE(point);
   SAFE_DELETE(c);
+  SAFE_DELETE(regGraphics);
 }
