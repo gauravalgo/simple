@@ -19,6 +19,8 @@
 
 extern "C" {
 #include "../../deps/lua/lua.h"
+#include "../../deps/lua/lualib.h"
+#include "../../deps/lua/lauxlib.h"
 }
 
 #include "../window/glfw_window.h"
@@ -48,6 +50,12 @@ namespace simple
                   bool callFunction(std::string name);
                   void setCore(core* c){m_core = c;}
                   core* getCore(){return m_core;}
+                  static int audio_register(lua_State* state);
+                  static int input_register(lua_State* state);
+                  static int math_register(lua_State* state);
+                  static int timer_register(lua_State* state);
+                  static int window_register(lua_State* state);
+                  static int graphics_register(lua_State* state);
                   void makeDefaultWindow();
             private:
                   //WINDOW
@@ -71,28 +79,7 @@ namespace simple
                   static int clearScreen(lua_State* L);
                   static int setViewport(lua_State* L);
                   //Maths
-                  //-Texture
-                  static int loadTexture(lua_State* L);
-                  static int bindTexture(lua_State* L);
-                  static int unBindTexture(lua_State* L);
-                  //-Font
-                  static int createFont(lua_State* L);
-                  static int drawFont(lua_State* L);
-                  static int beginFont(lua_State* L);
-                  static int endFont(lua_State* L);
-                  //-Batch
-                  static int createBatch(lua_State* L);
-                  static int drawBatch(lua_State* L);
-                  static int beginBatch(lua_State* L);
-                  static int endBatch(lua_State* L);
-                  static int renderMesh(lua_State* L);
-                  //-Shader
-                  static int createShader(lua_State* L);
-                  static int createDefaultShader(lua_State* L);
-                  static int bindShader(lua_State* L);
-                  static int unBindShader(lua_State* L);
                   static int setOrthoView(lua_State* L);
-                  static int sendShaderUniformLocation(lua_State* L);
                   //UTILS
                   static int getDeltaTime(lua_State* L);
                   static int getFPS(lua_State* L);
@@ -105,16 +92,26 @@ namespace simple
                   //Sound
                   static int loadSound(lua_State* L);
                   static int playSound(lua_State* L);
+
                   //Init modules
                   static int initSimple(lua_State* L);
 
-                  static int initWindow(lua_State* L);
-                  static int initGraphics(lua_State* L);
-                  static int initTime(lua_State* L);
-                  static int initInput(lua_State* L);
-                  static int initMath(lua_State* L);
-                  static int initSound(lua_State* L);
+                  static int regTimerFuncs[];
+                  static int regMathFuncs[];
+                  static int regWindowFuncs[];
+                  static luaL_Reg regAudioFuncs[];
+                  static int regInputFuncs[];
 
+                  static luaL_Reg GraphicsMetatableFuncs[];
+                  static luaL_Reg regGraphicsFuncs[];
+
+                  static int AudioMetatableFuncs[];
+                  static int WindowMetatableFuncs[];
+
+                  static int regMetatableGraphics(lua_State* state);
+
+                  static int makeTypeMetatable(lua_State* state, luaL_Reg const* funcs);
+                  static void registerModule(lua_State* state, char const* moduleName, luaL_Reg* funcs);
             };
       }
 }

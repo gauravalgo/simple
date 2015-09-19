@@ -1,0 +1,23 @@
+#ifndef REGISTER_GRAPHICS_H
+#define REGISTER_GRAPHICS_H
+
+extern "C" {
+#include "../../deps/lua/lua.h"
+#include "../../deps/lua/lualib.h"
+#include "../../deps/lua/lauxlib.h"
+}
+
+namespace simple
+{
+        namespace lang
+        {
+                class register_graphics
+                {
+                public:
+                        register_graphics();
+                        ~register_graphics();
+                        void register(lua_State* L);
+                };
+        }
+}
+#endif

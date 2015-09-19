@@ -69,6 +69,7 @@ class batch2d
 
     float u,v,u2,v2;
     float texWidth,texHeight;
+    float r,g,b,a;
 
     unsigned int m_vbo;
     unsigned int m_ebo;
@@ -85,8 +86,9 @@ class batch2d
   public:
     void begin();
     void end();
+    void setColor(float r, float g, float b, float a);
     void renderMesh();
-    void draw(float x, float y, float width, float height,float rotation,float originX,float originY,int srcX, int srcY, int srcWidth,int srcHeight, bool flipX, bool flipY, float r, float g, float b, float a);
+    void draw(float x, float y, float width, float height,float rotation,float originX,float originY,int srcX, int srcY, int srcWidth,int srcHeight, bool flipX, bool flipY, float scaleX, float scaleY);
     void draw(float x, float y, float width, float height);
     void draw(float x, float y, float width, float height, float rotation, float originX, float originY);
     void draw(float x, float y, float width, float height, float rotation, float originX, float originY, float r, float g, float b, float a);

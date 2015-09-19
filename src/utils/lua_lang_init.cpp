@@ -441,364 +441,6 @@ int lua_lang_init::playSound(lua_State *L)
 
 /*** END OF SOUND *****/
 
-
-/*** GRAPHICS *****/
-
-int lua_lang_init::loadTexture(lua_State *L)
-{
-  texture2D* tex = new texture2D();
-  luaL_checkstring(L, 1);
-  const char* path = lua_tostring(L, 1);
-  isStringError(L, 1, "loadTexture -> file path");
-  tex->create(path);
-  pushPointer(L, tex);
-  return 1;
-}
-
-int lua_lang_init::bindTexture(lua_State *L)
-{
-  texture2D* tex;
-  checkInteger(L, 1);
-  float id = lua_tointeger(L, 1);
-  tex = getTexture2D(id);
-  if(tex == getTexture2D(id))
-    getTexture2D(id)->bind();
-
-  return 1;
-}
-
-int lua_lang_init::unBindTexture(lua_State *L)
-{
-  if(checkArguments(L, 2))
-    LOG("Warning: function bindTexture takes: 1) a texture");
-
-  texture2D* tex;
-  checkInteger(L, 1);
-  int id = lua_tointeger(L, 1);
-  tex = getTexture2D(id);
-  if(tex == getTexture2D(id))
-    tex->unbind();
-  return 1;
-}
-
-int lua_lang_init::createShader(lua_State *L)
-{
-  shader* s = new shader();
-  //custom shader
-  luaL_checkstring(L, 1);
-  luaL_checkstring(L, 2);
-  isStringError(L, 1 , "createShader -> vertex shader expected");
-  isStringError(L, 2 , "createShader -> fragment shader expected");
-  const char* vertex = lua_tostring(L, 1);
-  const char* fragment = lua_tostring(L, 2);
-  s->create(vertex, fragment);
-  pushPointer(L, s);
-  return 1;
-}
-
-int lua_lang_init::createDefaultShader(lua_State* L)
-{
-  shader* s = new shader();
-
-  default_shaders df;
-
-  luaL_checkstring(L, 1);
-  std::string type = luaL_checkstring(L, 1);
-
-#ifndef EMSCRIPTEN
-  if (type == "texture")
-    s->create(df.gl_texture_vertex.c_str(), df.gl_texture_fragment.c_str());
-  else if(type == "font")
-    s->create(df.gl_font_vertex.c_str(), df.gl_font_fragment.c_str());
-#endif
-#ifdef EMSCRIPTEN
-  if(type == "texture")
-    s->create(df.gl_es_texture_vertex.c_str(), df.gl_es_texture_fragment.c_str());
-  else if (type == "font")
-    s->create(df.gl_es_font_vertex.c_str(), df.gl_es_font_fragment.c_str());
-#endif
-
-  pushPointer(L, s);
-  return 1;
-}
-
-int lua_lang_init::bindShader(lua_State *L)
-{
-  shader* s;
-  checkInteger(L, 1);
-  int id = lua_tointeger(L, 1);
-  s = getShader(id);
-  if(s == getShader(id))
-    s->bind();
-  return 1;
-}
-
-
-int lua_lang_init::unBindShader(lua_State *L)
-{
-  if(checkArguments(L, 2))
-    LOG("Warning: unBindShader takes: 1) shader ");
-
-  shader* s;
-  checkInteger(L, 1);
-  int id = lua_tointeger(L, 1);
-  s = getShader(id);
-  if(s == getShader(id))
-    s->unbind();
-  return 1;
-}
-
-int lua_lang_init::setOrthoView(lua_State *L)
-{
-  if(checkArguments(L, 9))
-    LOG("Warning: setOrthoView takes : 1) left 2)right 3)bottom 4)top 5)near 6)far 7)shader");
-
-  mat4  projection;
-  projection.setToIdentity();
-
-  float left = lua_tonumber(L, 1);
-  float right = lua_tonumber(L, 2);
-  float bottom = lua_tonumber(L, 3);
-  float top = lua_tonumber(L, 4);
-  float near = lua_tonumber(L, 5);
-  float far = lua_tonumber(L, 6);
-
-  //test this inside an update method and see what happens
-  projection = projection.setOrtho(left, right, bottom, top, near, far);
-  shader* s;
-  int shid = lua_tointeger(L, 7);
-
-  s = getShader(shid);
-  if(s == getShader(shid)){
-    // s->bind();
-    s->sendUniformLocation("proj", projection);
-  }
-  return 1;
-}
-
-//TODO later
-int lua_lang_init::sendShaderUniformLocation(lua_State *L)
-{
-  if(checkArguments(L, 4))
-    LOG("Warning: sendShaderUniformLocation takes: 1) shader 2) location 3) matrix");
-
-  shader* s;
-  int id = lua_tointeger(L, 1);
-  const char* location = lua_tostring(L, 2);
-  isStringError(L, 2, "sendShaderUniformLocation -> location string expected");
-  float data = lua_tonumber(L, 3);
-  s = getShader(id);
-  if(s == getShader(id)){
-    s->sendUniformLocation(location, data);
-  }
-
-  return 1;
-}
-
-int lua_lang_init::createFont(lua_State *L)
-{
-  font* f;
-  shader* s;
-  isObjectError(L, 1, "makeBatch -> shader");
-  lua_Integer shID = lua_tointeger(L, 1);
-  s = getShader(shID);
-  luaL_checkstring(L, 2);
-  const char* path = lua_tostring(L, 2);
-  FT_Library freetype;
-  if(FT_Init_FreeType(&freetype)){
-    LOG("Error: Could not init freetype lib!");
-    return 0;
-  }
-  float size = 16;
-  if(lua_isnumber(L, 3)){
-    size = lua_tonumber(L, 3);
-  }
-
-  if(s == getShader(shID)){
-    f = new font();
-    f->load(freetype, s, path, size);
-    pushPointer(L, f);
-  }
-  return 1;
-}
-
-int lua_lang_init::drawFont(lua_State *L)
-{
-  font* f;
-  shader* s;
-  luaL_checkinteger(L, 1);
-  luaL_checkinteger(L, 2);
-  luaL_checkstring(L, 3);
-  luaL_checknumber(L, 4);
-  luaL_checknumber(L, 5);
-  luaL_checknumber(L, 6);
-  luaL_checknumber(L, 7);
-  luaL_checknumber(L, 8);
-  luaL_checknumber(L, 9);
-  luaL_checknumber(L, 10);
-
-  float a = 1;
-  if(lua_isnumber(L, 11))
-    a = lua_tonumber(L, 11);
-
-  lua_Integer fID = lua_tointeger(L, 1);
-  lua_Integer sID = lua_tointeger(L, 2);
-  const char* text = lua_tostring(L, 3);
-  float x = lua_tonumber(L, 4);
-  float y = lua_tonumber(L, 5);
-  float sx = lua_tonumber(L, 6);
-  float sy = lua_tonumber(L, 7);
-  float r = lua_tonumber(L, 8);
-  float g = lua_tonumber(L, 9);
-  float b = lua_tonumber(L, 10);
-
-  f = getFont(fID);
-  s = getShader(sID);
-
-  if(f == getFont(fID) && s == getShader(sID))
-    f->draw(text, s, x, y, sx, sy, r, g, b, a);
-  return 1;
-}
-
-int lua_lang_init::beginFont(lua_State *L)
-{
-  font* f;
-  luaL_checkinteger(L, 1);
-  lua_Integer fID = lua_tointeger(L, 1);
-  f = getFont(fID);
-  if(f == getFont(fID))
-    f->begin();
-  return 1;
-}
-
-int lua_lang_init::endFont(lua_State *L)
-{
-  font* f;
-  luaL_checkinteger(L, 1);
-  lua_Integer fID = lua_tointeger(L, 1);
-  f = getFont(fID);
-  if(f == getFont(fID))
-    f->end();
-  return 1;
-}
-
-int lua_lang_init::createBatch(lua_State *L)
-{
-  shader* s;
-  batch2d* batch;
-  isObjectError(L, 1, "makeBatch -> shader");
-  lua_Integer shID = lua_tointeger(L, 1);
-  s = getShader(shID);
-  int limit = 9000;
-  if(lua_isinteger(L, 2))
-    limit = lua_tointeger(L, 2);
-
-  if(s == getShader(shID)){
-    batch = new batch2d(s, limit);
-    batch->create();
-    pushPointer(L, batch);
-  }
-  return 1;
-}
-
-int lua_lang_init::renderMesh(lua_State *L)
-{
-  isObjectError(L, 1, "renderMesh -> batch");
-  lua_Integer id = lua_tointeger(L, 1);
-  batch2d* b;
-  b = getBatch(id);
-  b->renderMesh();
-  return 1;
-}
-
-int lua_lang_init::beginBatch(lua_State *L)
-{
-  batch2d* batch;
-  luaL_checkinteger(L, 1);
-  lua_Integer id = lua_tointeger(L, 1);
-  batch = getBatch(id);
-  if(batch == getBatch(id))
-    batch->begin();
-
-  return 1;
-}
-
-int lua_lang_init::drawBatch(lua_State *L)
-{
-  luaL_checkinteger(L, 1);
-  lua_Integer id = lua_tointeger(L, 1);
-  batch2d* batch;
-  batch = getBatch(id);
-  if(batch == getBatch(id)){
-    luaL_checknumber(L, 2);
-    luaL_checknumber(L, 3);
-    luaL_checknumber(L, 4);
-    luaL_checknumber(L, 5);
-    float x = lua_tonumber(L, 2);
-    float y = lua_tonumber(L, 3);
-    float w = lua_tonumber(L, 4);
-    float h = lua_tonumber(L, 5);
-
-    float rotation = 0;
-    if(lua_isnumber(L, 6))
-      rotation = lua_tonumber(L, 6);
-    float originX = w * 0.5f;
-    if(lua_isnumber(L, 7))
-      originX = lua_tonumber(L, 7);
-    float originY = h * 0.5f;
-     if(lua_isnumber(L, 8))
-       originY = lua_tonumber(L, 8);
-     float srcX = 0;
-     if(lua_tonumber(L, 9))
-      srcX = lua_tonumber(L, 9);
-     float srcY = 0;
-     if(lua_tonumber(L, 10))
-      srcY = lua_tonumber(L, 10);
-     float srcWidth = w;
-     if(lua_tonumber(L,11))
-       srcWidth = lua_tonumber(L, 11);
-     float srcHeight = h;
-     if(lua_tonumber(L,12))
-       srcHeight = lua_tonumber(L, 12);
-     bool flipX = false;
-     if(lua_toboolean(L, 13))
-       flipX = lua_toboolean(L, 13);
-     bool flipY = true;
-     if(lua_toboolean(L, 14))
-       flipY = lua_toboolean(L, 14);
-     float r = 1;
-     if(lua_tonumber(L,15))
-       r = (1.0f/255.0f)*lua_tonumber(L, 15);
-     float g = 1;
-     if(lua_tonumber(L,16))
-       g = (1.0f/255.0f)*lua_tonumber(L, 16);
-     float b = 1;
-     if(lua_tonumber(L,17))
-       b = (1.0f/255.0f)*lua_tonumber(L, 17);
-     float a = 1;
-     if(lua_tonumber(L,18))
-       a = (1.0f/255.0f)*lua_tonumber(L, 18);
-
-     batch->draw(x, y, w, h, rotation, originX, originY, srcX, srcY, srcWidth, srcHeight, flipX, flipY, r, g, b, a);
-}
-
-return 1;
-}
-
-int lua_lang_init::endBatch(lua_State* L)
-{
-  batch2d* batch;
-  luaL_checkinteger(L, 1);
-  lua_Integer id = lua_tointeger(L, 1);
-  batch = getBatch(id);
-  if(batch == getBatch(id))
-    batch->end();
-
-  return 1;
-}
-
-/*** END OF GRAPHICS *****/
-
 /*** MOUSE *****/
 int lua_lang_init::getPointerX(lua_State* L)
 {
@@ -828,7 +470,6 @@ int lua_lang_init::getPointer(lua_State *L)
 
   return 2;
 }
-
 
 int lua_lang_init::isPointerPressed(lua_State *L)
 {
@@ -902,7 +543,6 @@ int lua_lang_init::isKeyUp(lua_State* L)
   return 0;
 }
 
-
 /*** END OF UTILS *****/
 
 static int getVersion(lua_State *L)
@@ -911,99 +551,99 @@ static int getVersion(lua_State *L)
   return 1;
 }
 
-int lua_lang_init::initWindow(lua_State *L)
+luaL_Reg lua_lang_init::regAudioFuncs[] =
 {
-  luaL_Reg reg[] = {
-    {"create", makeWindow},
-    {"setPosition", setWindowPosition},
-    {"setTitle", setWindowTitle},
-    {"getMonitorSize", getMonitorSize},
-    {"getSize", getWindowSize },
-    {"getWidth", getWindowWidth },
-    {"getHeight", getWindowHeight },
-    {"getFocus", getWindowFocus},
-    {"setVSync", setWindowVSync},
-    {0, 0},
-  };
-  luaL_newlib(L, reg);
-  return 1;
-}
+  {"newSound", loadSound},
+  {NULL, NULL}
+};
 
-int lua_lang_init::initTime(lua_State *L)
+int lua_lang_init::audio_register(lua_State* state)
 {
-  luaL_Reg reg[] = {
-    {"getFPS", getFPS},
-    {"delta", getDeltaTime},
-    {"getTicks", getWindowTicks},
-    {0, 0},
-  };
-  luaL_newlib(L, reg);
-  return 1;
-}
-
-
-int lua_lang_init::initInput(lua_State *L)
-{
-  luaL_Reg reg[] = {
-    {"getPointerX",getPointerX},
-    {"getPointerY",getPointerY},
-    {"getPointer", getPointer},
-    {"isKeyDown", isKeyDown},
-    {"isKeyUp", isKeyUp},
-    {"pressed", isPointerPressed},
-    {"released", isPointerReleased},
-    {0, 0},
-  };
-  luaL_newlib(L, reg);
-  return 1;
-}
-
-int lua_lang_init::initMath(lua_State *L)
-{
-  luaL_Reg reg[] = {
-    {"setOrtho",setOrthoView},
-    {0, 0},
-  };
-  luaL_newlib(L, reg);
-  return 1;
-}
-
-int lua_lang_init::initSound(lua_State *L)
-{
-  luaL_Reg reg[] = {
-    {"newSound", loadSound},
+  luaL_Reg AudioMetatableFuncs[] = {
     {"play", playSound},
-    {0, 0},
+    {NULL, NULL}
   };
-  luaL_newlib(L, reg);
+
   return 1;
 }
 
-int lua_lang_init::initGraphics(lua_State *L)
+int lua_lang_init::input_register(lua_State* state)
 {
-  luaL_Reg reg[] = {
-    {"newImage", loadTexture},
-    {"bindTexture", bindTexture},
+  luaL_Reg regInputFuncs[] =
+    {
+      {"getPointerX", getPointerX},
+      {"getPointerY", getPointerY},
+      {"getPointer", getPointer},
+      {"isKeyDown", isKeyDown},
+      {"isKeyUp", isKeyUp},
+      {"pressed", isPointerPressed},
+      {"released", isPointerReleased},
+    };
+
+  return 1;
+}
+
+int lua_lang_init::math_register(lua_State* state)
+{
+  luaL_Reg regMathFuncs[] =
+    {
+      {"setOrtho", setOrthoView},
+      {NULL, NULL}
+    };
+
+  return 1;
+}
+
+int lua_lang_init::timer_register(lua_State* state)
+{
+  luaL_Reg regTimerFuncs[] =
+    {
+      {"getFPS", getFPS},
+      {"delta", getDeltaTime},
+      {"getTicks", getWindowTicks},
+      {NULL, NULL}
+    };
+  return 1;
+}
+
+int lua_lang_init::window_register(lua_State* state)
+{
+  luaL_Reg regWindowFuncs[] =
+    {
+      {"create", makeWindow},
+      {"setPosition", setWindowPosition},
+      {"setTitle", setWindowTitle},
+      {"getMonitorSize", getMonitorSize},
+      {"getSize", getWindowSize },
+      {"getWidth", getWindowWidth },
+      {"getHeight", getWindowHeight },
+      {"getFocus", getWindowFocus },
+      {"setVSync", setWindowVSync },
+      {NULL, NULL}
+    };
+
+  luaL_newlib(state, regWindowFuncs);
+  luaL_Reg WindowMetatableFuncs[] = {
+    {NULL, NULL}
+  };
+  return 1;
+}
+
+int lua_lang_init::regMetatableGraphics(lua_State *state)
+{
+  luaL_Reg GraphicsMetatableFuncs[] = {
+    {"bindTexture",   bindTexture},
     {"unBindTexture", unBindTexture},
-    {"newShader", createShader},
-    {"newDefaultShader", createDefaultShader},
     {"bindShader", bindShader},
     {"unBindShader", unBindShader},
-    {"sendShaderUniformLocation", sendShaderUniformLocation},
-    {"newBatch", createBatch},
     {"renderMesh", renderMesh},
     {"beginBatch", beginBatch},
     {"endBatch", endBatch},
     {"drawBatch", drawBatch},
-    {"clearScreen", clearScreen},
-    {"setViewport", setViewport},
-    {"drawFont", drawFont},
     {"beginFont", beginFont},
-    {"newFont", createFont},
     {"endFont", endFont},
-    {0, 0},
+    {NULL, NULL}
   };
-  luaL_newlib(L, reg);
   return 1;
 }
 
@@ -1020,12 +660,12 @@ int lua_lang_init::initSimple(lua_State* L)
   luaL_newlib(L, reg);
 
   struct { char *name; int (*fn)(lua_State *L); } mods[] = {
-    { "window", initWindow  },
-    { "graphics", initGraphics  },
-    { "time", initTime },
-    { "input", initInput },
-    { "math", initMath },
-    { "sound", initSound },
+    { "window", window_register  },
+    { "graphics", graphics_register  },
+    //{ "timer", timer_register },
+    // { "input", input_register },
+    // { "math", math_register },
+    // { "audio", audio_register },
     { 0, 0 },
   };
 
@@ -1038,13 +678,7 @@ int lua_lang_init::initSimple(lua_State* L)
 
 void lua_lang_init::registerFunctions()
 {
-
   luaL_requiref(m_L, "simple", initSimple, 1);
-
-
-  lua_register(m_L, "simple_dumpTexture", dumbTexture);
-  lua_register(m_L, "simple_dumpShader", dumbShader);
-  lua_register(m_L, "simple_dumpBatch", dumbBatch);
 }
 
 void lua_lang_init::dumb()

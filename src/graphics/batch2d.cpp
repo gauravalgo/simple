@@ -30,12 +30,20 @@ using namespace simple;
 using namespace simple::graphics;
 
 batch2d::batch2d(shader* shader):
-  m_SIZE(40000)
+  m_SIZE(40000),
+  r(1),
+  g(r),
+  b(1),
+  a(1)
 {
   m_shader = shader;
 }
 
-batch2d::batch2d(shader* shader, int size)
+batch2d::batch2d(shader* shader, int size):
+  r(1),
+  g(r),
+  b(1),
+  a(1)
 {
   m_shader = shader;
   m_SIZE = size;
@@ -145,66 +153,84 @@ void batch2d::draw( float x, float y, float width, float height)
 void batch2d::draw(float x, float y, float width, float height, float rotation, float originX, float originY)
 {}
 
-void batch2d::draw(float x, float y, float width, float height, float rotation, float originX, float originY, int srcX, int srcY, int srcWidth, int srcHeight, bool flipX, bool flipY, float r, float g, float b, float a)
+float ex1;
+float ey1;
+float ex2;
+float ey2;
+float ex3;
+float ey3;
+float ex4;
+float ey4;
+
+void batch2d::draw(float x, float y, float width, float height, float rotation, float originX, float originY, int srcX, int srcY, int srcWidth, int srcHeight, bool flipX, bool flipY, float scaleX, float scaleY)
 {
   if(m_numSprite >= m_SIZE){
     LOG("Error: You're trying to draw more than " << m_SIZE << " sprites!");
     return;
   }
-
+  float ox = x + originX;
+  float oy = y + originY;
   if(rotation != 0){
     _cos = cos(RADIANS(rotation));
     _sin = sin(RADIANS(rotation));
     //corners calculation
-    fx = -originX;
-    fy = -originY;
-    fx2 = width - originX;
-    fy2 = height - originY;
+    fx = -srcWidth;
+    fy = -srcHeight;
+    fx2 = srcWidth;
+    fy2 = srcHeight;
 
-//coreners assigment
+    // scale
+    if (scaleX != 1 || scaleY != 1) {
+      fx *= scaleX;
+      fy *= scaleY;
+      fx2 *= scaleX;
+      fy2 *= scaleY;
+    }
+    //corners assigment
     p1x = fx;
     p1y = fy;
-    p2x = fx;
-    p2y = fy2;
+    p2x = fx2;
+    p2y = fy;
     p3x = fx2;
     p3y = fy2;
-    p4x = fx2;
-    p4y = fy;
+    p4x = fx;
+    p4y = fy2;
+
     //rotate each corner
-    px1 = p1x * _cos - p1y * _sin;
-    py1 = p1x * _sin + p1y * _cos;
+    ex1 = _cos * p1x - _sin * p1y;
+    ey1 = _sin * p1x + _cos * p1y;
 
-    px2 = p2x * _cos - p2y * _sin;
-    py2 = p2x * _sin + p2y * _cos;
+    ex2 = _cos * p2x - _sin * p2y;
+    ey2 = _sin * p2x + _cos * p2y;
 
-    px3 = p3x * _cos - p3y * _sin;
-    py3 = p3x * _sin + p3y * _cos;
+    ex3 = _cos * p3x - _sin * p3y;
+    ey3 = _sin * p3x + _cos * p3y;
 
-    px4 = px1 + (px3 - px2);
-    py4 = py3 - (py2 - py1);
+    ex4 = ex1 + (ex3 - ex2);
+    ey4 = ey3 - (ey2 - ey1);
+    }
+ else{
+    ex1 = -srcWidth + x;
+    ey1 = -srcHeight + y;
 
-  }else{
-    px1 = -srcWidth + x;
-    py1 = -srcHeight + y;
+    ex2 = +srcWidth + x;
+    ey2 = -srcHeight + y;
 
-    px2 = +srcWidth + x;
-    py2 = -srcHeight + y;
+    ex3 = srcWidth + x;
+    ey3 = srcHeight + y;
 
-    px3 = srcWidth + x;
-    py3 = srcHeight + y;
-
-    px4 = -srcWidth + x;
-    py4 = srcHeight + y;
+    ex4 = -srcWidth + x;
+    ey4 = srcHeight + y;
   }
 
-  px1 += (x + originX);
-  py1 += (y + originY);
-  px2 += (x + originX);
-  py2 += (y + originY);
-  px3 += (x + originX);
-  py3 += (y + originY);
-  px4 += (x + originX);
-  py4 += (y + originY);
+  ex1 += ox;
+  ey1 += oy;
+  ex2 += ox;
+  ey2 += oy;
+  ex3 += ox;
+  ey3 += oy;
+  ex4 += ox;
+  ey4 += oy;
 
   //if(srcX >= 0 || srcY >= 0){
   //convert pixel's coordonates to shader's coordonates
@@ -214,6 +240,7 @@ void batch2d::draw(float x, float y, float width, float height, float rotation, 
   v = (srcY + srcHeight) * texHeight;
   u2 = (srcX + srcWidth) * texWidth;
   v2 = srcY * texHeight;
+
   if (flipX) {
     float tmp = u;
     u = u2;
@@ -224,46 +251,49 @@ void batch2d::draw(float x, float y, float width, float height, float rotation, 
     v = v2;
     v2 = tmp;
   }
-  //}else{
-  //u = 0;
-  //v = 0;
-  // u2 = 1;
-  //v2 = 1;
-  //}
-  m_vertices[m_index++] = px1;
-  m_vertices[m_index++] = py1;
+
+  m_vertices[m_index++] = ex1;
+  m_vertices[m_index++] = ey1;
   m_vertices[m_index++] = r;
   m_vertices[m_index++] = g;
   m_vertices[m_index++] = b;
   m_vertices[m_index++] = a;
   m_vertices[m_index++] = u;
   m_vertices[m_index++] = v;
-  m_vertices[m_index++] = px2;
-  m_vertices[m_index++] = py2;
-  m_vertices[m_index++] = r;
-  m_vertices[m_index++] = g;
-  m_vertices[m_index++] = b;
-  m_vertices[m_index++] = a;
-  m_vertices[m_index++] = u2;
-  m_vertices[m_index++] = v;
-  m_vertices[m_index++] = px3;
-  m_vertices[m_index++] = py3;
-  m_vertices[m_index++] = r;
-  m_vertices[m_index++] = g;
-  m_vertices[m_index++] = b;
-  m_vertices[m_index++] = a;
-  m_vertices[m_index++] = u2;
-  m_vertices[m_index++] = v2;
-  m_vertices[m_index++] = px4;
-  m_vertices[m_index++] = py4;
+  m_vertices[m_index++] = ex2;
+  m_vertices[m_index++] = ey2;
   m_vertices[m_index++] = r;
   m_vertices[m_index++] = g;
   m_vertices[m_index++] = b;
   m_vertices[m_index++] = a;
   m_vertices[m_index++] = u;
   m_vertices[m_index++] = v2;
+  m_vertices[m_index++] = ex3;
+  m_vertices[m_index++] = ey3;
+  m_vertices[m_index++] = r;
+  m_vertices[m_index++] = g;
+  m_vertices[m_index++] = b;
+  m_vertices[m_index++] = a;
+  m_vertices[m_index++] = u2;
+  m_vertices[m_index++] = v2;
+  m_vertices[m_index++] = ex4;
+  m_vertices[m_index++] = ey4;
+  m_vertices[m_index++] = r;
+  m_vertices[m_index++] = g;
+  m_vertices[m_index++] = b;
+  m_vertices[m_index++] = a;
+  m_vertices[m_index++] = u2;
+  m_vertices[m_index++] = v;
 
   m_numSprite++;
+}
+
+void batch2d::setColor(float r, float g, float b, float a)
+{
+  this->r = r;
+  this->g = g;
+  this->b = b;
+  this->a = a;
 }
 
 void batch2d::draw(float x, float y, float width, float height, float rotation, float originX, float originY,
@@ -319,14 +349,14 @@ void batch2d::draw(float x, float y, float width, float height, float rotation, 
     py4 = height + y;
   }
 
-  px1 += x + originX;
-  py1 += y + originY;
-  px2 += x + originX;
-  py2 += y + originY;
-  px3 += x + originX;
-  py3 += y + originY;
-  px4 += x + originX;
-  py4 += y + originY;
+  px1 += (x + originX);
+  py1 += (y + originY);
+  px2 += (x + originX);
+  py2 += (y + originY);
+  px3 += (x + originX);
+  py3 += (y + originY);
+  px4 += (x + originX);
+  py4 += (y + originY);
 
   m_vertices[m_index++] = px1;
   m_vertices[m_index++] = py1;
