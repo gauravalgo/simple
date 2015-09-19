@@ -7,6 +7,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/simple.dir/src/graphics/batch2d.cpp.o"
   "CMakeFiles/simple.dir/src/graphics/gl_graphics.cpp.o"
   "CMakeFiles/simple.dir/src/window/glfw_window.cpp.o"
+  "CMakeFiles/simple.dir/src/utils/register_window.cpp.o"
   "CMakeFiles/simple.dir/src/utils/lua_lang_init.cpp.o"
   "CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o"
   "CMakeFiles/simple.dir/src/utils/core.cpp.o"

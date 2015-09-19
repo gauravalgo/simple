@@ -58,17 +58,6 @@ namespace simple
                   static int graphics_register(lua_State* state);
                   void makeDefaultWindow();
             private:
-                  //WINDOW
-                  static int makeWindow(lua_State* L);
-                  static int setWindowPosition(lua_State* L);
-                  static int setWindowTitle(lua_State* L);
-                  static int getMonitorSize(lua_State* L);
-                  static int getWindowTicks(lua_State* L);
-                  static int getWindowFocus(lua_State* L);
-                  static int setWindowVSync(lua_State* L);
-                  static int getWindowSize(lua_State* L);
-                  static int getWindowWidth(lua_State* L);
-                  static int getWindowHeight(lua_State* L);
                   //MOUSE
                   static int getPointerX(lua_State* L);
                   static int getPointerY(lua_State* L);

@@ -165,6 +165,7 @@ CMakeFiles/simple.dir/src/utils/lua_lang_init.cpp.o
  /home/vlad/Dev/simple/src/utils/lua_lang_init.cpp
  /home/vlad/Dev/simple/src/utils/lua_lang_init.h
  /home/vlad/Dev/simple/src/utils/register_graphics.h
+ /home/vlad/Dev/simple/src/utils/register_window.h
  /home/vlad/Dev/simple/src/window/glfw_window.h
 CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o
  ../deps/freetype/include/freetype/config/ftheader.h
@@ -192,8 +193,39 @@ CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o
  /home/vlad/Dev/simple/src/sound/openal_context.h
  /home/vlad/Dev/simple/src/utils/core.h
  /home/vlad/Dev/simple/src/utils/definitions.h
+ /home/vlad/Dev/simple/src/utils/lua_lang_utils.h
  /home/vlad/Dev/simple/src/utils/register_graphics.cpp
  /home/vlad/Dev/simple/src/utils/register_graphics.h
+ /home/vlad/Dev/simple/src/window/glfw_window.h
+CMakeFiles/simple.dir/src/utils/register_window.cpp.o
+ ../deps/freetype/include/freetype/config/ftheader.h
+ ../deps/freetype/include/ft2build.h
+ ../deps/glew/include/GL/glew.h
+ ../deps/glfw/include/GLFW/glfw3.h
+ /home/vlad/Dev/simple/deps/lua/lauxlib.h
+ /home/vlad/Dev/simple/deps/lua/lua.h
+ /home/vlad/Dev/simple/deps/lua/luaconf.h
+ /home/vlad/Dev/simple/deps/lua/lualib.h
+ /home/vlad/Dev/simple/src/graphics/batch2d.h
+ /home/vlad/Dev/simple/src/graphics/default_shaders.h
+ /home/vlad/Dev/simple/src/graphics/font.h
+ /home/vlad/Dev/simple/src/graphics/gl_graphics.h
+ /home/vlad/Dev/simple/src/graphics/mesh.h
+ /home/vlad/Dev/simple/src/graphics/shader.h
+ /home/vlad/Dev/simple/src/graphics/texture2D.h
+ /home/vlad/Dev/simple/src/input/keyboard.h
+ /home/vlad/Dev/simple/src/input/pointer.h
+ /home/vlad/Dev/simple/src/maths/mat4.h
+ /home/vlad/Dev/simple/src/maths/vec2.h
+ /home/vlad/Dev/simple/src/maths/vec3.h
+ /home/vlad/Dev/simple/src/maths/vec4.h
+ /home/vlad/Dev/simple/src/sound/ogg_player.h
+ /home/vlad/Dev/simple/src/sound/openal_context.h
+ /home/vlad/Dev/simple/src/utils/core.h
+ /home/vlad/Dev/simple/src/utils/definitions.h
+ /home/vlad/Dev/simple/src/utils/lua_lang_utils.h
+ /home/vlad/Dev/simple/src/utils/register_window.cpp
+ /home/vlad/Dev/simple/src/utils/register_window.h
  /home/vlad/Dev/simple/src/window/glfw_window.h
 CMakeFiles/simple.dir/src/window/glfw_window.cpp.o
  ../deps/glew/include/GL/glew.h

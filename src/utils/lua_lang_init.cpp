@@ -15,6 +15,7 @@
  ******************************************************************************/
 #include "lua_lang_init.h"
 #include "register_graphics.h"
+#include "register_window.h"
 
 #include "../utils/definitions.h"
 #include "../window/glfw_window.h"
@@ -57,13 +58,13 @@ lua_lang_init::lua_lang_init(){}
 lua_lang_init::~lua_lang_init(){}
 
 static glfw_window m_window;
-static bool default_window;
 
 static core* c;
 static keyboard* k;
 static pointer* point;
 
 static register_graphics* regGraphics;
+static register_window* regWindow;
 
 void lua_lang_init::create()
 {
@@ -73,11 +74,12 @@ void lua_lang_init::create()
   if(!m_L)
     LOG("Error: Could not load lua state!");
 
-  default_window = true;
   core* co = new core();
   co->create();
-
+  regWindow = new register_window();
+  regWindow->setDefaultWindow(true);
   c = co;
+  regWindow->setCore(c);
   setCore(c);
 
   k = new keyboard();
@@ -89,7 +91,7 @@ void lua_lang_init::create()
 void lua_lang_init::makeDefaultWindow()
 {
   //Did the user forgot to make his own window?
-  if(default_window){
+  if(regWindow->getDefaultWindow()){
     c->getWindow()->create("Simple - No Title!", 800, 600, false, false);
     c->getWindow()->setVSync(true); //don't melt the CPU
     c->getGLGraphics()->setViewport(0, 0, 800, 600);
@@ -253,162 +255,6 @@ int lua_lang_init::dumbBatch(lua_State *L)
   lua_isnumber(L,i),function = return is "i" is a number or not
   lua_type(L,i)
 */
-
-/******* WINDOW ******/
-
-int lua_lang_init::makeWindow(lua_State* L)
-{
-
-  default_window = false;
-  luaL_checkstring(L, 1);
-  const char* title = lua_tostring(L, 1);
-  checkFloat(L, 2);
-  checkFloat(L, 3);
-  int width = lua_tonumber(L,2);
-  int height = lua_tonumber(L, 3);
-  bool fullscreen = false;
-  bool resizable = false;
-  int x = -1;
-  int y = -1;
-  //Optional
-  if(lua_isnumber(L, 4))
-    fullscreen = lua_tonumber(L, 4);
-  if(lua_isnumber(L, 5))
-    resizable = lua_tonumber(L, 5);
-
-  if(lua_isnumber(L, 5) && lua_isnumber(L, 6)){
-    x = lua_tonumber(L, 5);
-    y = lua_tonumber(L, 6);
-  }
-  c->getWindow()->create(title, width, height, fullscreen, resizable);
-  c->getWindow()->setPosition(x, y);
-  return 1;
-}
-
-int lua_lang_init::getWindowSize(lua_State *L)
-{
-  float w = c->getWindow()->getWidth();
-  float h = c->getWindow()->getHeight();
-
-  lua_pushnumber(L, h);
-  lua_pushnumber(L, w);
-
-  return 2;
-}
-
-int lua_lang_init::getWindowWidth(lua_State *L)
-{
-  float w = c->getWindow()->getWidth();
-  lua_pushnumber(L, w);
-  return 1;
-}
-
-int lua_lang_init::getWindowHeight(lua_State *L)
-{
-  float h = c->getWindow()->getHeight();
-  lua_pushnumber(L, h);
-  return 1;
-}
-
-int lua_lang_init::setWindowVSync(lua_State *L)
-{
-  if(checkArguments(L, 2))
-    LOG("Warning: function makeWindow takes: 1)boolean");
-
-  bool v = lua_toboolean(L, 1);
-  c->getWindow()->setVSync(v);
-  return 1;
-}
-
-int lua_lang_init::setWindowPosition(lua_State* L)
-{
-  checkFloat(L , 1);
-  checkFloat(L , 2);
-  int x = lua_tonumber(L, 1);
-  int y = lua_tonumber(L, 2);
-  c->getWindow()->setPosition(x, y);
-  return 1;
-}
-
-int lua_lang_init::setWindowTitle(lua_State* L)
-{
-  luaL_checkstring(L, 1);
-  const char* title = lua_tostring(L, 1);
-  c->getWindow()->setTitle(title);
-  return 1;
-}
-
-int lua_lang_init::getWindowFocus(lua_State* L)
-{
-  if(checkArguments(L, 1))
-    LOG("Warning: function getWindowFocus takes no parameter");
-  bool focused = c->getWindow()->isFocused();
-  lua_pushboolean(L, focused);
-  return 1;
-}
-
-int lua_lang_init::getWindowTicks(lua_State* L)
-{
-  if(checkArguments(L, 1))
-    LOG("Warning: function getTicks takes no parameter");
-
-  lua_pushnumber(L, c->getWindow()->getTicks());
-  return 1;
-}
-
-int lua_lang_init::getMonitorSize(lua_State* L)
-{
-  lua_newtable(L);
-
-  float x = c->getWindow()->getMonitorSize().x;
-  float y = c->getWindow()->getMonitorSize().y;
-
-  lua_pushnumber(L, y);
-  lua_pushnumber(L, x);
-  lua_settable(L, -3);
-  return 1;
-}
-
-
-/*** END OF WINDOW *****/
-
-/*** GL GRAPHICS *****/
-
-int lua_lang_init::clearScreen(lua_State* L)
-{
-  checkFloat(L, 1);
-  checkFloat(L, 2);
-  checkFloat(L, 3);
-  checkFloat(L, 4);
-  float r = lua_tonumber(L, 1);
-  float g = lua_tonumber(L, 2);
-  float b = lua_tonumber(L, 3);
-  float a = lua_tonumber(L, 4);
-  float scale = 1.0f / 255.0f;
-  c->getGLGraphics()->clearScreen(scale * r, scale * g, scale * b, scale * a);
-
-  return 1;
-}
-
-int lua_lang_init::setViewport(lua_State *L)
-{
-  checkFloat(L, 1);
-  checkFloat(L, 2);
-  checkFloat(L, 3);
-  checkFloat(L, 4);
-  int x = lua_tonumber(L, 1);
-  int y = lua_tonumber(L, 2);
-  int w = lua_tonumber(L, 3);
-  int h = lua_tonumber(L, 4);
-  c->getGLGraphics()->setViewport(x, y, w, h);
-  return 1;
-}
-
-/*** END OF GL GRAPHICS *****/
-
-/*** MATHS *****/
-
-/*** END OF MATHS *****/
 
 /*** SOUND *****/
 
@@ -605,32 +451,9 @@ int lua_lang_init::timer_register(lua_State* state)
     {
       {"getFPS", getFPS},
       {"delta", getDeltaTime},
-      {"getTicks", getWindowTicks},
+      //{"getTicks", getWindowTicks},
       {NULL, NULL}
     };
-  return 1;
-}
-
-int lua_lang_init::window_register(lua_State* state)
-{
-  luaL_Reg regWindowFuncs[] =
-    {
-      {"create", makeWindow},
-      {"setPosition", setWindowPosition},
-      {"setTitle", setWindowTitle},
-      {"getMonitorSize", getMonitorSize},
-      {"getSize", getWindowSize },
-      {"getWidth", getWindowWidth },
-      {"getHeight", getWindowHeight },
-      {"getFocus", getWindowFocus },
-      {"setVSync", setWindowVSync },
-      {NULL, NULL}
-    };
-
-  luaL_newlib(state, regWindowFuncs);
-  luaL_Reg WindowMetatableFuncs[] = {
-    {NULL, NULL}
-  };
   return 1;
 }
 
@@ -647,7 +470,7 @@ int lua_lang_init::initSimple(lua_State* L)
   luaL_newlib(L, reg);
 
   struct { char *name; int (*fn)(lua_State *L); } mods[] = {
-    { "window", window_register  },
+    { "window", regWindow->registerModule  },
     { "graphics", regGraphics->registerModule  },
     //{ "timer", timer_register },
     // { "input", input_register },
@@ -676,4 +499,5 @@ void lua_lang_init::dumb()
   SAFE_DELETE(point);
   SAFE_DELETE(c);
   SAFE_DELETE(regGraphics);
+  SAFE_DELETE(regWindow);
 }

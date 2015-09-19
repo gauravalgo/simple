@@ -797,6 +797,33 @@ src/utils/register_graphics.cpp.s:
 	$(MAKE) -f CMakeFiles/simple.dir/build.make CMakeFiles/simple.dir/src/utils/register_graphics.cpp.s
 .PHONY : src/utils/register_graphics.cpp.s
 
+src/utils/register_window.o: src/utils/register_window.cpp.o
+
+.PHONY : src/utils/register_window.o
+
+# target to build an object file
+src/utils/register_window.cpp.o:
+	$(MAKE) -f CMakeFiles/simple.dir/build.make CMakeFiles/simple.dir/src/utils/register_window.cpp.o
+.PHONY : src/utils/register_window.cpp.o
+
+src/utils/register_window.i: src/utils/register_window.cpp.i
+
+.PHONY : src/utils/register_window.i
+
+# target to preprocess a source file
+src/utils/register_window.cpp.i:
+	$(MAKE) -f CMakeFiles/simple.dir/build.make CMakeFiles/simple.dir/src/utils/register_window.cpp.i
+.PHONY : src/utils/register_window.cpp.i
+
+src/utils/register_window.s: src/utils/register_window.cpp.s
+
+.PHONY : src/utils/register_window.s
+
+# target to generate assembly for a file
+src/utils/register_window.cpp.s:
+	$(MAKE) -f CMakeFiles/simple.dir/build.make CMakeFiles/simple.dir/src/utils/register_window.cpp.s
+.PHONY : src/utils/register_window.cpp.s
+
 src/window/glfw_window.o: src/window/glfw_window.cpp.o
 
 .PHONY : src/window/glfw_window.o
@@ -903,6 +930,9 @@ help:
 	@echo "... src/utils/register_graphics.o"
 	@echo "... src/utils/register_graphics.i"
 	@echo "... src/utils/register_graphics.s"
+	@echo "... src/utils/register_window.o"
+	@echo "... src/utils/register_window.i"
+	@echo "... src/utils/register_window.s"
 	@echo "... src/window/glfw_window.o"
 	@echo "... src/window/glfw_window.i"
 	@echo "... src/window/glfw_window.s"

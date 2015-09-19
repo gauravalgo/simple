@@ -249,9 +249,33 @@ CMakeFiles/simple.dir/src/window/glfw_window.cpp.o.provides: CMakeFiles/simple.d
 CMakeFiles/simple.dir/src/window/glfw_window.cpp.o.provides.build: CMakeFiles/simple.dir/src/window/glfw_window.cpp.o
 
 
+CMakeFiles/simple.dir/src/utils/register_window.cpp.o: CMakeFiles/simple.dir/flags.make
+CMakeFiles/simple.dir/src/utils/register_window.cpp.o: ../src/utils/register_window.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/simple.dir/src/utils/register_window.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/simple.dir/src/utils/register_window.cpp.o -c /home/vlad/Dev/simple/src/utils/register_window.cpp
+
+CMakeFiles/simple.dir/src/utils/register_window.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/simple.dir/src/utils/register_window.cpp.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/vlad/Dev/simple/src/utils/register_window.cpp > CMakeFiles/simple.dir/src/utils/register_window.cpp.i
+
+CMakeFiles/simple.dir/src/utils/register_window.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/simple.dir/src/utils/register_window.cpp.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/vlad/Dev/simple/src/utils/register_window.cpp -o CMakeFiles/simple.dir/src/utils/register_window.cpp.s
+
+CMakeFiles/simple.dir/src/utils/register_window.cpp.o.requires:
+
+.PHONY : CMakeFiles/simple.dir/src/utils/register_window.cpp.o.requires
+
+CMakeFiles/simple.dir/src/utils/register_window.cpp.o.provides: CMakeFiles/simple.dir/src/utils/register_window.cpp.o.requires
+	$(MAKE) -f CMakeFiles/simple.dir/build.make CMakeFiles/simple.dir/src/utils/register_window.cpp.o.provides.build
+.PHONY : CMakeFiles/simple.dir/src/utils/register_window.cpp.o.provides
+
+CMakeFiles/simple.dir/src/utils/register_window.cpp.o.provides.build: CMakeFiles/simple.dir/src/utils/register_window.cpp.o
+
+
 CMakeFiles/simple.dir/src/utils/lua_lang_init.cpp.o: CMakeFiles/simple.dir/flags.make
 CMakeFiles/simple.dir/src/utils/lua_lang_init.cpp.o: ../src/utils/lua_lang_init.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/simple.dir/src/utils/lua_lang_init.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/simple.dir/src/utils/lua_lang_init.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/simple.dir/src/utils/lua_lang_init.cpp.o -c /home/vlad/Dev/simple/src/utils/lua_lang_init.cpp
 
 CMakeFiles/simple.dir/src/utils/lua_lang_init.cpp.i: cmake_force
@@ -275,7 +299,7 @@ CMakeFiles/simple.dir/src/utils/lua_lang_init.cpp.o.provides.build: CMakeFiles/s
 
 CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: CMakeFiles/simple.dir/flags.make
 CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o: ../src/utils/register_graphics.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o -c /home/vlad/Dev/simple/src/utils/register_graphics.cpp
 
 CMakeFiles/simple.dir/src/utils/register_graphics.cpp.i: cmake_force
@@ -299,7 +323,7 @@ CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o.provides.build: CMakeFil
 
 CMakeFiles/simple.dir/src/utils/core.cpp.o: CMakeFiles/simple.dir/flags.make
 CMakeFiles/simple.dir/src/utils/core.cpp.o: ../src/utils/core.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/simple.dir/src/utils/core.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/simple.dir/src/utils/core.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/simple.dir/src/utils/core.cpp.o -c /home/vlad/Dev/simple/src/utils/core.cpp
 
 CMakeFiles/simple.dir/src/utils/core.cpp.i: cmake_force
@@ -323,7 +347,7 @@ CMakeFiles/simple.dir/src/utils/core.cpp.o.provides.build: CMakeFiles/simple.dir
 
 CMakeFiles/simple.dir/src/utils/file_system.cpp.o: CMakeFiles/simple.dir/flags.make
 CMakeFiles/simple.dir/src/utils/file_system.cpp.o: ../src/utils/file_system.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/simple.dir/src/utils/file_system.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/simple.dir/src/utils/file_system.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/simple.dir/src/utils/file_system.cpp.o -c /home/vlad/Dev/simple/src/utils/file_system.cpp
 
 CMakeFiles/simple.dir/src/utils/file_system.cpp.i: cmake_force
@@ -347,7 +371,7 @@ CMakeFiles/simple.dir/src/utils/file_system.cpp.o.provides.build: CMakeFiles/sim
 
 CMakeFiles/simple.dir/src/input/pointer.cpp.o: CMakeFiles/simple.dir/flags.make
 CMakeFiles/simple.dir/src/input/pointer.cpp.o: ../src/input/pointer.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/simple.dir/src/input/pointer.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/simple.dir/src/input/pointer.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/simple.dir/src/input/pointer.cpp.o -c /home/vlad/Dev/simple/src/input/pointer.cpp
 
 CMakeFiles/simple.dir/src/input/pointer.cpp.i: cmake_force
@@ -371,7 +395,7 @@ CMakeFiles/simple.dir/src/input/pointer.cpp.o.provides.build: CMakeFiles/simple.
 
 CMakeFiles/simple.dir/src/input/keyboard.cpp.o: CMakeFiles/simple.dir/flags.make
 CMakeFiles/simple.dir/src/input/keyboard.cpp.o: ../src/input/keyboard.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/simple.dir/src/input/keyboard.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/simple.dir/src/input/keyboard.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/simple.dir/src/input/keyboard.cpp.o -c /home/vlad/Dev/simple/src/input/keyboard.cpp
 
 CMakeFiles/simple.dir/src/input/keyboard.cpp.i: cmake_force
@@ -395,7 +419,7 @@ CMakeFiles/simple.dir/src/input/keyboard.cpp.o.provides.build: CMakeFiles/simple
 
 CMakeFiles/simple.dir/src/sound/openal_contex.cpp.o: CMakeFiles/simple.dir/flags.make
 CMakeFiles/simple.dir/src/sound/openal_contex.cpp.o: ../src/sound/openal_contex.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/simple.dir/src/sound/openal_contex.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/simple.dir/src/sound/openal_contex.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/simple.dir/src/sound/openal_contex.cpp.o -c /home/vlad/Dev/simple/src/sound/openal_contex.cpp
 
 CMakeFiles/simple.dir/src/sound/openal_contex.cpp.i: cmake_force
@@ -419,7 +443,7 @@ CMakeFiles/simple.dir/src/sound/openal_contex.cpp.o.provides.build: CMakeFiles/s
 
 CMakeFiles/simple.dir/src/sound/ogg_player.cpp.o: CMakeFiles/simple.dir/flags.make
 CMakeFiles/simple.dir/src/sound/ogg_player.cpp.o: ../src/sound/ogg_player.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/simple.dir/src/sound/ogg_player.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/simple.dir/src/sound/ogg_player.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/simple.dir/src/sound/ogg_player.cpp.o -c /home/vlad/Dev/simple/src/sound/ogg_player.cpp
 
 CMakeFiles/simple.dir/src/sound/ogg_player.cpp.i: cmake_force
@@ -443,7 +467,7 @@ CMakeFiles/simple.dir/src/sound/ogg_player.cpp.o.provides.build: CMakeFiles/simp
 
 CMakeFiles/simple.dir/src/main.cpp.o: CMakeFiles/simple.dir/flags.make
 CMakeFiles/simple.dir/src/main.cpp.o: ../src/main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/simple.dir/src/main.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/simple.dir/src/main.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/simple.dir/src/main.cpp.o -c /home/vlad/Dev/simple/src/main.cpp
 
 CMakeFiles/simple.dir/src/main.cpp.i: cmake_force
@@ -467,7 +491,7 @@ CMakeFiles/simple.dir/src/main.cpp.o.provides.build: CMakeFiles/simple.dir/src/m
 
 CMakeFiles/simple.dir/deps/glew/src/glew.c.o: CMakeFiles/simple.dir/flags.make
 CMakeFiles/simple.dir/deps/glew/src/glew.c.o: ../deps/glew/src/glew.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building C object CMakeFiles/simple.dir/deps/glew/src/glew.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building C object CMakeFiles/simple.dir/deps/glew/src/glew.c.o"
 	/usr/bin/cc  $(C_DEFINES) $(C_FLAGS) -o CMakeFiles/simple.dir/deps/glew/src/glew.c.o   -c /home/vlad/Dev/simple/deps/glew/src/glew.c
 
 CMakeFiles/simple.dir/deps/glew/src/glew.c.i: cmake_force
@@ -491,7 +515,7 @@ CMakeFiles/simple.dir/deps/glew/src/glew.c.o.provides.build: CMakeFiles/simple.d
 
 CMakeFiles/simple.dir/deps/stb_image/stb_image.c.o: CMakeFiles/simple.dir/flags.make
 CMakeFiles/simple.dir/deps/stb_image/stb_image.c.o: ../deps/stb_image/stb_image.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building C object CMakeFiles/simple.dir/deps/stb_image/stb_image.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building C object CMakeFiles/simple.dir/deps/stb_image/stb_image.c.o"
 	/usr/bin/cc  $(C_DEFINES) $(C_FLAGS) -o CMakeFiles/simple.dir/deps/stb_image/stb_image.c.o   -c /home/vlad/Dev/simple/deps/stb_image/stb_image.c
 
 CMakeFiles/simple.dir/deps/stb_image/stb_image.c.i: cmake_force
@@ -515,7 +539,7 @@ CMakeFiles/simple.dir/deps/stb_image/stb_image.c.o.provides.build: CMakeFiles/si
 
 CMakeFiles/simple.dir/deps/stb_vorbis/stb_vorbis.c.o: CMakeFiles/simple.dir/flags.make
 CMakeFiles/simple.dir/deps/stb_vorbis/stb_vorbis.c.o: ../deps/stb_vorbis/stb_vorbis.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building C object CMakeFiles/simple.dir/deps/stb_vorbis/stb_vorbis.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building C object CMakeFiles/simple.dir/deps/stb_vorbis/stb_vorbis.c.o"
 	/usr/bin/cc  $(C_DEFINES) $(C_FLAGS) -o CMakeFiles/simple.dir/deps/stb_vorbis/stb_vorbis.c.o   -c /home/vlad/Dev/simple/deps/stb_vorbis/stb_vorbis.c
 
 CMakeFiles/simple.dir/deps/stb_vorbis/stb_vorbis.c.i: cmake_force
@@ -547,6 +571,7 @@ simple_OBJECTS = \
 "CMakeFiles/simple.dir/src/graphics/batch2d.cpp.o" \
 "CMakeFiles/simple.dir/src/graphics/gl_graphics.cpp.o" \
 "CMakeFiles/simple.dir/src/window/glfw_window.cpp.o" \
+"CMakeFiles/simple.dir/src/utils/register_window.cpp.o" \
 "CMakeFiles/simple.dir/src/utils/lua_lang_init.cpp.o" \
 "CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o" \
 "CMakeFiles/simple.dir/src/utils/core.cpp.o" \
@@ -571,6 +596,7 @@ simple: CMakeFiles/simple.dir/src/graphics/default_shaders.cpp.o
 simple: CMakeFiles/simple.dir/src/graphics/batch2d.cpp.o
 simple: CMakeFiles/simple.dir/src/graphics/gl_graphics.cpp.o
 simple: CMakeFiles/simple.dir/src/window/glfw_window.cpp.o
+simple: CMakeFiles/simple.dir/src/utils/register_window.cpp.o
 simple: CMakeFiles/simple.dir/src/utils/lua_lang_init.cpp.o
 simple: CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o
 simple: CMakeFiles/simple.dir/src/utils/core.cpp.o
@@ -597,7 +623,7 @@ simple: deps/lua/liblua.a
 simple: deps/openal/libcommon.a
 simple: /usr/lib64/libfluidsynth.so
 simple: CMakeFiles/simple.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Linking CXX executable simple"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Linking CXX executable simple"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/simple.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -613,6 +639,7 @@ CMakeFiles/simple.dir/requires: CMakeFiles/simple.dir/src/graphics/default_shade
 CMakeFiles/simple.dir/requires: CMakeFiles/simple.dir/src/graphics/batch2d.cpp.o.requires
 CMakeFiles/simple.dir/requires: CMakeFiles/simple.dir/src/graphics/gl_graphics.cpp.o.requires
 CMakeFiles/simple.dir/requires: CMakeFiles/simple.dir/src/window/glfw_window.cpp.o.requires
+CMakeFiles/simple.dir/requires: CMakeFiles/simple.dir/src/utils/register_window.cpp.o.requires
 CMakeFiles/simple.dir/requires: CMakeFiles/simple.dir/src/utils/lua_lang_init.cpp.o.requires
 CMakeFiles/simple.dir/requires: CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o.requires
 CMakeFiles/simple.dir/requires: CMakeFiles/simple.dir/src/utils/core.cpp.o.requires

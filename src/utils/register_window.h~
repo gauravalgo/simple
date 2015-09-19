@@ -1,0 +1,24 @@
+#ifndef REGISTER_WINDOW_H
+#define REGISTER_WINDOW_H
+
+extern "C" {
+#include "../../deps/lua/lua.h"
+#include "../../deps/lua/lualib.h"
+#include "../../deps/lua/lauxlib.h"
+}
+
+namespace simple
+{
+        namespace lang
+        {
+                class register_window
+                {
+                public:
+                        register_window();
+                        ~register_window();
+                        int registerModule(lua_State* L);
+                        int registerMetatable(lua_State* L);
+                };
+        }
+}
+#endif
