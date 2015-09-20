@@ -57,9 +57,6 @@ namespace simple
                   static int graphics_register(lua_State* state);
                   void makeDefaultWindow();
             private:
-                  //UTILS
-                  static int getDeltaTime(lua_State* L);
-                  static int getFPS(lua_State* L);
                   static int quit(lua_State* L);
                   //Sound
                   static int loadSound(lua_State* L);

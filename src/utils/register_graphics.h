@@ -8,6 +8,7 @@ extern "C" {
 }
 
 #include "../graphics/shader.h"
+
 namespace simple
 {
         namespace lang

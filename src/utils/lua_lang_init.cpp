@@ -18,6 +18,7 @@
 #include "register_window.h"
 #include "register_input.h"
 #include "register_math.h"
+#include "register_timer.h"
 
 #include "../utils/definitions.h"
 #include "../window/glfw_window.h"
@@ -69,6 +70,7 @@ static register_graphics* regGraphics;
 static register_window* regWindow;
 static register_input* regInput;
 static register_math* regMath;
+static register_timer* regTimer;
 
 void lua_lang_init::create()
 {
@@ -87,6 +89,8 @@ void lua_lang_init::create()
   regWindow->setDefaultWindow(true);
 
   regInput = new register_input();
+  regTimer = new register_timer();
+
   c = co;
 
   regWindow->setCore(c);
@@ -97,6 +101,8 @@ void lua_lang_init::create()
 
   regMath = new register_math();
   regMath->setCore(c);
+
+  regTimer->setCore(c);
 
   setCore(c);
 
@@ -270,22 +276,6 @@ int lua_lang_init::playSound(lua_State *L)
 /*** END OF SOUND *****/
 
 /*** UTILS *****/
-int lua_lang_init::getDeltaTime(lua_State* L)
-{
-  if(checkArguments(L, 1))
-    LOG("Warning: function getDeltaTime takes no parameters");
-  lua_pushnumber(L, c->getWindow()->getDeltaTime());
-  return 1;
-}
-
-int lua_lang_init::getFPS(lua_State* L)
-{
-  if(checkArguments(L, 1))
-    LOG("Warning: function getFPS takes no parameters");
-  float FPS = c->getWindow()->getFPS();
-  lua_pushnumber(L, FPS);
-  return 1;
-}
 
 int lua_lang_init::quit(lua_State* L)
 {
@@ -317,17 +307,6 @@ int lua_lang_init::audio_register(lua_State* state)
   return 1;
 }
 
-int lua_lang_init::timer_register(lua_State* state)
-{
-  luaL_Reg regTimerFuncs[] =
-    {
-      {"getFPS", getFPS},
-      {"delta", getDeltaTime},
-      {NULL, NULL}
-    };
-  return 1;
-}
-
 int lua_lang_init::initSimple(lua_State* L)
 {
   int i;
@@ -343,7 +322,7 @@ int lua_lang_init::initSimple(lua_State* L)
   struct { char *name; int (*fn)(lua_State *L); } mods[] = {
     { "window", regWindow->registerModule  },
     { "graphics", regGraphics->registerModule  },
-    //{ "timer", timer_register },
+    { "timer", regTimer->registerModule },
     { "input", regInput->registerModule },
     { "math", regMath->registerModule },
     // { "audio", audio_register },
@@ -374,4 +353,5 @@ void lua_lang_init::dumb()
   SAFE_DELETE(regWindow);
   SAFE_DELETE(regInput);
   SAFE_DELETE(regMath);
+  SAFE_DELETE(regTimer);
 }
