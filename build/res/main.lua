@@ -48,10 +48,10 @@ end
 
 local rotation = 10
 function simple.draw()
-   simple.graphics.clearScreen(125, 114, 89, 255)
+   simple.graphics.clearScreen(125, 114, 129, 255)
    simple.graphics.setViewport(0, 0, width, height);
 
-   --shader:bindShader()
+  -- shader:bindShader()
 end
 
 local timer = 2;

@@ -1,0 +1,46 @@
+#ifndef REGISTER_INPUT_H
+#define REGISTER_INPUT_H
+
+extern "C" {
+#include "../../deps/lua/lua.h"
+#include "../../deps/lua/lualib.h"
+#include "../../deps/lua/lauxlib.h"
+}
+
+#include "core.h"
+#include "../input/keyboard.h"
+
+namespace simple
+{
+        using namespace simple::input;
+        namespace lang
+        {
+                class register_input
+                {
+                private:
+                        keyboard* m_key;
+                        core* m_core;
+                public:
+                        register_input();
+                        ~register_input();
+                public:
+                        void setKeyboard(keyboard* key);
+                        keyboard* getKeyboard();
+
+                        void setCore(core* co);
+                        core* getCore();
+
+                        int registerModule(lua_State* L);
+                        int registerMetatable(lua_State* L);
+                private:
+                        static int isKeyDown(lua_State* L);
+                        static int isKeyUp(lua_State* L);
+                        static int getPointerX(lua_State* L);
+                        static int getPointerY(lua_State* L);
+                        static int getPointer(lua_State* L);
+                        static int isPointerPressed(lua_State* L);
+                        static int isPointerReleased(lua_State* L);
+                };
+        }
+}
+#endif

@@ -1,0 +1,120 @@
+#include "register_input.h"
+
+using namespace simple;
+using namespace simple::lang;
+using namespace simple::input;
+
+register_input::register_input()
+{
+
+}
+
+register_input::~register_input()
+{
+
+}
+
+void register_input::setKeyboard(input::keyboard *key)
+{
+        m_key = key;
+}
+
+keyboard* register_input::getKeyboard()
+{
+        return m_key;
+}
+
+void register_input::setCore(simple::core *co)
+{
+m_core = co;
+}
+
+core* register_input::getCore()
+{
+return m_core;
+}
+
+int register_input::isKeyDown(lua_State* L)
+{
+        luaL_checkstring(L, 1);
+        const char* key = lua_tostring(L, 1);
+        if(k->isKeyDown(key))
+                return 1;
+        else
+                return 0;
+        return 0;
+}
+
+int register_input::isKeyUp(lua_State* L)
+{
+        luaL_checkstring(L, 1);
+        const char* key = lua_tostring(L, 1);
+        if(k->isKeyUp(key))
+                return 1;
+        else
+                return 0;
+        return 0;
+}
+
+int register_input::getPointerX(lua_State* L)
+{
+  if(checkArguments(L, 1))
+    LOG("Warning: function getPointerX takes no parameter");
+
+  lua_pushnumber(L, c->getWindow()->getPointX());
+
+  return 1;
+}
+
+int register_input::getPointerY(lua_State* L)
+{
+  if(checkArguments(L, 1))
+    LOG("Warning: function getPointerY takes no parameter");
+  lua_pushnumber(L, c->getWindow()->getPointY());
+  return 1;
+}
+
+int register_input::getPointer(lua_State *L)
+{
+  float x = c->getWindow()->getPointerPosition().x;
+  float y = c->getWindow()->getPointerPosition().y;
+
+  lua_pushnumber(L, x);
+  lua_pushnumber(L, y);
+
+  return 2;
+}
+
+
+int register_input::isPointerPressed(lua_State *L)
+{
+  luaL_checkstring(L, 1);
+  const char* button = lua_tostring(L, 1);
+  if(point->isPressed(button))
+    return 1;
+  else
+    return 0;
+  return 0;
+}
+
+int register_input::isPointerReleased(lua_State *L)
+{
+  luaL_checkstring(L, 1);
+  const char* button = lua_tostring(L, 1);
+  if(point->isReleased(button))
+    return 1;
+  else
+    return 0;
+  return 0;
+}
+
+int register_input::registerModule(lua_State* L)
+{
+
+        return 1;
+}
+
+int register_input::registerMetatable(lua_State* L)
+{
+        return 1;
+}

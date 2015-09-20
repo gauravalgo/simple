@@ -1,0 +1,14 @@
+#include "register_math.h"
+
+using namespace simple;
+using namespace simple::lang;
+
+register_math::register_math()
+{
+
+}
+
+register_math::~register_math()
+{
+
+}

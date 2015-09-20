@@ -16,6 +16,8 @@
 #include "lua_lang_init.h"
 #include "register_graphics.h"
 #include "register_window.h"
+#include "register_input.h"
+#include "register_math.h"
 
 #include "../utils/definitions.h"
 #include "../window/glfw_window.h"
@@ -65,6 +67,8 @@ static pointer* point;
 
 static register_graphics* regGraphics;
 static register_window* regWindow;
+static register_input* regInput;
+static register_math* regMath;
 
 void lua_lang_init::create()
 {
@@ -74,16 +78,27 @@ void lua_lang_init::create()
   if(!m_L)
     LOG("Error: Could not load lua state!");
 
+  k = new keyboard();
+  point = new pointer();
+
   core* co = new core();
   co->create();
   regWindow = new register_window();
   regWindow->setDefaultWindow(true);
-  c = co;
-  regWindow->setCore(c);
-  setCore(c);
 
-  k = new keyboard();
-  point = new pointer();
+  regInput = new register_input();
+  c = co;
+
+  regWindow->setCore(c);
+
+  regInput->setCore(c);
+  regInput->setPointer(point);
+  regInput->setKeyboard(k);
+
+  regMath = new register_math();
+  regMath->setCore(c);
+
+  setCore(c);
 
   regGraphics = new register_graphics();
 }
@@ -106,11 +121,6 @@ void lua_lang_init::setMainScript(const char* name)
   if(error != 0)
     LOG("Error: Could not load main script " << name << " make sure your " << name << " is in the same folder with simple's executable.");
 
-}
-
-bool lua_lang_init::callFunction(std::string name)
-{
-  return true;
 }
 
 static bool checkArguments(lua_State* L, int number)
@@ -214,39 +224,6 @@ static mat4* getMatrix4(LUA_INTEGER value)
   return (mat4*)value;
 }
 
-
-int lua_lang_init::dumbTexture(lua_State *L)
-{
-  luaL_checkinteger(L, 1);
-  lua_Integer id = lua_tointeger(L, 1);
-  texture2D* tex;
-  tex = getTexture2D(id);
-  SAFE_DELETE(tex);
-  return 1;
-}
-
-int lua_lang_init::dumbShader(lua_State *L)
-{
-  luaL_checkinteger(L, 1);
-  lua_Integer id = lua_tointeger(L, 1);
-  shader* s;
-  s = getShader(id);
-  if(s == getShader(id))
-    SAFE_DELETE(s);
-  return 1;
-}
-
-int lua_lang_init::dumbBatch(lua_State *L)
-{
-  luaL_checkinteger(L, 1);
-  lua_Integer id = lua_tointeger(L, 1);
-  batch2d* b;
-  b = getBatch(id);
-  SAFE_DELETE(b);
-  return 1;
-}
-
-
 /*Short doc:
 
   lua_pushnumber = pushes a float to a destination
@@ -292,62 +269,6 @@ int lua_lang_init::playSound(lua_State *L)
 
 /*** END OF SOUND *****/
 
-/*** MOUSE *****/
-int lua_lang_init::getPointerX(lua_State* L)
-{
-  if(checkArguments(L, 1))
-    LOG("Warning: function getPointerX takes no parameter");
-
-  lua_pushnumber(L, c->getWindow()->getPointX());
-
-  return 1;
-}
-
-int lua_lang_init::getPointerY(lua_State* L)
-{
-  if(checkArguments(L, 1))
-    LOG("Warning: function getPointerY takes no parameter");
-  lua_pushnumber(L, c->getWindow()->getPointY());
-  return 1;
-}
-
-int lua_lang_init::getPointer(lua_State *L)
-{
-  float x = c->getWindow()->getPointerPosition().x;
-  float y = c->getWindow()->getPointerPosition().y;
-
-  lua_pushnumber(L, x);
-  lua_pushnumber(L, y);
-
-  return 2;
-}
-
-int lua_lang_init::isPointerPressed(lua_State *L)
-{
-  luaL_checkstring(L, 1);
-  const char* button = lua_tostring(L, 1);
-  if(point->isPressed(button))
-    return 1;
-  else
-    return 0;
-  return 0;
-}
-
-int lua_lang_init::isPointerReleased(lua_State *L)
-{
-  luaL_checkstring(L, 1);
-  const char* button = lua_tostring(L, 1);
-  if(point->isReleased(button))
-    return 1;
-  else
-    return 0;
-  return 0;
-}
-
-
-/*** END OF MOUSE *****/
-
-
 /*** UTILS *****/
 int lua_lang_init::getDeltaTime(lua_State* L)
 {
@@ -370,28 +291,6 @@ int lua_lang_init::quit(lua_State* L)
 {
   c->getWindow()->setRunning(false);
   return 1;
-}
-
-int lua_lang_init::isKeyDown(lua_State* L)
-{
-  luaL_checkstring(L, 1);
-  const char* key = lua_tostring(L, 1);
-  if(k->isKeyDown(key))
-    return 1;
-  else
-    return 0;
-  return 0;
-}
-
-int lua_lang_init::isKeyUp(lua_State* L)
-{
-  luaL_checkstring(L, 1);
-  const char* key = lua_tostring(L, 1);
-  if(k->isKeyUp(key))
-    return 1;
-  else
-    return 0;
-  return 0;
 }
 
 /*** END OF UTILS *****/
@@ -418,40 +317,12 @@ int lua_lang_init::audio_register(lua_State* state)
   return 1;
 }
 
-int lua_lang_init::input_register(lua_State* state)
-{
-  luaL_Reg regInputFuncs[] =
-    {
-      {"getPointerX", getPointerX},
-      {"getPointerY", getPointerY},
-      {"getPointer", getPointer},
-      {"isKeyDown", isKeyDown},
-      {"isKeyUp", isKeyUp},
-      {"pressed", isPointerPressed},
-      {"released", isPointerReleased},
-    };
-
-  return 1;
-}
-
-int lua_lang_init::math_register(lua_State* state)
-{
-  luaL_Reg regMathFuncs[] =
-    {
-      {"setOrtho", setOrthoView},
-      {NULL, NULL}
-    };
-
-  return 1;
-}
-
 int lua_lang_init::timer_register(lua_State* state)
 {
   luaL_Reg regTimerFuncs[] =
     {
       {"getFPS", getFPS},
       {"delta", getDeltaTime},
-      //{"getTicks", getWindowTicks},
       {NULL, NULL}
     };
   return 1;
@@ -473,8 +344,8 @@ int lua_lang_init::initSimple(lua_State* L)
     { "window", regWindow->registerModule  },
     { "graphics", regGraphics->registerModule  },
     //{ "timer", timer_register },
-    // { "input", input_register },
-    // { "math", math_register },
+    { "input", regInput->registerModule },
+    { "math", regMath->registerModule },
     // { "audio", audio_register },
     { 0, 0 },
   };
@@ -489,6 +360,7 @@ int lua_lang_init::initSimple(lua_State* L)
 void lua_lang_init::registerFunctions()
 {
   luaL_requiref(m_L, "simple", initSimple, 1);
+  regGraphics->registerMetatable(m_L);
 }
 
 void lua_lang_init::dumb()
@@ -500,4 +372,6 @@ void lua_lang_init::dumb()
   SAFE_DELETE(c);
   SAFE_DELETE(regGraphics);
   SAFE_DELETE(regWindow);
+  SAFE_DELETE(regInput);
+  SAFE_DELETE(regMath);
 }

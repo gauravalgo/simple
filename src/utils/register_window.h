@@ -22,11 +22,11 @@ namespace simple
                         static int registerMetatable(lua_State* L);
                         static void setDefaultWindow(bool value);
                         static bool getDefaultWindow();
-                        static core* c_;
                         static void setCore(core* co);
                         static core* getCore();
                 private:
                         static int makeWindow(lua_State* L);
+                        static int getTicks(lua_State* L);
                         static int setWindowPosition(lua_State* L);
                         static int setWindowTitle(lua_State* L);
                         static int getMonitorSize(lua_State* L);

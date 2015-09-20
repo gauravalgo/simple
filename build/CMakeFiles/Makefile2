@@ -70,7 +70,7 @@ CMakeFiles/simple.dir/all: deps/openal/CMakeFiles/openal.dir/all
 CMakeFiles/simple.dir/all: deps/openal/CMakeFiles/common.dir/all
 	$(MAKE) -f CMakeFiles/simple.dir/build.make CMakeFiles/simple.dir/depend
 	$(MAKE) -f CMakeFiles/simple.dir/build.make CMakeFiles/simple.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=89,90,91,92,93,94,95,96,97,98,99,100 "Built target simple"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=88,89,90,91,92,93,94,95,96,97,98,99,100 "Built target simple"
 .PHONY : CMakeFiles/simple.dir/all
 
 # Include target in all.
@@ -331,7 +331,7 @@ clean: deps/openal/CMakeFiles/common.dir/clean
 deps/openal/CMakeFiles/makehrtf.dir/all:
 	$(MAKE) -f deps/openal/CMakeFiles/makehrtf.dir/build.make deps/openal/CMakeFiles/makehrtf.dir/depend
 	$(MAKE) -f deps/openal/CMakeFiles/makehrtf.dir/build.make deps/openal/CMakeFiles/makehrtf.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=59 "Built target makehrtf"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=58 "Built target makehrtf"
 .PHONY : deps/openal/CMakeFiles/makehrtf.dir/all
 
 # Include target in all.
@@ -368,7 +368,7 @@ clean: deps/openal/CMakeFiles/makehrtf.dir/clean
 deps/openal/CMakeFiles/openal.dir/all: deps/openal/CMakeFiles/common.dir/all
 	$(MAKE) -f deps/openal/CMakeFiles/openal.dir/build.make deps/openal/CMakeFiles/openal.dir/depend
 	$(MAKE) -f deps/openal/CMakeFiles/openal.dir/build.make deps/openal/CMakeFiles/openal.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87 "Built target openal"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86 "Built target openal"
 .PHONY : deps/openal/CMakeFiles/openal.dir/all
 
 # Include target in all.
@@ -406,7 +406,7 @@ deps/openal/CMakeFiles/openal-info.dir/all: deps/openal/CMakeFiles/openal.dir/al
 deps/openal/CMakeFiles/openal-info.dir/all: deps/openal/CMakeFiles/common.dir/all
 	$(MAKE) -f deps/openal/CMakeFiles/openal-info.dir/build.make deps/openal/CMakeFiles/openal-info.dir/depend
 	$(MAKE) -f deps/openal/CMakeFiles/openal-info.dir/build.make deps/openal/CMakeFiles/openal-info.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=88 "Built target openal-info"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=87 "Built target openal-info"
 .PHONY : deps/openal/CMakeFiles/openal-info.dir/all
 
 # Include target in all.
@@ -516,7 +516,7 @@ deps/lua/preinstall:
 deps/lua/CMakeFiles/lua.dir/all:
 	$(MAKE) -f deps/lua/CMakeFiles/lua.dir/build.make deps/lua/CMakeFiles/lua.dir/depend
 	$(MAKE) -f deps/lua/CMakeFiles/lua.dir/build.make deps/lua/CMakeFiles/lua.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58 "Built target lua"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/vlad/Dev/simple/build/CMakeFiles --progress-num=40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57 "Built target lua"
 .PHONY : deps/lua/CMakeFiles/lua.dir/all
 
 # Include target in all.
@@ -526,7 +526,7 @@ all: deps/lua/CMakeFiles/lua.dir/all
 
 # Build rule for subdir invocation for target.
 deps/lua/CMakeFiles/lua.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/vlad/Dev/simple/build/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/vlad/Dev/simple/build/CMakeFiles 18
 	$(MAKE) -f CMakeFiles/Makefile2 deps/lua/CMakeFiles/lua.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/vlad/Dev/simple/build/CMakeFiles 0
 .PHONY : deps/lua/CMakeFiles/lua.dir/rule

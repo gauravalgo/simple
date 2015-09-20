@@ -6,15 +6,15 @@ using namespace simple::lang;
 
 static bool default_window;
 
-static core* co_;
+static core* c;
 
 register_window::register_window()
 {}
 register_window::~register_window()
 {}
 
-void register_window::setCore(core* co){co_ = co;}
-core* register_window::getCore(){return co_; }
+void register_window::setCore(core* co){c = co;}
+core* register_window::getCore(){return c; }
 
 void register_window::setDefaultWindow(bool value)
 {
@@ -138,18 +138,25 @@ int register_window::getMonitorSize(lua_State* L)
         return 1;
 }
 
+int register_window::getTicks(lua_State *L)
+{
+        lua_pushnumber(L, getCore()->getWindow()->getTicks());
+        return 1;
+}
+
 int register_window::registerModule(lua_State *L)
 {
         luaL_Reg reg[] = {
-                {"create", makeWindow},
-                {"setPosition", setWindowPosition},
-                {"setTitle", setWindowTitle},
-                {"getMonitorSize", getMonitorSize},
+                {"create", makeWindow },
+                {"setPosition", setWindowPosition },
+                {"setTitle", setWindowTitle },
+                {"getMonitorSize", getMonitorSize },
                 {"getSize", getWindowSize },
                 {"getWidth", getWindowWidth },
                 {"getHeight", getWindowHeight },
-                {"getFocus", getWindowFocus},
-                {"setVSync", setWindowVSync},
+                {"getFocus", getWindowFocus },
+                {"setVSync", setWindowVSync },
+                {"getTicks", getTicks },
                 {0, 0},
         };
         luaL_newlib(L, reg);

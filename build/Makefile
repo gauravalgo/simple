@@ -797,6 +797,60 @@ src/utils/register_graphics.cpp.s:
 	$(MAKE) -f CMakeFiles/simple.dir/build.make CMakeFiles/simple.dir/src/utils/register_graphics.cpp.s
 .PHONY : src/utils/register_graphics.cpp.s
 
+src/utils/register_input.o: src/utils/register_input.cpp.o
+
+.PHONY : src/utils/register_input.o
+
+# target to build an object file
+src/utils/register_input.cpp.o:
+	$(MAKE) -f CMakeFiles/simple.dir/build.make CMakeFiles/simple.dir/src/utils/register_input.cpp.o
+.PHONY : src/utils/register_input.cpp.o
+
+src/utils/register_input.i: src/utils/register_input.cpp.i
+
+.PHONY : src/utils/register_input.i
+
+# target to preprocess a source file
+src/utils/register_input.cpp.i:
+	$(MAKE) -f CMakeFiles/simple.dir/build.make CMakeFiles/simple.dir/src/utils/register_input.cpp.i
+.PHONY : src/utils/register_input.cpp.i
+
+src/utils/register_input.s: src/utils/register_input.cpp.s
+
+.PHONY : src/utils/register_input.s
+
+# target to generate assembly for a file
+src/utils/register_input.cpp.s:
+	$(MAKE) -f CMakeFiles/simple.dir/build.make CMakeFiles/simple.dir/src/utils/register_input.cpp.s
+.PHONY : src/utils/register_input.cpp.s
+
+src/utils/register_math.o: src/utils/register_math.cpp.o
+
+.PHONY : src/utils/register_math.o
+
+# target to build an object file
+src/utils/register_math.cpp.o:
+	$(MAKE) -f CMakeFiles/simple.dir/build.make CMakeFiles/simple.dir/src/utils/register_math.cpp.o
+.PHONY : src/utils/register_math.cpp.o
+
+src/utils/register_math.i: src/utils/register_math.cpp.i
+
+.PHONY : src/utils/register_math.i
+
+# target to preprocess a source file
+src/utils/register_math.cpp.i:
+	$(MAKE) -f CMakeFiles/simple.dir/build.make CMakeFiles/simple.dir/src/utils/register_math.cpp.i
+.PHONY : src/utils/register_math.cpp.i
+
+src/utils/register_math.s: src/utils/register_math.cpp.s
+
+.PHONY : src/utils/register_math.s
+
+# target to generate assembly for a file
+src/utils/register_math.cpp.s:
+	$(MAKE) -f CMakeFiles/simple.dir/build.make CMakeFiles/simple.dir/src/utils/register_math.cpp.s
+.PHONY : src/utils/register_math.cpp.s
+
 src/utils/register_window.o: src/utils/register_window.cpp.o
 
 .PHONY : src/utils/register_window.o
@@ -930,6 +984,12 @@ help:
 	@echo "... src/utils/register_graphics.o"
 	@echo "... src/utils/register_graphics.i"
 	@echo "... src/utils/register_graphics.s"
+	@echo "... src/utils/register_input.o"
+	@echo "... src/utils/register_input.i"
+	@echo "... src/utils/register_input.s"
+	@echo "... src/utils/register_math.o"
+	@echo "... src/utils/register_math.i"
+	@echo "... src/utils/register_math.s"
 	@echo "... src/utils/register_window.o"
 	@echo "... src/utils/register_window.i"
 	@echo "... src/utils/register_window.s"

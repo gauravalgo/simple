@@ -36,6 +36,8 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/vlad/Dev/simple/src/utils/file_system.cpp" "/home/vlad/Dev/simple/build/CMakeFiles/simple.dir/src/utils/file_system.cpp.o"
   "/home/vlad/Dev/simple/src/utils/lua_lang_init.cpp" "/home/vlad/Dev/simple/build/CMakeFiles/simple.dir/src/utils/lua_lang_init.cpp.o"
   "/home/vlad/Dev/simple/src/utils/register_graphics.cpp" "/home/vlad/Dev/simple/build/CMakeFiles/simple.dir/src/utils/register_graphics.cpp.o"
+  "/home/vlad/Dev/simple/src/utils/register_input.cpp" "/home/vlad/Dev/simple/build/CMakeFiles/simple.dir/src/utils/register_input.cpp.o"
+  "/home/vlad/Dev/simple/src/utils/register_math.cpp" "/home/vlad/Dev/simple/build/CMakeFiles/simple.dir/src/utils/register_math.cpp.o"
   "/home/vlad/Dev/simple/src/utils/register_window.cpp" "/home/vlad/Dev/simple/build/CMakeFiles/simple.dir/src/utils/register_window.cpp.o"
   "/home/vlad/Dev/simple/src/window/glfw_window.cpp" "/home/vlad/Dev/simple/build/CMakeFiles/simple.dir/src/window/glfw_window.cpp.o"
   )

@@ -7,10 +7,12 @@ extern "C" {
 #include "../../deps/lua/lauxlib.h"
 }
 
+#include "../graphics/shader.h"
 namespace simple
 {
         namespace lang
         {
+                using namespace simple::graphics;
                 class register_graphics
                 {
                 public:
@@ -19,6 +21,10 @@ namespace simple
                         static int registerMetatable(lua_State* L);
                         static int registerModule(lua_State* L);
                 private:
+                        static shader* pushShader (lua_State *L, shader* sh);
+                        static shader* checkShader (lua_State *L, int index);
+
+
                         static int clearScreen(lua_State* L);
                         static int setViewport(lua_State* L);
                         static int loadTexture(lua_State* L);
