@@ -19,6 +19,7 @@
 #include "register_input.h"
 #include "register_math.h"
 #include "register_timer.h"
+#include "register_audio.h"
 
 #include "../utils/definitions.h"
 #include "../window/glfw_window.h"
@@ -71,6 +72,7 @@ static register_window* regWindow;
 static register_input* regInput;
 static register_math* regMath;
 static register_timer* regTimer;
+static register_audio* regAudio;
 
 void lua_lang_init::create()
 {
@@ -90,6 +92,7 @@ void lua_lang_init::create()
 
   regInput = new register_input();
   regTimer = new register_timer();
+  regAudio = new register_audio();
 
   c = co;
 
@@ -103,6 +106,7 @@ void lua_lang_init::create()
   regMath->setCore(c);
 
   regTimer->setCore(c);
+  regAudio->setCore(c);
 
   setCore(c);
 
@@ -122,160 +126,12 @@ void lua_lang_init::makeDefaultWindow()
 
 void lua_lang_init::setMainScript(const char* name)
 {
-  // //Look for main.lua and execute it
+  //Look for main.lua and execute it
   int error = luaL_dofile(m_L, name);
   if(error != 0)
     LOG("Error: Could not load main script " << name << " make sure your " << name << " is in the same folder with simple's executable.");
 
 }
-
-static bool checkArguments(lua_State* L, int number)
-{
-  if(lua_gettop(L) < number)
-    return false;
-  return true;
-}
-
-//Errors handling
-static bool isObjectError(lua_State *L, int spot, const char* what)
-{
-  if(!lua_isnumber(L, spot)){
-    LOG("Error: " << what << " from location " << spot << " must be an object");
-    return false;
-  }
-  return true;
-}
-
-static bool isStringError(lua_State *L, int spot, const char* what)
-{
-  if(lua_isnumber(L, spot) || lua_isboolean(L, spot) || lua_isnil(L, spot)){
-    LOG("Error: " << what << " from location " << spot << " must be a string");
-    return false;
-  }
-  return true;
-}
-
-static float checkFloat(lua_State *L, int location)
-{
-  return luaL_checknumber(L,location);
-}
-
-static float checkInteger(lua_State *L, int location)
-{
-  return luaL_checkinteger(L,location);
-}
-
-//Misc
-static void pushPointer(lua_State* L, void* value)
-{
-  lua_pushinteger(L, (lua_Integer)value);
-}
-
-static texture2D* getTexture2D(LUA_INTEGER texture)
-{
-  if(texture == 0){
-    LOG("texture: " << texture << " does not exist!");
-    return NULL;
-  }
-
-  return (texture2D*)texture;
-}
-
-static batch2d* getBatch(LUA_INTEGER batch)
-{
-  if(batch == 0){
-    LOG("batch: " << batch << " does not exist!");
-    return NULL;
-  }
-
-  return (batch2d*)batch;
-}
-
-static font* getFont(LUA_INTEGER value)
-{
-  if(value == 0){
-    LOG("Font: " << value << "does not exist");
-    return NULL;
-  }
-  return (font*)value;
-}
-
-static shader* getShader(LUA_INTEGER value)
-{
-  if(value == 0){
-    LOG("shader: " << value << " does not exist");
-    return NULL;
-  }
-
-  return (shader*)value;
-}
-
-static ogg_player* getOGG(LUA_INTEGER value)
-{
-  if(value == 0){
-    LOG("ogg: " << value << " does not exist!");
-    return NULL;
-  }
-
-  return (ogg_player*)value;
-}
-
-static mat4* getMatrix4(LUA_INTEGER value)
-{
-  if(value == 0){
-    LOG("mat4: " << value << " does not exist");
-    return NULL;
-  }
-
-  return (mat4*)value;
-}
-
-/*Short doc:
-
-  lua_pushnumber = pushes a float to a destination
-  lua_tonumber = recives a float form a destination
-  lua_gettop = returns the number of parameters form a Lua function
-  lua_isnumber(L,i),function = return is "i" is a number or not
-  lua_type(L,i)
-*/
-
-/*** SOUND *****/
-
-int lua_lang_init::loadSound(lua_State *L)
-{
-  ogg_player* ogg_p = new ogg_player();
-  luaL_checkstring(L, 1);
-  const char* path = lua_tostring(L, 1);
-  ogg_p->create(path);
-
-  pushPointer(L, ogg_p);
-  return 1;
-}
-
-int lua_lang_init::playSound(lua_State *L)
-{
-  ogg_player* ogg;
-  luaL_checkinteger(L, 1);
-  lua_Integer id = lua_tonumber(L, 1);
-  float volume = 1.0f;
-  float pitch = 1.0f;
-  if(lua_isnumber(L, 2)){
-    luaL_checknumber(L, 2);
-    volume = lua_tonumber(L, 2);
-  }
-  if(lua_isnumber(L, 3)){
-    luaL_checknumber(L, 3);
-    pitch = lua_tonumber(L, 3);
-  }
-  ogg = getOGG(id);
-  if(ogg == getOGG(id))
-    ogg->play(volume, pitch);
-  return 1;
-}
-
-/*** END OF SOUND *****/
-
-/*** UTILS *****/
 
 int lua_lang_init::quit(lua_State* L)
 {
@@ -283,27 +139,9 @@ int lua_lang_init::quit(lua_State* L)
   return 1;
 }
 
-/*** END OF UTILS *****/
-
 static int getVersion(lua_State *L)
 {
   LOG("simple - cracking bottles- version 0.2.2");
-  return 1;
-}
-
-luaL_Reg lua_lang_init::regAudioFuncs[] =
-{
-  {"newSound", loadSound},
-  {NULL, NULL}
-};
-
-int lua_lang_init::audio_register(lua_State* state)
-{
-  luaL_Reg AudioMetatableFuncs[] = {
-    {"play", playSound},
-    {NULL, NULL}
-  };
-
   return 1;
 }
 
@@ -325,7 +163,7 @@ int lua_lang_init::initSimple(lua_State* L)
     { "timer", regTimer->registerModule },
     { "input", regInput->registerModule },
     { "math", regMath->registerModule },
-    // { "audio", audio_register },
+    { "audio", regAudio->registerModule },
     { 0, 0 },
   };
 
@@ -354,4 +192,5 @@ void lua_lang_init::dumb()
   SAFE_DELETE(regInput);
   SAFE_DELETE(regMath);
   SAFE_DELETE(regTimer);
+  SAFE_DELETE(regAudio);
 }

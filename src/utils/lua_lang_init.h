@@ -58,9 +58,6 @@ namespace simple
                   void makeDefaultWindow();
             private:
                   static int quit(lua_State* L);
-                  //Sound
-                  static int loadSound(lua_State* L);
-                  static int playSound(lua_State* L);
 
                   //Init modules
                   static int initSimple(lua_State* L);

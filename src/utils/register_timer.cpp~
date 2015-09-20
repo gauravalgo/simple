@@ -1,4 +1,0 @@
-#include "register_timer.h"
-
-using namespace simple;
-using namespace simple::lang;
