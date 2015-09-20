@@ -13,33 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-#ifndef CORE_H
-#define CORE_H
-
-#include "../window/glfw_window.h"
-#include "../graphics/gl_graphics.h"
-#include "../sound/openal_context.h"
+#ifndef REGISTER_INPUT_H
+#define REGISTER_INPUT_H
 
 namespace simple
 {
-  using namespace simple::graphics;
-  using namespace simple::sound;
+        namespace lang
+        {
+                class register_input
+                {
+                public:
+                        register_input();
+                        ~register_input();
+                public:
+                        void registerModule(lua_State* L);
+                        void registerMetatable(lua_State* L);
+                private:
+                        static int getPointerX(lua_State* L);
+                        static int getPointerY(lua_State* L);
+                        static int getPointer(lua_State* L);
+                        static int isPointerPressed(lua_State* L);
+                        static int isPointerReleased(lua_State* L);
 
-  class core
-  {
-  public:
-    core();
-    ~core();
-  private:
-    glfw_window* m_window;
-    gl_graphics* m_graphics;
-    openal_context* m_openal_context;
-  public:
-    void create();
-
-    openal_context* getOpenAL();
-    glfw_window* getWindow();
-    gl_graphics* getGLGraphics();
-  };
+                };
+        }
 }
 #endif

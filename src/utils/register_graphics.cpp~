@@ -1,4 +1,0 @@
-#include "register_graphics.h"
-
-using namespace simple;
-using namespace simple::lang;

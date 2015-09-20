@@ -13,33 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-#ifndef CORE_H
-#define CORE_H
+#ifndef REGISTER_TIMER_H
+#define REGISTER_TIMER_H
 
-#include "../window/glfw_window.h"
-#include "../graphics/gl_graphics.h"
-#include "../sound/openal_context.h"
+extern "C" {
+#include "../../deps/lua/lua.h"
+#include "../../deps/lua/lualib.h"
+#include "../../deps/lua/lauxlib.h"
+}
+
+#include "core.h"
 
 namespace simple
 {
-  using namespace simple::graphics;
-  using namespace simple::sound;
-
-  class core
+  namespace lang
   {
-  public:
-    core();
-    ~core();
-  private:
-    glfw_window* m_window;
-    gl_graphics* m_graphics;
-    openal_context* m_openal_context;
-  public:
-    void create();
-
-    openal_context* getOpenAL();
-    glfw_window* getWindow();
-    gl_graphics* getGLGraphics();
-  };
+    class register_timer
+    {
+    public:
+      register_timer();
+      ~register_timer();
+      static int registerModule(lua_State* L);
+      static void setCore(core* co);
+      static core* getCore();
+    private:
+      static int getDeltaTime(lua_State* L);
+      static int getFPS(lua_State* L);
+    };
+  }
 }
 #endif

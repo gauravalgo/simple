@@ -47,7 +47,6 @@ namespace simple
                   void create();
                   void registerFunctions();
                   void dumb();
-                  bool callFunction(std::string name);
                   void setCore(core* c){m_core = c;}
                   core* getCore(){return m_core;}
                   static int audio_register(lua_State* state);
@@ -58,40 +57,7 @@ namespace simple
                   static int graphics_register(lua_State* state);
                   void makeDefaultWindow();
             private:
-                  //WINDOW
-                  static int makeWindow(lua_State* L);
-                  static int setWindowPosition(lua_State* L);
-                  static int setWindowTitle(lua_State* L);
-                  static int getMonitorSize(lua_State* L);
-                  static int getWindowTicks(lua_State* L);
-                  static int getWindowFocus(lua_State* L);
-                  static int setWindowVSync(lua_State* L);
-                  static int getWindowSize(lua_State* L);
-                  static int getWindowWidth(lua_State* L);
-                  static int getWindowHeight(lua_State* L);
-                  //MOUSE
-                  static int getPointerX(lua_State* L);
-                  static int getPointerY(lua_State* L);
-                  static int getPointer(lua_State* L);
-                  static int isPointerPressed(lua_State* L);
-                  static int isPointerReleased(lua_State* L);
-                  //GL GRAPHICS
-                  static int clearScreen(lua_State* L);
-                  static int setViewport(lua_State* L);
-                  //Maths
-                  static int setOrthoView(lua_State* L);
-                  //UTILS
-                  static int getDeltaTime(lua_State* L);
-                  static int getFPS(lua_State* L);
                   static int quit(lua_State* L);
-                  static int isKeyDown(lua_State* L);
-                  static int isKeyUp(lua_State* L);
-                  static int dumbBatch(lua_State* L);
-                  static int dumbTexture(lua_State* L);
-                  static int dumbShader(lua_State* L);
-                  //Sound
-                  static int loadSound(lua_State* L);
-                  static int playSound(lua_State* L);
 
                   //Init modules
                   static int initSimple(lua_State* L);
@@ -107,8 +73,6 @@ namespace simple
 
                   static int AudioMetatableFuncs[];
                   static int WindowMetatableFuncs[];
-
-                  static int regMetatableGraphics(lua_State* state);
 
                   static int makeTypeMetatable(lua_State* state, luaL_Reg const* funcs);
                   static void registerModule(lua_State* state, char const* moduleName, luaL_Reg* funcs);
