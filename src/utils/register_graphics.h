@@ -23,6 +23,8 @@ extern "C" {
 }
 
 #include "../graphics/shader.h"
+#include "../graphics/font.h"
+#include "../graphics/texture2D.h"
 
 namespace simple
 {
@@ -34,12 +36,19 @@ namespace simple
                 public:
                         register_graphics();
                         ~register_graphics();
-                        static int registerMetatable(lua_State* L);
-                        static int registerModule(lua_State* L);
+                        static int registerFont(lua_State* L);
+                        static int registerShader(lua_State* L);
+                        static int registerTexture(lua_State* L);
                 private:
                         static shader* pushShader (lua_State *L, shader* sh);
-                        static shader* checkShader (lua_State *L, int index);
 
+                        static shader* checkShader(lua_State* L, int n);
+                        static font* checkFont(lua_State* L, int n);
+                        static texture2D* checkTexture(lua_State* L, int n);
+
+                        static int initShader(lua_State* L);
+                        static int initFont(lua_State* L);
+                        static int initTexture(lua_State* L);
 
                         static int clearScreen(lua_State* L);
                         static int setViewport(lua_State* L);
