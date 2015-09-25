@@ -27,7 +27,8 @@ using namespace simple::maths;
 
 using namespace std;
 
-shader::shader()
+shader::shader():
+  m_linked(false)
 {
 
 }
@@ -123,7 +124,8 @@ void shader::bind()
 {
   if(m_program == 0)
     LOG("Error: shader, create method must be called first!");
-   glUseProgram(getProgram());
+  m_linked = true;
+  glUseProgram(getProgram());
 }
 
 void shader::unbind()

@@ -161,7 +161,6 @@ int lua_lang_init::initSimple(lua_State* L)
     { "window", regWindow->registerModule  },
     { "timer", regTimer->registerModule },
     { "input", regInput->registerModule },
-    { "math", regMath->registerModule },
     { "audio", regAudio->registerModule },
     { 0, 0 },
   };
@@ -176,8 +175,14 @@ int lua_lang_init::initSimple(lua_State* L)
 void lua_lang_init::registerFunctions()
 {
   luaL_requiref(m_L, "simple", initSimple, 1);
+  //math
+  regMath->registerModule(m_L);
+  //graphics
   regGraphics->registerShader(m_L);
   regGraphics->registerFont(m_L);
+  regGraphics->registerTexture(m_L);
+  regGraphics->registerBatch(m_L);
+  regGraphics->registerGraphics(m_L);
 }
 
 void lua_lang_init::dumb()

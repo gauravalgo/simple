@@ -37,44 +37,53 @@ core* register_math::getCore()
   return m_core;
 }
 
+int register_math::initMath(lua_State* L)
+{
+  register_math ** f = (register_math **) lua_newuserdata(L, sizeof(register_math *));
+  *f = new register_math();
+
+  luaL_getmetatable(L, "luaL_math");
+  lua_setmetatable(L, -2);
+  return 1;
+}
+
+shader* register_math::checkShader(lua_State* L, int n)
+{
+  return *(shader **)luaL_checkudata(L, n, "luaL_shader");
+}
+
 int register_math::setOrthoView(lua_State *L)
 {
-  if(checkArguments(L, 9))
-    LOG("Warning: setOrthoView takes : 1) left 2)right 3)bottom 4)top 5)near 6)far 7)shader");
-
   mat4  projection;
-  projection.setToIdentity(); //TODO test this
+  projection.setToIdentity(); //TODO test this more
 
-  float left = lua_tonumber(L, 1);
-  float right = lua_tonumber(L, 2);
-  float bottom = lua_tonumber(L, 3);
-  float top = lua_tonumber(L, 4);
-  float near = lua_tonumber(L, 5);
-  float far = lua_tonumber(L, 6);
+  shader* s = checkShader(L, 2);
+  if(!s->getLinked())
+    LOG("Warning: Can't set orthoView because shader has not been linked yet!");
+  float left = lua_tonumber(L, 3);
+  float right = lua_tonumber(L, 4);
+  float bottom = lua_tonumber(L, 5);
+  float top = lua_tonumber(L, 6);
+  float near = lua_tonumber(L, 7);
+  float far = lua_tonumber(L, 8);
 
   projection = projection.setOrtho(left, right, bottom, top, near, far);
-  shader* s;
-  int shid = lua_tointeger(L, 7);
-
-  s = getShader(shid);
-  if(s == getShader(shid)){
-    s->sendUniformLocation("proj", projection);
-  }
+  s->sendUniformLocation("proj", projection);
   return 1;
 }
 
 int register_math::registerModule(lua_State* L)
 {
   luaL_Reg reg[] = {
-    {"setOrtho",setOrthoView},
-    {0, 0},
+    {"new", initMath },
+    {"setOrtho", setOrthoView },
+    {NULL, NULL},
   };
-  luaL_newlib(L, reg);
-  return 1;
-}
 
-int register_math::registerMetatable(lua_State* L)
-{
-
+  luaL_newmetatable(L, "luaL_math");
+  luaL_setfuncs(L, reg, 0);
+  lua_pushvalue(L, -1);
+  lua_setfield(L, -1, "__index");
+  lua_setglobal(L, "Math");
   return 1;
 }

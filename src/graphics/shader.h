@@ -37,6 +37,7 @@ namespace simple
       uint m_vertexShaderID;
       uint m_fragmentShaderID;
       uint m_program;
+      bool m_linked;
       std::string mFilenameVertexShader, mFilenameFragmentShader;
     public:
       void create(const char* vertexShaderFilename,
@@ -45,6 +46,7 @@ namespace simple
       void bind();
       void unbind();
     public:
+      bool getLinked(){return m_linked;}
       uint getProgram(){return m_program;}
     };
   }

@@ -29,27 +29,13 @@
 using namespace simple;
 using namespace simple::graphics;
 
-batch2d::batch2d(shader* shader):
+batch2d::batch2d():
   m_SIZE(40000),
   r(1),
   g(r),
   b(1),
   a(1)
-{
-  m_shader = shader;
-}
-
-batch2d::batch2d(shader* shader, int size):
-  r(1),
-  g(r),
-  b(1),
-  a(1)
-{
-  m_shader = shader;
-  m_SIZE = size;
-}
-
-batch2d::batch2d(){}
+{}
 
 batch2d::~batch2d()
 {
@@ -59,8 +45,10 @@ batch2d::~batch2d()
   glDisableVertexAttribArray(m_color_attribute);
 }
 
-void batch2d::create()
+void batch2d::create(shader* s, int limit)
 {
+  m_shader = s;
+  m_SIZE = limit;
 
   glGenBuffers(1, &m_vbo);
   glBindBuffer(GL_ARRAY_BUFFER, m_vbo);

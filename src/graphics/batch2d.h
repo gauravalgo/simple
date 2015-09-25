@@ -33,8 +33,6 @@ namespace graphics
 class batch2d
 {
   public:
-    batch2d(shader* shader, int size);
-    batch2d(shader* shader);
     batch2d();
     ~batch2d();
 
@@ -96,7 +94,7 @@ class batch2d
               float g, float b, float a, float* texturecoords);
     void draw(float x, float y, float width, float height, float r, float g, float b, float a);
     void draw(float x, float y, float width, float height, float* texturecoords, float r, float g, float b, float a);
-    void create();
+    void create(shader* s, int limit);
   public:
     void setShader(shader* s){m_shader = s;}
 };

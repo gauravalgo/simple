@@ -25,6 +25,7 @@ extern "C" {
 #include "core.h"
 #include "../input/keyboard.h"
 #include "../input/pointer.h"
+#include "../graphics/shader.h"
 
 namespace simple
 {
@@ -37,10 +38,11 @@ namespace simple
                         ~register_math();
                 public:
                         static int registerModule(lua_State* L);
-                        static int registerMetatable(lua_State* L);
                         static void setCore(core* co);
                         static core* getCore();
                 private:
+                        static shader* checkShader(lua_State* L, int n);
+                        static int initMath(lua_State* L);
                         static int setOrthoView(lua_State* L);
                 };
         }
