@@ -43,7 +43,10 @@ namespace simple
                         static int registerGraphics(lua_State* L);
                         static int registerBatch(lua_State* L);
                 private:
-                        static shader* pushShader (lua_State *L, shader* sh);
+                        static int deleteBatch(lua_State* L);
+                        static int deleteShader(lua_State* L);
+                        static int deleteFont(lua_State* L);
+                        static int deleteTexture(lua_State* L);
 
                         static batch2d* checkBatch(lua_State* L, int n);
                         static shader* checkShader(lua_State* L, int n);

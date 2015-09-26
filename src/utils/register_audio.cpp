@@ -22,22 +22,32 @@ core* register_audio::getCore()
   return m_core;
 }
 
+int register_audio::initAudio(lua_State *L)
+{
+  register_audio** f = (register_audio **) lua_newuserdata(L, sizeof(register_audio *));
+  *f = new register_audio();
+
+  luaL_getmetatable(L, "luaL_audio");
+  lua_setmetatable(L, -2);
+}
+
+ogg_player* register_audio::checkOGG(lua_State *L, int n)
+{
+  return *(ogg_player**)luaL_checkudata(L, n, "luaL_audio");
+}
+
 int register_audio::loadSound(lua_State *L)
 {
-  ogg_player* ogg_p = new ogg_player();
-  luaL_checkstring(L, 1);
-  const char* path = lua_tostring(L, 1);
+  ogg_player* ogg_p = checkOGG(L, 1);
+  luaL_checkstring(L, 2);
+  const char* path = lua_tostring(L, 2);
   ogg_p->create(path);
-
-  pushPointer(L, ogg_p);
   return 1;
 }
 
 int register_audio::playSound(lua_State *L)
 {
-  ogg_player* ogg;
-  luaL_checkinteger(L, 1);
-  lua_Integer id = lua_tonumber(L, 1);
+  ogg_player* ogg = checkOGG(L, 1);
   float volume = 1.0f;
   float pitch = 1.0f;
   if(lua_isnumber(L, 2)){
@@ -48,20 +58,23 @@ int register_audio::playSound(lua_State *L)
     luaL_checknumber(L, 3);
     pitch = lua_tonumber(L, 3);
   }
-  ogg = getOGG(id);
-  if(ogg == getOGG(id))
-    ogg->play(volume, pitch);
+  ogg->play(volume, pitch);
   return 1;
 }
 
 int register_audio::registerModule(lua_State *L)
 {
-
   luaL_Reg reg[] = {
-    {"newSound", loadSound},
+    {"new", initAudio },
+    {"init", loadSound},
     {"play", playSound},
     {0, 0},
   };
-  luaL_newlib(L, reg);
+
+  luaL_newmetatable(L, "luaL_audio");
+  luaL_setfuncs(L, reg, 0);
+  lua_pushvalue(L, -1);
+  lua_setfield(L, -1, "__index");
+  lua_setglobal(L, "Audio");
   return 1;
 }

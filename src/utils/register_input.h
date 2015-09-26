@@ -37,6 +37,8 @@ namespace simple
                         register_input();
                         ~register_input();
                 public:
+                        static int initInput(lua_State* L);
+
                         static void setKeyboard(keyboard* key);
                         static keyboard* getKeyboard();
 
@@ -47,8 +49,9 @@ namespace simple
                         static pointer* getPointer();
 
                         static int registerModule(lua_State* L);
-                        static int registerMetatable(lua_State* L);
                 private:
+                        static register_input* checkInput(lua_State* L, int n);
+                        static int deleteInput(lua_State* L);
                         static int isKeyDown(lua_State* L);
                         static int isKeyUp(lua_State* L);
                         static int getPointerX(lua_State* L);

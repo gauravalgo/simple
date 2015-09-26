@@ -48,6 +48,54 @@ batch2d* register_graphics::checkBatch(lua_State *L, int n)
         return *(batch2d **)luaL_checkudata(L, n, "luaL_batch");
 }
 
+int register_graphics::deleteFont(lua_State *L)
+{
+        font* f = checkFont(L, 1);
+        if (f != NULL){
+                SAFE_DELETE(f);
+        }else{
+                LOG("can not delete font because it is null!");
+                return 0;
+        }
+        return 1;
+}
+
+int register_graphics::deleteShader(lua_State *L)
+{
+        shader* f = checkShader(L, 1);
+        if (f != NULL){
+                SAFE_DELETE(f);
+        }else{
+                LOG("can not delete shader because it is null!");
+                return 0;
+        }
+        return 1;
+}
+
+int register_graphics::deleteTexture(lua_State *L)
+{
+        texture2D* f = checkTexture(L, 1);
+        if (f != NULL){
+                SAFE_DELETE(f);
+        }else{
+                LOG("can not delete texture because it is null!");
+                return 0;
+        }
+        return 1;
+}
+
+int register_graphics::deleteBatch(lua_State *L)
+{
+        batch2d* f = checkBatch(L, 1);
+        if (f != NULL){
+                SAFE_DELETE(f);
+        }else{
+                LOG("can not delete batch because it is null!");
+                return 0;
+        }
+        return 1;
+}
+
 int register_graphics::initTexture(lua_State *L)
 {
         texture2D ** f = (texture2D **) lua_newuserdata(L, sizeof(texture2D *));
@@ -155,16 +203,11 @@ int register_graphics::sendShaderUniformLocation(lua_State *L)
         if(checkArguments(L, 4))
                 LOG("Warning: sendShaderUniformLocation takes: 1) shader 2) location 3) matrix");
 
-        shader* s;
-        int id = lua_tointeger(L, 1);
+        shader* s = checkShader(L, 1);
         const char* location = lua_tostring(L, 2);
         isStringError(L, 2, "sendShaderUniformLocation -> location string expected");
         float data = lua_tonumber(L, 3);
-        s = getShader(id);
-        if(s == getShader(id)){
-                s->sendUniformLocation(location, data);
-        }
-
+        s->sendUniformLocation(location, data);
         return 1;
 }
 
@@ -385,6 +428,7 @@ int register_graphics::registerShader(lua_State *L)
                 {"init", createShader},
                 {"bind", bindShader},
                 {"unbind", unBindShader},
+                {"gc", deleteShader },
                 {NULL, NULL }
         };
         luaL_newmetatable(L, SHADER_NAME);
@@ -404,6 +448,7 @@ int register_graphics::registerBatch(lua_State *L)
                 {"begin", beginBatch },
                 {"stop", endBatch },
                 {"renderMesh", renderMesh },
+                {"gc", deleteBatch },
                 {NULL, NULL }
         };
         luaL_newmetatable(L, BATCH_NAME);
@@ -436,6 +481,7 @@ int register_graphics::registerTexture(lua_State *L)
                 {"init", loadTexture},
                 {"bind", bindTexture},
                 {"unbind", unBindTexture },
+                {"gc", deleteTexture },
                 {NULL, NULL}
         };
         luaL_newmetatable(L, TEXTURE_NAME);
@@ -454,6 +500,7 @@ int register_graphics::registerFont(lua_State* L)
                 {"draw", drawFont},
                 {"begin", beginFont },
                 {"stop", endFont },
+                {"gc", deleteFont },
                 {NULL, NULL}
         };
 

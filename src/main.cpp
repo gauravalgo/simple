@@ -64,8 +64,10 @@ int main()
 #ifdef EMSCRIPTEN
   emscripten_set_main_loop(update_em, 0, 0);
 #endif
-  //lua_init->callFunction("simple_dumb");
-  lua_init->dumb();
+  lua_pushstring(lua_init->getState(), "dump");
+  lua_rawget(lua_init->getState(), -2);
+  lua_call(lua_init->getState(), 0, 0);
+  lua_init->dump();
   return 1;
 }
 

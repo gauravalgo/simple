@@ -46,36 +46,14 @@ namespace simple
                   void setMainScript(const char* name);
                   void create();
                   void registerFunctions();
-                  void dumb();
+                  void dump();
                   void setCore(core* c){m_core = c;}
                   core* getCore(){return m_core;}
-                  static int audio_register(lua_State* state);
-                  static int input_register(lua_State* state);
-                  static int math_register(lua_State* state);
-                  static int timer_register(lua_State* state);
-                  static int window_register(lua_State* state);
                   static int graphics_register(lua_State* state);
                   void makeDefaultWindow();
             private:
                   static int quit(lua_State* L);
-
-                  //Init modules
                   static int initSimple(lua_State* L);
-
-                  static int regTimerFuncs[];
-                  static int regMathFuncs[];
-                  static int regWindowFuncs[];
-                  static luaL_Reg regAudioFuncs[];
-                  static int regInputFuncs[];
-
-                  static luaL_Reg GraphicsMetatableFuncs[];
-                  static luaL_Reg regGraphicsFuncs[];
-
-                  static int AudioMetatableFuncs[];
-                  static int WindowMetatableFuncs[];
-
-                  static int makeTypeMetatable(lua_State* state, luaL_Reg const* funcs);
-                  static void registerModule(lua_State* state, char const* moduleName, luaL_Reg* funcs);
             };
       }
 }

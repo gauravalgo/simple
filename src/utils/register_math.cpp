@@ -44,6 +44,7 @@ int register_math::initMath(lua_State* L)
 
   luaL_getmetatable(L, "luaL_math");
   lua_setmetatable(L, -2);
+
   return 1;
 }
 

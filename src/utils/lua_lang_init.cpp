@@ -158,10 +158,6 @@ int lua_lang_init::initSimple(lua_State* L)
   luaL_newlib(L, reg);
 
   struct { char *name; int (*fn)(lua_State *L); } mods[] = {
-    { "window", regWindow->registerModule  },
-    { "timer", regTimer->registerModule },
-    { "input", regInput->registerModule },
-    { "audio", regAudio->registerModule },
     { 0, 0 },
   };
 
@@ -175,8 +171,16 @@ int lua_lang_init::initSimple(lua_State* L)
 void lua_lang_init::registerFunctions()
 {
   luaL_requiref(m_L, "simple", initSimple, 1);
+  //timer
+  regTimer->registerModule(m_L);
+  //window
+  regWindow->registerModule(m_L);
   //math
   regMath->registerModule(m_L);
+  //input
+  regInput->registerModule(m_L);
+  //audio
+  regInput->registerModule(m_L);
   //graphics
   regGraphics->registerShader(m_L);
   regGraphics->registerFont(m_L);
@@ -185,7 +189,7 @@ void lua_lang_init::registerFunctions()
   regGraphics->registerGraphics(m_L);
 }
 
-void lua_lang_init::dumb()
+void lua_lang_init::dump()
 {
   lua_close(m_L);
 
