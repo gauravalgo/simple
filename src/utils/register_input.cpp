@@ -60,10 +60,27 @@ pointer* register_input::getPointer()
   return m_pointer;
 }
 
+register_input* register_input::checkInput(lua_State *L, int n)
+{
+  return *(register_input**)luaL_checkudata(L, n, "luaL_input");
+}
+
+int register_input::deleteInput(lua_State *L)
+{
+  register_input* input = checkInput(L, 1);
+  if(input != NULL){
+    SAFE_DELETE(input);
+  }else{
+    LOG("Could not delete input because it is null");
+    return 0;
+  }
+  return 1;
+}
+
 int register_input::isKeyDown(lua_State* L)
 {
-  luaL_checkstring(L, 1);
-  const char* key = lua_tostring(L, 1);
+  luaL_checkstring(L, 2);
+  const char* key = lua_tostring(L, 2);
   if(getKeyboard()->isKeyDown(key))
     return 1;
   else
@@ -73,8 +90,8 @@ int register_input::isKeyDown(lua_State* L)
 
 int register_input::isKeyUp(lua_State* L)
 {
-  luaL_checkstring(L, 1);
-  const char* key = lua_tostring(L, 1);
+  luaL_checkstring(L, 2);
+  const char* key = lua_tostring(L, 2);
   if(getKeyboard()->isKeyUp(key))
     return 1;
   else
@@ -84,7 +101,7 @@ int register_input::isKeyUp(lua_State* L)
 
 int register_input::getPointerX(lua_State* L)
 {
-  if(checkArguments(L, 1))
+  if(checkArguments(L, 2))
     LOG("Warning: function getPointerX takes no parameter");
 
   lua_pushnumber(L, getCore()->getWindow()->getPointX());
@@ -94,7 +111,7 @@ int register_input::getPointerX(lua_State* L)
 
 int register_input::getPointerY(lua_State* L)
 {
-  if(checkArguments(L, 1))
+  if(checkArguments(L, 2))
     LOG("Warning: function getPointerY takes no parameter");
   lua_pushnumber(L, getCore()->getWindow()->getPointY());
   return 1;
@@ -111,11 +128,10 @@ int register_input::getPointer(lua_State *L)
   return 2;
 }
 
-
 int register_input::isPointerPressed(lua_State *L)
 {
-  luaL_checkstring(L, 1);
-  const char* button = lua_tostring(L, 1);
+  luaL_checkstring(L, 2);
+  const char* button = lua_tostring(L, 2);
   if(getPointer()->isPressed(button))
     return 1;
   else
@@ -125,8 +141,8 @@ int register_input::isPointerPressed(lua_State *L)
 
 int register_input::isPointerReleased(lua_State *L)
 {
-  luaL_checkstring(L, 1);
-  const char* button = lua_tostring(L, 1);
+  luaL_checkstring(L, 2);
+  const char* button = lua_tostring(L, 2);
   if(getPointer()->isReleased(button))
     return 1;
   else
@@ -134,23 +150,37 @@ int register_input::isPointerReleased(lua_State *L)
   return 0;
 }
 
-int register_input::registerModule(lua_State* L)
+int register_input::initInput(lua_State *L)
 {
-  luaL_Reg regInputFuncs[] =
-    {
-      {"getPointerX", getPointerX},
-      {"getPointerY", getPointerY},
-      {"getPointer", getPointer},
-      {"isKeyDown", isKeyDown},
-      {"isKeyUp", isKeyUp},
-      {"pressed", isPointerPressed},
-      {"released", isPointerReleased},
-    };
-  luaL_newlib(L, regInputFuncs);
+  register_input ** f = (register_input**) lua_newuserdata(L, sizeof(register_input *));
+  *f = new register_input();
+
+  luaL_getmetatable(L, "luaL_input");
+  lua_setmetatable(L, -2);
+
   return 1;
 }
 
-int register_input::registerMetatable(lua_State* L)
+int register_input::registerModule(lua_State* L)
 {
+  luaL_Reg reg[] =
+    {
+      {"new", initInput },
+      {"getPointerX", getPointerX },
+      {"getPointerY", getPointerY },
+      {"getPointer", getPointer },
+      {"isKeyDown", isKeyDown },
+      {"isKeyUp", isKeyUp },
+      {"pressed", isPointerPressed },
+      {"released", isPointerReleased },
+      {"gc", deleteInput },
+      {NULL,NULL}
+    };
+  luaL_newmetatable(L, "luaL_input");
+  luaL_setfuncs(L, reg, 0);
+  lua_pushvalue(L, -1);
+  lua_setfield(L, -1, "__index");
+  lua_setglobal(L, "Input");
+
   return 1;
 }

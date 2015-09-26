@@ -53,15 +53,10 @@ extern "C" {
 #include <iostream>
 #include <string>
 
-
-static bool isObjectError(lua_State *L, int spot, const char* what)
-{
-        if(!lua_isnumber(L, spot)){
-                LOG("Error: " << what << " from location " << spot << " must be an object");
-                return false;
-        }
-        return true;
-}
+static const char* FONT_NAME = "luaL_font";
+static const char* SHADER_NAME = "luaL_shader";
+static const char* BATCH_NAME = "luaL_batch";
+static const char* TEXTURE_NAME = "luaL_texture";
 
 static bool checkArguments(lua_State* L, int number)
 {
@@ -88,59 +83,4 @@ static float checkInteger(lua_State *L, int location)
 {
         return luaL_checkinteger(L,location);
 }
-
-static void pushPointer(lua_State* L, void* value)
-{
-        lua_pushinteger(L, (lua_Integer)value);
-}
-
-static texture2D* getTexture2D(LUA_INTEGER texture)
-{
-        if(texture == 0){
-                LOG("texture: " << texture << " does not exist!");
-                return NULL;
-        }
-
-        return (texture2D*)texture;
-}
-
-static batch2d* getBatch(LUA_INTEGER batch)
-{
-        if(batch == 0){
-                LOG("batch: " << batch << " does not exist!");
-                return NULL;
-        }
-
-        return (batch2d*)batch;
-}
-
-static font* getFont(LUA_INTEGER value)
-{
-        if(value == 0){
-                LOG("Font: " << value << "does not exist");
-                return NULL;
-        }
-        return (font*)value;
-}
-
-static shader* getShader(LUA_INTEGER value)
-{
-        if(value == 0){
-                LOG("shader: " << value << " does not exist");
-                return NULL;
-        }
-
-        return (shader*)value;
-}
-
-static ogg_player* getOGG(LUA_INTEGER value)
-{
-        if(value == 0){
-                LOG("ogg: " << value << " does not exist!");
-                return NULL;
-        }
-
-        return (ogg_player*)value;
-}
-
 #endif

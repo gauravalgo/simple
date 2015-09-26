@@ -1,17 +1,17 @@
-local width = 620
-local height = 480
+local w = 620
+local h = 480
 
 local ortho;
 local image;
 local batch;
 local shader;
-local font_shader;
-local font;
+local _math;
+local window;
 
 local gl_texture_fragment;
 local gl_texture_vertex;
 
-function simple_init()
+function simple.load()
    gl_texture_vertex =
       "#version 130\n" ..
    "in vec2 position;" ..
@@ -34,75 +34,66 @@ function simple_init()
    "gl_FragColor = Color * texture2D(tex, Texcoords);"..
    "}";
 
-   simple.window.create("Simple - A new era", width, height)
+   window = Window.new()
+   window:init("Simple - A new era", w, h)
 
-   --shader = simple.graphics.newDefaultShader("texture")
-   shader = simple.graphics.newShader(gl_texture_vertex,gl_texture_fragment);
-   font_shader = simple.graphics.newDefaultShader("font")
+   shader = Shader.new()
+   shader:init("texture");
 
-   image = simple.graphics.newImage("res/test3.png")
+   shader2 = Shader.new()
+   shader2:init("font")
 
-   batch = simple.graphics.newBatch(shader, 17000)
-   simple.getVersion()
+   font = Font.new()
+   font:init(shader, "res/vera.ttf", 24)
 
-   font = simple.graphics.newFont(font_shader, "res/vera.ttf", 24)
+   graphics = Graphics.new()
+
+   _math = Math.new()
+
+   batch = Batch.new()
+   batch:init(shader,1200)
+
+   image = Texture.new()
+   image:init("res/test3.png")
+
+   input = Input.new()
+   simple.getVersion();
 end
-local x = 100
-local y = 100
+
 local rotation = 10
-local w = 32;
-local h = 32;
-local originX = w / 2
-local originY = h / 2
-function simple_draw()
-   simple.graphics.clearScreen(125, 114, 89, 255)
-   simple.graphics.setViewport(0, 0, width, height);
+function simple.draw()
+   graphics:clear(156,125,124,255)
+   graphics:viewPort(0, 0, w, h)
 
-   simple.graphics.bindShader(shader)
-   simple.math.setOrtho(0, width, height, 0, 0, 100, shader)
+   shader:bind()
+   _math:setOrtho(shader, 0, w, h, 0, 0, 100)
+   batch:begin()
+   image:bind()
+   batch:draw(100,100,16,16)
+   batch:renderMesh()
+   batch:stop()
+   image:unbind()
 
-   simple.graphics.beginBatch(batch)
-   simple.graphics.bindTexture(image)
-   simple.graphics.drawBatch(batch, 100, 100, w, h, rotation, originX, originY, 0, 0, 16, 32)
-
-   simple.graphics.renderMesh(batch)
-   simple.graphics.unBindTexture(image)
-   simple.graphics.endBatch(batch)
-
-   simple.graphics.bindShader(font_shader)
-   simple.math.setOrtho(0, width, height, 0, 0, 100, font_shader)
-   simple.graphics.beginFont(font);
-   simple.graphics.drawFont(font, font_shader, "Hello World", 200, 100, 1,1, 255, 120, 120, 255)
-   simple.graphics.endFont(font);
+   shader2:bind()
+   font:begin()
+   _math:setOrtho(shader2, 0, w, h, 0, 0, 100)
+   font:draw(shader2, "Hello World", 200, 100, 1,1, 255, 120, 120, 255)
+   font:stop()
 end
 
 local timer = 2;
-function simple_update(delta)
+function simple.update(delta)
    rotation = rotation + 108 * delta;
-
-   if(simple.input.isKeyDown("esc")) then
+   if input:isKeyDown("esc") then
       simple.quit()
    end
-
-   if simple.input.isKeyDown("d") then
-      x = x + 120 * delta;
-   end
-   if simple.input.isKeyDown("a") then
-      x = x - 120 * delta;
-   end
-   if simple.input.isKeyDown("s") then
-      y = y + 120 * delta;
-   end
-   if simple.input.isKeyDown("w") then
-      y = y - 120 * delta;
-   end
-   --print(simple.time.getFPS());
 end
 
-function simple_dumb()
-
-   print("SIMPLE DUMP")
-   --simple_dumpBatch(batch);
-   --simple_dumpShader(shader) --make it work !
-   --simple_dumpTexture(image);
+function simple.dump()
+   input:gc()
+   font:gc()
+   shader:gc()
+   shader2:gc()
+   batch:gc()
+   window:gc()
 end

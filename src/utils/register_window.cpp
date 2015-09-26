@@ -41,28 +41,55 @@ bool register_window::getDefaultWindow()
         return default_window;
 }
 
+int register_window::initWindow(lua_State* L)
+{
+        register_window ** f = (register_window **) lua_newuserdata(L, sizeof(register_window *));
+        *f = new register_window();
+
+        luaL_getmetatable(L, "luaL_window");
+        lua_setmetatable(L, -2);
+        return 1;
+}
+
+register_window* register_window::checkWindow(lua_State *L, int n)
+{
+        return *(register_window**)luaL_checkudata(L, n, "luaL_window");
+}
+
+int register_window::deleteWindow(lua_State *L)
+{
+        register_window* window = checkWindow(L, 1);
+        if(window != NULL){
+                SAFE_DELETE(window);
+        }else{
+                LOG("Could not delete window because it is null");
+                return 0;
+        }
+        return 1;
+}
+
 int register_window::makeWindow(lua_State* L)
 {
         setDefaultWindow(false);
-        luaL_checkstring(L, 1);
-        const char* title = lua_tostring(L, 1);
-        checkFloat(L, 2);
+        luaL_checkstring(L, 2);
+        const char* title = lua_tostring(L, 2);
         checkFloat(L, 3);
-        int width = lua_tonumber(L,2);
-        int height = lua_tonumber(L, 3);
+        checkFloat(L, 4);
+        int width = lua_tonumber(L,3);
+        int height = lua_tonumber(L, 4);
         bool fullscreen = false;
         bool resizable = false;
         int x = -1;
         int y = -1;
         //Optional
-        if(lua_isnumber(L, 4))
-                fullscreen = lua_tonumber(L, 4);
         if(lua_isnumber(L, 5))
-                resizable = lua_tonumber(L, 5);
+                fullscreen = lua_tonumber(L, 5);
+        if(lua_isnumber(L, 6))
+                resizable = lua_tonumber(L, 6);
 
-        if(lua_isnumber(L, 5) && lua_isnumber(L, 6)){
-                x = lua_tonumber(L, 5);
-                y = lua_tonumber(L, 6);
+        if(lua_isnumber(L, 7) && lua_isnumber(L, 8)){
+                x = lua_tonumber(L, 7);
+                y = lua_tonumber(L, 8);
         }
         getCore()->getWindow()->create(title, width, height, fullscreen, resizable);
         getCore()->getWindow()->setPosition(x, y);
@@ -99,32 +126,32 @@ int register_window::setWindowVSync(lua_State *L)
         if(checkArguments(L, 2))
                 LOG("Warning: function makeWindow takes: 1)boolean");
 
-        bool v = lua_toboolean(L, 1);
+        bool v = lua_toboolean(L, 2);
         getCore()->getWindow()->setVSync(v);
         return 1;
 }
 
 int register_window::setWindowPosition(lua_State* L)
 {
-        checkFloat(L , 1);
         checkFloat(L , 2);
-        int x = lua_tonumber(L, 1);
-        int y = lua_tonumber(L, 2);
+        checkFloat(L , 3);
+        int x = lua_tonumber(L, 2);
+        int y = lua_tonumber(L, 3);
         getCore()->getWindow()->setPosition(x, y);
         return 1;
 }
 
 int register_window::setWindowTitle(lua_State* L)
 {
-        luaL_checkstring(L, 1);
-        const char* title = lua_tostring(L, 1);
+        luaL_checkstring(L, 2);
+        const char* title = lua_tostring(L, 2);
         getCore()->getWindow()->setTitle(title);
         return 1;
 }
 
 int register_window::getWindowFocus(lua_State* L)
 {
-        if(checkArguments(L, 1))
+        if(checkArguments(L, 2))
                 LOG("Warning: function getWindowFocus takes no parameter");
         bool focused = getCore()->getWindow()->isFocused();
         lua_pushboolean(L, focused);
@@ -162,7 +189,8 @@ int register_window::getTicks(lua_State *L)
 int register_window::registerModule(lua_State *L)
 {
         luaL_Reg reg[] = {
-                {"create", makeWindow },
+                {"new", initWindow },
+                {"init", makeWindow },
                 {"setPosition", setWindowPosition },
                 {"setTitle", setWindowTitle },
                 {"getMonitorSize", getMonitorSize },
@@ -172,13 +200,13 @@ int register_window::registerModule(lua_State *L)
                 {"getFocus", getWindowFocus },
                 {"setVSync", setWindowVSync },
                 {"getTicks", getTicks },
-                {0, 0},
+                {"gc", deleteWindow },
+                {NULL, NULL}
         };
-        luaL_newlib(L, reg);
-        return 1;
-}
-
-int register_window::registerMetatable(lua_State *L)
-{
+        luaL_newmetatable(L, "luaL_window");
+        luaL_setfuncs(L, reg, 0);
+        lua_pushvalue(L, -1);
+        lua_setfield(L, -1, "__index");
+        lua_setglobal(L, "Window");
         return 1;
 }

@@ -37,6 +37,15 @@ core* register_timer::getCore()
   return m_core;
 }
 
+int register_timer::initTimer(lua_State *L)
+{
+  register_timer ** timer = (register_timer**)lua_newuserdata(L, sizeof(register_timer*));
+  *timer = new register_timer();
+
+  luaL_getmetatable(L, "luaL_timer");
+  lua_setmetatable(L, -2);
+  return 1;
+}
 int register_timer::getDeltaTime(lua_State* L)
 {
   if(checkArguments(L, 1))
@@ -57,10 +66,15 @@ int register_timer::getFPS(lua_State* L)
 int register_timer::registerModule(lua_State *L)
 {
   luaL_Reg reg[] = {
+    {"new", initTimer },
     {"getFPS", getFPS },
     {"delta", getDeltaTime },
-    {0, 0},
+    {NULL, NULL}
   };
-  luaL_newlib(L, reg);
+  luaL_newmetatable(L, "luaL_timer");
+  luaL_setfuncs(L, reg, 0);
+  lua_pushvalue(L, -1);
+  lua_setfield(L, -1, "__index");
+  lua_setglobal(L, "Math");
   return 1;
 }

@@ -28,76 +28,145 @@ register_graphics::~register_graphics()
         SAFE_DELETE(c);
 }
 
+font* register_graphics::checkFont(lua_State* L, int n)
+{
+        return *(font **)luaL_checkudata(L, n, "luaL_font");
+}
+
+shader* register_graphics::checkShader(lua_State* L, int n)
+{
+        return *(shader **)luaL_checkudata(L, n, "luaL_shader");
+}
+
+texture2D* register_graphics::checkTexture(lua_State *L, int n)
+{
+        return *(texture2D **)luaL_checkudata(L, n, "luaL_texture");
+}
+
+batch2d* register_graphics::checkBatch(lua_State *L, int n)
+{
+        return *(batch2d **)luaL_checkudata(L, n, "luaL_batch");
+}
+
+int register_graphics::deleteFont(lua_State *L)
+{
+        font* f = checkFont(L, 1);
+        if (f != NULL){
+                SAFE_DELETE(f);
+        }else{
+                LOG("can not delete font because it is null!");
+                return 0;
+        }
+        return 1;
+}
+
+int register_graphics::deleteShader(lua_State *L)
+{
+        shader* f = checkShader(L, 1);
+        if (f != NULL){
+                SAFE_DELETE(f);
+        }else{
+                LOG("can not delete shader because it is null!");
+                return 0;
+        }
+        return 1;
+}
+
+int register_graphics::deleteTexture(lua_State *L)
+{
+        texture2D* f = checkTexture(L, 1);
+        if (f != NULL){
+                SAFE_DELETE(f);
+        }else{
+                LOG("can not delete texture because it is null!");
+                return 0;
+        }
+        return 1;
+}
+
+int register_graphics::deleteBatch(lua_State *L)
+{
+        batch2d* f = checkBatch(L, 1);
+        if (f != NULL){
+                SAFE_DELETE(f);
+        }else{
+                LOG("can not delete batch because it is null!");
+                return 0;
+        }
+        return 1;
+}
+
+int register_graphics::initTexture(lua_State *L)
+{
+        texture2D ** f = (texture2D **) lua_newuserdata(L, sizeof(texture2D *));
+        *f = new texture2D();
+
+        luaL_getmetatable(L, TEXTURE_NAME);
+        lua_setmetatable(L, -2);
+        return 1;
+        return 1;
+}
+
 int register_graphics::loadTexture(lua_State *L)
 {
-        texture2D* tex = new texture2D();
-        luaL_checkstring(L, 1);
-        const char* path = lua_tostring(L, 1);
+        texture2D* tex = checkTexture(L, 1);
+        luaL_checkstring(L, 2);
+        const char* path = lua_tostring(L, 2);
         isStringError(L, 1, "loadTexture -> file path");
         tex->create(path);
-        pushPointer(L, tex);
         return 1;
 }
 
 int register_graphics::bindTexture(lua_State *L)
 {
-        texture2D* tex;
-        checkInteger(L, 1);
-        float id = lua_tointeger(L, 1);
-        tex = getTexture2D(id);
-        if(tex == getTexture2D(id))
-                getTexture2D(id)->bind();
-
+        texture2D* tex = checkTexture(L, 1);
+        tex->bind();
         return 1;
 }
 
 int register_graphics::unBindTexture(lua_State *L)
 {
-        if(checkArguments(L, 2))
-                LOG("Warning: function bindTexture takes: 1) a texture");
-
-        texture2D* tex;
-        checkInteger(L, 1);
-        int id = lua_tointeger(L, 1);
-        tex = getTexture2D(id);
-        if(tex == getTexture2D(id))
-                tex->unbind();
+        texture2D* tex = checkTexture(L, 1);
+        tex->unbind();
         return 1;
 }
 
-shader* register_graphics::pushShader (lua_State *L, shader* sh)
+int register_graphics::initShader(lua_State *L)
 {
-        shader *pi = (shader *)lua_newuserdata(L, sizeof(shader));
-        pi = sh;
-        luaL_getmetatable(L, "simple.graphics");
+        shader ** f = (shader **) lua_newuserdata(L, sizeof(shader *));
+        *f = new shader();
+
+        luaL_getmetatable(L, SHADER_NAME);
         lua_setmetatable(L, -2);
-        return pi;
+        return 1;
 }
 
 int register_graphics::createShader(lua_State *L)
 {
-        shader* s = new shader();
-//custom shader
-        luaL_checkstring(L, 1);
-        luaL_checkstring(L, 2);
-        isStringError(L, 1 , "createShader -> vertex shader expected");
-        isStringError(L, 2 , "createShader -> fragment shader expected");
-        const char* vertex = lua_tostring(L, 1);
-        const char* fragment = lua_tostring(L, 2);
-        s->create(vertex, fragment);
-        pushShader(L, s);
-        pushPointer(L, s);
+        shader* s = checkShader(L, 1);
+        //Silly trick but will do.
+        if(lua_isstring(L, 2) && !lua_isstring(L, 3))
+                createDefaultShader(L);
+        else{
+                //custom shader
+                luaL_checkstring(L, 2);
+                luaL_checkstring(L, 3);
+                isStringError(L, 2 , "createShader -> vertex shader expected");
+                isStringError(L, 3 , "createShader -> fragment shader expected");
+                const char* vertex = lua_tostring(L, 2);
+                const char* fragment = lua_tostring(L, 3);
+                s->create(vertex, fragment);
+        }
         return 1;
 }
 
 int register_graphics::createDefaultShader(lua_State* L)
 {
-        shader* s = new shader();
+        shader* s = checkShader(L, 1);
 
         default_shaders df;
 
-        luaL_checkstring(L, 1);
-        std::string type = luaL_checkstring(L, 1);
+        std::string type = luaL_checkstring(L, 2);
 
 #ifndef EMSCRIPTEN
         if (type == "texture")
@@ -111,18 +180,7 @@ int register_graphics::createDefaultShader(lua_State* L)
         else if (type == "font")
                 s->create(df.gl_es_font_vertex.c_str(), df.gl_es_font_fragment.c_str());
 #endif
-
-        pushPointer(L, s);
         return 1;
-}
-
-shader* register_graphics::checkShader (lua_State* L, int index)
-{
-        shader *pi, *im;
-        luaL_checktype(L, index, LUA_TUSERDATA);
-        pi = (shader*)luaL_checkudata(L, index, "simple.graphics");
-        im = pi;
-        return im;
 }
 
 int register_graphics::bindShader(lua_State *L)
@@ -134,15 +192,8 @@ int register_graphics::bindShader(lua_State *L)
 
 int register_graphics::unBindShader(lua_State *L)
 {
-        if(checkArguments(L, 2))
-                LOG("Warning: unBindShader takes: 1) shader ");
-
-        shader* s;
-        checkInteger(L, 1);
-        int id = lua_tointeger(L, 1);
-        s = getShader(id);
-        if(s == getShader(id))
-                s->unbind();
+        shader* s = checkShader(L, 1);
+        s->unbind();
         return 1;
 }
 
@@ -152,52 +203,50 @@ int register_graphics::sendShaderUniformLocation(lua_State *L)
         if(checkArguments(L, 4))
                 LOG("Warning: sendShaderUniformLocation takes: 1) shader 2) location 3) matrix");
 
-        shader* s;
-        int id = lua_tointeger(L, 1);
+        shader* s = checkShader(L, 1);
         const char* location = lua_tostring(L, 2);
         isStringError(L, 2, "sendShaderUniformLocation -> location string expected");
         float data = lua_tonumber(L, 3);
-        s = getShader(id);
-        if(s == getShader(id)){
-                s->sendUniformLocation(location, data);
-        }
+        s->sendUniformLocation(location, data);
+        return 1;
+}
 
+int register_graphics::initFont(lua_State* L)
+{
+        font** f = (font **) lua_newuserdata(L, sizeof(font *));
+        *f = new font();
+
+        luaL_getmetatable(L, FONT_NAME);
+        lua_setmetatable(L, -2);
         return 1;
 }
 
 int register_graphics::createFont(lua_State *L)
 {
-        font* f;
-        shader* s;
-        isObjectError(L, 1, "makeBatch -> shader");
-        lua_Integer shID = lua_tointeger(L, 1);
-        s = getShader(shID);
-        luaL_checkstring(L, 2);
-        const char* path = lua_tostring(L, 2);
+        font* f = checkFont(L, 1);
+        shader* s = checkShader(L, 2);
+
+        luaL_checkstring(L, 3);
+        const char* path = lua_tostring(L, 3);
         FT_Library freetype;
         if(FT_Init_FreeType(&freetype)){
                 LOG("Error: Could not init freetype lib!");
                 return 0;
         }
         float size = 16;
-        if(lua_isnumber(L, 3)){
-                size = lua_tonumber(L, 3);
-        }
+        if(lua_isnumber(L, 4))
+                size = lua_tonumber(L, 4);
 
-        if(s == getShader(shID)){
-                f = new font();
-                f->load(freetype, s, path, size);
-                pushPointer(L, f);
-        }
+        f->load(freetype, s, path, size);
         return 1;
 }
 
 int register_graphics::drawFont(lua_State *L)
 {
-        font* f;
-        shader* s;
-        luaL_checkinteger(L, 1);
-        luaL_checkinteger(L, 2);
+        font* f = checkFont(L, 1);
+        shader* s = checkShader(L, 2);
+        if(!s->getLinked())
+                LOG("WARNING: shader:bind must be called before drawFont!");
         luaL_checkstring(L, 3);
         luaL_checknumber(L, 4);
         luaL_checknumber(L, 5);
@@ -211,8 +260,6 @@ int register_graphics::drawFont(lua_State *L)
         if(lua_isnumber(L, 11))
                 a = lua_tonumber(L, 11);
 
-        lua_Integer fID = lua_tointeger(L, 1);
-        lua_Integer sID = lua_tointeger(L, 2);
         const char* text = lua_tostring(L, 3);
         float x = lua_tonumber(L, 4);
         float y = lua_tonumber(L, 5);
@@ -222,156 +269,138 @@ int register_graphics::drawFont(lua_State *L)
         float g = lua_tonumber(L, 9);
         float b = lua_tonumber(L, 10);
 
-        f = getFont(fID);
-        s = getShader(sID);
-
-        if(f == getFont(fID) && s == getShader(sID))
-                f->draw(text, s, x, y, sx, sy, r, g, b, a);
+        f->draw(text, s, x, y, sx, sy, r, g, b, a);
         return 1;
 }
 
 int register_graphics::beginFont(lua_State *L)
 {
-        font* f;
-        luaL_checkinteger(L, 1);
-        lua_Integer fID = lua_tointeger(L, 1);
-        f = getFont(fID);
-        if(f == getFont(fID))
-                f->begin();
+        font* f = checkFont(L, 1);
+        f->begin();
         return 1;
 }
 
 int register_graphics::endFont(lua_State *L)
 {
-        font* f;
-        luaL_checkinteger(L, 1);
-        lua_Integer fID = lua_tointeger(L, 1);
-        f = getFont(fID);
-        if(f == getFont(fID))
-                f->end();
+        font* f = checkFont(L, 1);
+        f->end();
+        return 1;
+}
+
+int register_graphics::initBatch(lua_State *L)
+{
+        batch2d ** f = (batch2d **) lua_newuserdata(L, sizeof(batch2d *));
+        *f = new batch2d();
+
+        luaL_getmetatable(L, BATCH_NAME);
+        lua_setmetatable(L, -2);
         return 1;
 }
 
 int register_graphics::createBatch(lua_State *L)
 {
-        shader* s;
-        batch2d* batch;
-        isObjectError(L, 1, "makeBatch -> shader");
-        lua_Integer shID = lua_tointeger(L, 1);
-        s = getShader(shID);
+        batch2d* batch = checkBatch(L, 1);
+        shader* s = checkShader(L, 2);
         int limit = 9000;
-        if(lua_isinteger(L, 2))
-                limit = lua_tointeger(L, 2);
+        if(lua_isinteger(L, 3))
+                limit = lua_tointeger(L, 3);
 
-        if(s == getShader(shID)){
-                batch = new batch2d(s, limit);
-                batch->create();
-                pushPointer(L, batch);
-        }
+        batch->create(s, limit);
         return 1;
 }
 
 int register_graphics::renderMesh(lua_State *L)
 {
-        isObjectError(L, 1, "renderMesh -> batch");
-        lua_Integer id = lua_tointeger(L, 1);
-        batch2d* b;
-        b = getBatch(id);
+        batch2d* b = checkBatch(L, 1);
         b->renderMesh();
         return 1;
 }
 
 int register_graphics::beginBatch(lua_State *L)
 {
-        batch2d* batch;
-        luaL_checkinteger(L, 1);
-        lua_Integer id = lua_tointeger(L, 1);
-        batch = getBatch(id);
-        if(batch == getBatch(id))
-                batch->begin();
-
+        batch2d* batch = checkBatch(L, 1);
+        batch->begin();
         return 1;
 }
 
 int register_graphics::drawBatch(lua_State *L)
 {
-        luaL_checkinteger(L, 1);
-        lua_Integer id = lua_tointeger(L, 1);
-        batch2d* batch;
-        batch = getBatch(id);
-        if(batch == getBatch(id)){
-                luaL_checknumber(L, 2);
-                luaL_checknumber(L, 3);
-                luaL_checknumber(L, 4);
-                luaL_checknumber(L, 5);
-                float x = lua_tonumber(L, 2);
-                float y = lua_tonumber(L, 3);
-                float w = lua_tonumber(L, 4);
-                float h = lua_tonumber(L, 5);
+        batch2d* batch = checkBatch(L, 1);
+        luaL_checknumber(L, 2);
+        luaL_checknumber(L, 3);
+        luaL_checknumber(L, 4);
+        luaL_checknumber(L, 5);
+        float x = lua_tonumber(L, 2);
+        float y = lua_tonumber(L, 3);
+        float w = lua_tonumber(L, 4);
+        float h = lua_tonumber(L, 5);
 
-                float rotation = 0;
-                if(lua_isnumber(L, 6))
-                        rotation = lua_tonumber(L, 6);
-                float originX = w * 0.5f;
-                if(lua_isnumber(L, 7))
-                        originX = lua_tonumber(L, 7);
-                float originY = h * 0.5f;
-                if(lua_isnumber(L, 8))
-                        originY = lua_tonumber(L, 8);
-                float srcX = 0;
-                if(lua_tonumber(L, 9))
-                        srcX = lua_tonumber(L, 9);
-                float srcY = 0;
-                if(lua_tonumber(L, 10))
-                        srcY = lua_tonumber(L, 10);
-                float srcWidth = w;
-                if(lua_tonumber(L,11))
-                        srcWidth = lua_tonumber(L, 11);
-                float srcHeight = h;
-                if(lua_tonumber(L,12))
-                        srcHeight = lua_tonumber(L, 12);
-                bool flipX = false;
-                if(lua_toboolean(L, 13))
-                        flipX = lua_toboolean(L, 13);
-                bool flipY = true;
-                if(lua_toboolean(L, 14))
-                        flipY = lua_toboolean(L, 14);
-                float scaleX = 1;
-                if(lua_tonumber(L,15))
-                        scaleX = lua_tonumber(L, 15);
-                float scaleY = 1;
-                if(lua_tonumber(L, 16))
-                        scaleY = lua_tonumber(L, 16);
+        float rotation = 0;
+        if(lua_isnumber(L, 6))
+                rotation = lua_tonumber(L, 6);
+        float originX = w * 0.5f;
+        if(lua_isnumber(L, 7))
+                originX = lua_tonumber(L, 7);
+        float originY = h * 0.5f;
+        if(lua_isnumber(L, 8))
+                originY = lua_tonumber(L, 8);
+        float srcX = 0;
+        if(lua_tonumber(L, 9))
+                srcX = lua_tonumber(L, 9);
+        float srcY = 0;
+        if(lua_tonumber(L, 10))
+                srcY = lua_tonumber(L, 10);
+        float srcWidth = w;
+        if(lua_tonumber(L,11))
+                srcWidth = lua_tonumber(L, 11);
+        float srcHeight = h;
+        if(lua_tonumber(L,12))
+                srcHeight = lua_tonumber(L, 12);
+        bool flipX = false;
+        if(lua_toboolean(L, 13))
+                flipX = lua_toboolean(L, 13);
+        bool flipY = true;
+        if(lua_toboolean(L, 14))
+                flipY = lua_toboolean(L, 14);
+        float scaleX = 1;
+        if(lua_tonumber(L,15))
+                scaleX = lua_tonumber(L, 15);
+        float scaleY = 1;
+        if(lua_tonumber(L, 16))
+                scaleY = lua_tonumber(L, 16);
 
-                batch->draw(x, y, w, h, rotation, originX, originY, srcX, srcY, srcWidth, srcHeight, flipX, flipY, scaleX, scaleY);
-        }
-
+        batch->draw(x, y, w, h, rotation, originX, originY, srcX, srcY, srcWidth, srcHeight, flipX, flipY, scaleX, scaleY);
         return 1;
 }
 
 int register_graphics::endBatch(lua_State* L)
 {
-        batch2d* batch;
-        luaL_checkinteger(L, 1);
-        lua_Integer id = lua_tointeger(L, 1);
-        batch = getBatch(id);
-        if(batch == getBatch(id))
-                batch->end();
+        batch2d* batch = checkBatch(L, 1);
+        batch->end();
 
         return 1;
 }
 
+int register_graphics::initGraphics(lua_State *L)
+{
+        register_graphics ** f = (register_graphics **) lua_newuserdata(L, sizeof(register_graphics *));
+        *f = new register_graphics();
+
+        luaL_getmetatable(L, "luaL_graphics");
+        lua_setmetatable(L, -2);
+        return 1;
+}
 
 int register_graphics::clearScreen(lua_State* L)
 {
-        checkFloat(L, 1);
         checkFloat(L, 2);
         checkFloat(L, 3);
         checkFloat(L, 4);
-        float r = lua_tonumber(L, 1);
-        float g = lua_tonumber(L, 2);
-        float b = lua_tonumber(L, 3);
-        float a = lua_tonumber(L, 4);
+        checkFloat(L, 5);
+        float r = lua_tonumber(L, 2);
+        float g = lua_tonumber(L, 3);
+        float b = lua_tonumber(L, 4);
+        float a = lua_tonumber(L, 5);
         float scale = 1.0f / 255.0f;
         c->getGLGraphics()->clearScreen(scale * r, scale * g, scale * b, scale * a);
 
@@ -380,66 +409,106 @@ int register_graphics::clearScreen(lua_State* L)
 
 int register_graphics::setViewport(lua_State *L)
 {
-        checkFloat(L, 1);
         checkFloat(L, 2);
         checkFloat(L, 3);
         checkFloat(L, 4);
-        int x = lua_tonumber(L, 1);
-        int y = lua_tonumber(L, 2);
-        int w = lua_tonumber(L, 3);
-        int h = lua_tonumber(L, 4);
+        checkFloat(L, 5);
+        int x = lua_tonumber(L, 2);
+        int y = lua_tonumber(L, 3);
+        int w = lua_tonumber(L, 4);
+        int h = lua_tonumber(L, 5);
         c->getGLGraphics()->setViewport(x, y, w, h);
         return 1;
 }
 
-int register_graphics::registerMetatable(lua_State *L)
+int register_graphics::registerShader(lua_State *L)
 {
-        luaL_Reg meta[] = {
-                {"bindTexture",   bindTexture},
-                {"unBindTexture", unBindTexture},
-                {"bindShader", bindShader},
-                {"unBindShader", unBindShader},
-                {"renderMesh", renderMesh},
-                {"beginBatch", beginBatch},
-                {"endBatch", endBatch},
-                {"drawBatch", drawBatch},
-                {"beginFont", beginFont},
-                {"endFont", endFont},
-                {NULL, NULL}
+        luaL_Reg regShader[] = {
+                {"new", initShader },
+                {"init", createShader},
+                {"bind", bindShader},
+                {"unbind", unBindShader},
+                {"gc", deleteShader },
+                {NULL, NULL }
         };
-        const luaL_Reg _meta[] = {
-                {0, 0}
-        };
-
-        luaL_newmetatable(L, "simple.graphics");        /* create metatable for Image,
-                                               add it to the Lua registry */
-        luaL_openlibs(L);  /* fill metatable */
-        lua_pushliteral(L, "__index");
-        lua_pushvalue(L, -3);               /* dup methods table*/
-        lua_rawset(L, -3);                  /* metatable.__index = methods */
-        lua_pushliteral(L, "__metatable");
-        lua_pushvalue(L, -3);               /* dup methods table*/
-        lua_rawset(L, -3);                  /* hide metatable:
-                                               metatable.__metatable = methods */
-        lua_pop(L, 1);                      /* drop metatable */
-        return 1;                           /* return methods on the stack */
+        luaL_newmetatable(L, SHADER_NAME);
+        luaL_setfuncs(L, regShader, 0);
+        lua_pushvalue(L, -1);
+        lua_setfield(L, -1, "__index");
+        lua_setglobal(L, "Shader");
+        return 1;
 }
 
+int register_graphics::registerBatch(lua_State *L)
+{
+        luaL_Reg reg[] = {
+                {"new", initBatch },
+                {"init", createBatch },
+                {"draw", drawBatch },
+                {"begin", beginBatch },
+                {"stop", endBatch },
+                {"renderMesh", renderMesh },
+                {"gc", deleteBatch },
+                {NULL, NULL }
+        };
+        luaL_newmetatable(L, BATCH_NAME);
+        luaL_setfuncs(L, reg, 0);
+        lua_pushvalue(L, -1);
+        lua_setfield(L, -1, "__index");
+        lua_setglobal(L, "Batch");
+}
 
-int register_graphics::registerModule(lua_State* L)
+int register_graphics::registerGraphics(lua_State *L)
+{
+        luaL_Reg reg[] = {
+                {"new", initGraphics },
+                {"clear", clearScreen },
+                {"viewPort", setViewport},
+                {NULL, NULL}
+        };
+        luaL_newmetatable(L, "luaL_graphics");
+        luaL_setfuncs(L, reg, 0);
+        lua_pushvalue(L, -1);
+        lua_setfield(L, -1, "__index");
+        lua_setglobal(L, "Graphics");
+        return 1;
+}
+
+int register_graphics::registerTexture(lua_State *L)
+{
+        luaL_Reg reg[] = {
+                {"new", initTexture },
+                {"init", loadTexture},
+                {"bind", bindTexture},
+                {"unbind", unBindTexture },
+                {"gc", deleteTexture },
+                {NULL, NULL}
+        };
+        luaL_newmetatable(L, TEXTURE_NAME);
+        luaL_setfuncs(L, reg, 0);
+        lua_pushvalue(L, -1);
+        lua_setfield(L, -1, "__index");
+        lua_setglobal(L, "Texture");
+        return 1;
+}
+
+int register_graphics::registerFont(lua_State* L)
 {
         luaL_Reg regGraphicsFuncs[] = {
-                {"newImage", loadTexture},
-                {"newShader", createShader},
-                {"newDefaultShader", createDefaultShader},
-                {"newBatch", createBatch},
-                {"clearScreen", clearScreen},
-                {"setViewport", setViewport},
-                {"drawFont", drawFont},
-                {"newFont", createFont},
+                {"new", initFont },
+                {"init", createFont },
+                {"draw", drawFont},
+                {"begin", beginFont },
+                {"stop", endFont },
+                {"gc", deleteFont },
                 {NULL, NULL}
         };
 
-        luaL_newlib(L, regGraphicsFuncs);
+        luaL_newmetatable(L, FONT_NAME);
+        luaL_setfuncs(L, regGraphicsFuncs, 0);
+        lua_pushvalue(L, -1);
+        lua_setfield(L, -1, "__index");
+        lua_setglobal(L, "Font");
+
         return 1;
 }

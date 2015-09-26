@@ -8,6 +8,7 @@ extern "C" {
 }
 
 #include "core.h"
+#include "../sound/ogg_player.h"
 
 namespace simple
 {
@@ -22,6 +23,8 @@ namespace simple
       static void setCore(core* co);
       static core* getCore();
     private:
+      static ogg_player* checkOGG(lua_State* L, int n);
+      static int initAudio(lua_State* L);
       static int loadSound(lua_State* L);
       static int playSound(lua_State* L);
     };

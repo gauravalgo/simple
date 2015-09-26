@@ -37,6 +37,7 @@ namespace simple
       static void setCore(core* co);
       static core* getCore();
     private:
+      static int initTimer(lua_State* L);
       static int getDeltaTime(lua_State* L);
       static int getFPS(lua_State* L);
     };

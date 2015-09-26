@@ -141,7 +141,7 @@ int lua_lang_init::quit(lua_State* L)
 
 static int getVersion(lua_State *L)
 {
-  LOG("simple - cracking bottles- version 0.2.2");
+  LOG("simple - cracking bottles- version 0.2.3");
   return 1;
 }
 
@@ -158,12 +158,6 @@ int lua_lang_init::initSimple(lua_State* L)
   luaL_newlib(L, reg);
 
   struct { char *name; int (*fn)(lua_State *L); } mods[] = {
-    { "window", regWindow->registerModule  },
-    { "graphics", regGraphics->registerModule  },
-    { "timer", regTimer->registerModule },
-    { "input", regInput->registerModule },
-    { "math", regMath->registerModule },
-    { "audio", regAudio->registerModule },
     { 0, 0 },
   };
 
@@ -177,10 +171,25 @@ int lua_lang_init::initSimple(lua_State* L)
 void lua_lang_init::registerFunctions()
 {
   luaL_requiref(m_L, "simple", initSimple, 1);
-  regGraphics->registerMetatable(m_L);
+  //timer
+  regTimer->registerModule(m_L);
+  //window
+  regWindow->registerModule(m_L);
+  //math
+  regMath->registerModule(m_L);
+  //input
+  regInput->registerModule(m_L);
+  //audio
+  regInput->registerModule(m_L);
+  //graphics
+  regGraphics->registerShader(m_L);
+  regGraphics->registerFont(m_L);
+  regGraphics->registerTexture(m_L);
+  regGraphics->registerBatch(m_L);
+  regGraphics->registerGraphics(m_L);
 }
 
-void lua_lang_init::dumb()
+void lua_lang_init::dump()
 {
   lua_close(m_L);
 
