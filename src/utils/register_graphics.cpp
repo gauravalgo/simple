@@ -144,10 +144,13 @@ int register_graphics::initShader(lua_State *L)
 int register_graphics::createShader(lua_State *L)
 {
         shader* s = checkShader(L, 1);
-        //Silly trick but will do.
-        if(lua_isstring(L, 2) && !lua_isstring(L, 3))
+        string type;
+        if(lua_isstring(L, 2))
+                type = lua_tostring(L, 2);
+
+        if(lua_isstring(L, 2) && (type == "texture" || type == "font"))
                 createDefaultShader(L);
-        else{
+        else if(lua_isstring(L,2) && lua_isstring(L,3)){
                 //custom shader
                 luaL_checkstring(L, 2);
                 luaL_checkstring(L, 3);

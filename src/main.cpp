@@ -29,7 +29,7 @@ int main()
   lua_init = new lua_lang_init();
   lua_init->create();
   lua_init->registerFunctions();
-  lua_init->setMainScript("res/main.lua");
+  lua_init->setMainScript("main.lua");
   lua_getglobal(lua_init->getState(), "simple");
   lua_pushstring(lua_init->getState(), "load");
   lua_rawget(lua_init->getState(), -2);
@@ -76,10 +76,17 @@ void update_em()
   if(!lua_init->getCore()->getWindow()->getRunning())
     return;
 
-  //render_simple();
   lua_init->getCore()->getWindow()->calculateDeltaTime();
-  //update_simple();
+  lua_pushstring(lua_init->getState(), "update");
+  lua_rawget(lua_init->getState(), -2);
+  lua_pushnumber(lua_init->getState(),lua_init->getCore()->getWindow()->getDeltaTime());
+  lua_call(lua_init->getState(), 1, 0);
 
+  lua_pushstring(lua_init->getState(), "draw");
+  lua_rawget(lua_init->getState(), -2);
+  lua_call(lua_init->getState(), 0, 0);
+
+  lua_init->getCore()->getWindow()->update();
   GLenum err = GL_NO_ERROR;
   while((err = glGetError()) != GL_NO_ERROR){
     LOG("OpenGL error: " << err);
