@@ -20,9 +20,9 @@ using namespace simple::sound;
 
 #include "../utils/definitions.h"
 
-#include <AL/al.h>
-#include <AL/alc.h>
-#include <AL/alext.h>
+#include "../../deps/openal/include/AL/al.h"
+#include "../../deps/openal/include/AL/alc.h"
+#include "../../deps/openal/include/AL/alext.h"
 
 openal_context::openal_context()
 {}
