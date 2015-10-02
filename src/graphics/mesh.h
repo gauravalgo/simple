@@ -40,7 +40,6 @@ namespace simple
       int m_tex_attribute;
       uint m_vbo;
       uint m_ebo;
-      shader* m_shader;
       float* m_vertices;
       int m_sizeV;
       unsigned short* m_indices;

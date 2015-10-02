@@ -16,9 +16,8 @@
 #ifndef OPENAL_CONTEXT_H
 #define OPENAL_CONTEXT_H
 
-#include "../../deps/openal/include/AL/al.h"
-#include "../../deps/openal/include/AL/alc.h"
-#include "../../deps/openal/include/AL/alext.h"
+#include <AL/al.h>
+#include <AL/alc.h>
 
 #include "../utils/definitions.h"
 
@@ -29,8 +28,8 @@ namespace simple
                 class openal_context
                 {
                 private:
-                        ALCdevice* m_device;
                         ALCcontext* m_context;
+                        ALCdevice* m_device;
                 public:
                         openal_context();
                         ~openal_context();

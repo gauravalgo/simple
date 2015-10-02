@@ -112,7 +112,7 @@ int register_graphics::loadTexture(lua_State *L)
         texture2D* tex = checkTexture(L, 1);
         luaL_checkstring(L, 2);
         const char* path = lua_tostring(L, 2);
-        isStringError(L, 1, "loadTexture -> file path");
+
         tex->create(path);
         return 1;
 }
@@ -154,8 +154,6 @@ int register_graphics::createShader(lua_State *L)
                 //custom shader
                 luaL_checkstring(L, 2);
                 luaL_checkstring(L, 3);
-                isStringError(L, 2 , "createShader -> vertex shader expected");
-                isStringError(L, 3 , "createShader -> fragment shader expected");
                 const char* vertex = lua_tostring(L, 2);
                 const char* fragment = lua_tostring(L, 3);
                 s->create(vertex, fragment);
@@ -203,12 +201,8 @@ int register_graphics::unBindShader(lua_State *L)
 //TODO
 int register_graphics::sendShaderUniformLocation(lua_State *L)
 {
-        if(checkArguments(L, 4))
-                LOG("Warning: sendShaderUniformLocation takes: 1) shader 2) location 3) matrix");
-
         shader* s = checkShader(L, 1);
         const char* location = lua_tostring(L, 2);
-        isStringError(L, 2, "sendShaderUniformLocation -> location string expected");
         float data = lua_tonumber(L, 3);
         s->sendUniformLocation(location, data);
         return 1;
@@ -248,7 +242,7 @@ int register_graphics::drawFont(lua_State *L)
 {
         font* f = checkFont(L, 1);
         shader* s = checkShader(L, 2);
-        if(!s->getLinked())
+        if(!s->getLinked() && s != NULL)
                 LOG("WARNING: shader:bind must be called before drawFont!");
         luaL_checkstring(L, 3);
         luaL_checknumber(L, 4);
@@ -263,7 +257,7 @@ int register_graphics::drawFont(lua_State *L)
         if(lua_isnumber(L, 11))
                 a = lua_tonumber(L, 11);
 
-        const char* text = lua_tostring(L, 3);
+        std::string text = lua_tostring(L, 3);
         float x = lua_tonumber(L, 4);
         float y = lua_tonumber(L, 5);
         float sx = lua_tonumber(L, 6);
@@ -272,7 +266,7 @@ int register_graphics::drawFont(lua_State *L)
         float g = lua_tonumber(L, 9);
         float b = lua_tonumber(L, 10);
 
-        f->draw(text, s, x, y, sx, sy, r, g, b, a);
+        f->draw(text.c_str(), s, x, y, sx, sy, r, g, b, a);
         return 1;
 }
 
@@ -396,10 +390,10 @@ int register_graphics::initGraphics(lua_State *L)
 
 int register_graphics::clearScreen(lua_State* L)
 {
-        checkFloat(L, 2);
-        checkFloat(L, 3);
-        checkFloat(L, 4);
-        checkFloat(L, 5);
+        luaL_checknumber(L, 2);
+        luaL_checknumber(L, 3);
+        luaL_checknumber(L, 4);
+        luaL_checknumber(L, 5);
         float r = lua_tonumber(L, 2);
         float g = lua_tonumber(L, 3);
         float b = lua_tonumber(L, 4);
@@ -412,10 +406,10 @@ int register_graphics::clearScreen(lua_State* L)
 
 int register_graphics::setViewport(lua_State *L)
 {
-        checkFloat(L, 2);
-        checkFloat(L, 3);
-        checkFloat(L, 4);
-        checkFloat(L, 5);
+        luaL_checknumber(L, 2);
+        luaL_checknumber(L, 3);
+        luaL_checknumber(L, 4);
+        luaL_checknumber(L, 5);
         int x = lua_tonumber(L, 2);
         int y = lua_tonumber(L, 3);
         int w = lua_tonumber(L, 4);
@@ -459,6 +453,7 @@ int register_graphics::registerBatch(lua_State *L)
         lua_pushvalue(L, -1);
         lua_setfield(L, -1, "__index");
         lua_setglobal(L, "Batch");
+        return 1;
 }
 
 int register_graphics::registerGraphics(lua_State *L)
@@ -498,12 +493,12 @@ int register_graphics::registerTexture(lua_State *L)
 int register_graphics::registerFont(lua_State* L)
 {
         luaL_Reg regGraphicsFuncs[] = {
-                {"new", initFont },
-                {"init", createFont },
-                {"draw", drawFont},
-                {"begin", beginFont },
-                {"stop", endFont },
-                {"gc", deleteFont },
+                // {"new", initFont },
+                // {"init", createFont },
+                // {"draw", drawFont},
+                // {"begin", beginFont },
+                // {"stop", endFont },
+                // {"gc", deleteFont },
                 {NULL, NULL}
         };
 

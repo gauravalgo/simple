@@ -20,9 +20,8 @@ using namespace simple::sound;
 
 #include "../utils/definitions.h"
 
-#include "../../deps/openal/include/AL/al.h"
-#include "../../deps/openal/include/AL/alc.h"
-#include "../../deps/openal/include/AL/alext.h"
+#include <AL/al.h>
+#include <AL/alc.h>
 
 openal_context::openal_context()
 {}
@@ -30,35 +29,34 @@ openal_context::openal_context()
 openal_context::~openal_context()
 {
   alcMakeContextCurrent(NULL);
-  alcDestroyContext(m_context);
-  alcCloseDevice(m_device);
 }
 
 ALuint buffer;
-
 void openal_context::create()
 {
   m_device = alcOpenDevice(NULL);
   if (m_device == NULL)
     LOG("Failed to init OpenAL device.");
   m_context = alcCreateContext(m_device, NULL);
-  if(! m_context)
+  if(!m_context)
     LOG("OpenAL : Unable to create context!");
   if(!alcMakeContextCurrent(m_context))
     LOG("Failed to initialite audio context\n");
 
   ALenum error = alGetError();
   if(error != AL_NO_ERROR){
-    LOG("OpenAL : error!");
+    LOG("OpenAL : " << error << " error!");
     return;
   }
   LOG("OpenAL inited");
 }
 
+//piata caius iacob nr 9 - 11 bloul T scara A ap 16
+
+
 void openal_context::makeBuffer(uint* id)
 {
   alGenBuffers(1, id);
-  ALenum error = alGetError();
 }
 
 void openal_context::deleteBuffer(uint* id)
@@ -105,6 +103,7 @@ void openal_context::deleteSourceID(uint* sourceID)
 {
   alDeleteSources(1, sourceID);
 }
+
 void openal_context::setSourceID(uint sourceID, ALuint id)
 {
   alSourcei(sourceID, AL_BUFFER, id);

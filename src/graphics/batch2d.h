@@ -79,8 +79,6 @@ class batch2d
     int m_numSprite;
     int m_SIZE;
     shader* m_shader;
-    uint m_modelAttrib;
-    texture2D* m_texture;
   public:
     void begin();
     void end();

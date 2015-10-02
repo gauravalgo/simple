@@ -22,9 +22,9 @@ using namespace simple::maths;
 
 glfw_window::glfw_window():
   m_running(true),
-  m_width(0),
-  m_vsync(false),
-  m_height(0)
+  m_width(800),
+  m_height(800),
+  m_vsync(false)
 {
 
 }

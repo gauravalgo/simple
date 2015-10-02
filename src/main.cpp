@@ -29,7 +29,7 @@ int main()
   lua_init = new lua_lang_init();
   lua_init->create();
   lua_init->registerFunctions();
-  lua_init->setMainScript("main.lua");
+  lua_init->setMainScript("res/main.lua");
   lua_getglobal(lua_init->getState(), "simple");
   lua_pushstring(lua_init->getState(), "load");
   lua_rawget(lua_init->getState(), -2);
@@ -77,6 +77,7 @@ void update_em()
     return;
 
   lua_init->getCore()->getWindow()->calculateDeltaTime();
+
   lua_pushstring(lua_init->getState(), "update");
   lua_rawget(lua_init->getState(), -2);
   lua_pushnumber(lua_init->getState(),lua_init->getCore()->getWindow()->getDeltaTime());
@@ -86,15 +87,10 @@ void update_em()
   lua_rawget(lua_init->getState(), -2);
   lua_call(lua_init->getState(), 0, 0);
 
-  lua_init->getCore()->getWindow()->update();
-  GLenum err = GL_NO_ERROR;
-  while((err = glGetError()) != GL_NO_ERROR){
-    LOG("OpenGL error: " << err);
-  }
-
 //limit fps to 60
   if(lua_init->getCore()->getWindow()->getVSync())
     glfwSwapInterval(1);
+
   glfwGetCursorPos(lua_init->getCore()->getWindow()->getWindow(), &lua_init->getCore()->getWindow()->m_px, &lua_init->getCore()->getWindow()->m_py);
 
   glfwSwapBuffers(lua_init->getCore()->getWindow()->getWindow());

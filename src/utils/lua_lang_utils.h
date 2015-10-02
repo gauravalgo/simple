@@ -58,29 +58,4 @@ static const char* SHADER_NAME = "luaL_shader";
 static const char* BATCH_NAME = "luaL_batch";
 static const char* TEXTURE_NAME = "luaL_texture";
 
-static bool checkArguments(lua_State* L, int number)
-{
-        if(lua_gettop(L) < number)
-                return false;
-        return true;
-}
-
-static bool isStringError(lua_State *L, int spot, const char* what)
-{
-        if(lua_isnumber(L, spot) || lua_isboolean(L, spot) || lua_isnil(L, spot)){
-                LOG("Error: " << what << " from location " << spot << " must be a string");
-                return false;
-        }
-        return true;
-}
-
-static float checkFloat(lua_State *L, int location)
-{
-        return luaL_checknumber(L,location);
-}
-
-static float checkInteger(lua_State *L, int location)
-{
-        return luaL_checkinteger(L,location);
-}
 #endif

@@ -147,30 +147,17 @@ static int getVersion(lua_State *L)
 
 int lua_lang_init::initSimple(lua_State* L)
 {
-  int i;
-
   luaL_Reg reg[] = {
     { "getVersion",	getVersion },
     { "quit", quit },
     { 0, 0 },
   };
-
   luaL_newlib(L, reg);
-
-  struct { char *name; int (*fn)(lua_State *L); } mods[] = {
-    { 0, 0 },
-  };
-
-  for (i = 0; mods[i].name; i++) {
-    mods[i].fn(L);
-    lua_setfield(L, -2, mods[i].name);
-  }
   return 1;
 }
 
 void lua_lang_init::registerFunctions()
 {
-  luaL_requiref(m_L, "simple", initSimple, 1);
   //timer
   regTimer->registerModule(m_L);
   //window
@@ -187,19 +174,11 @@ void lua_lang_init::registerFunctions()
   regGraphics->registerTexture(m_L);
   regGraphics->registerBatch(m_L);
   regGraphics->registerGraphics(m_L);
+
+  luaL_requiref(m_L, "simple", initSimple, 1);
 }
 
 void lua_lang_init::dump()
 {
   lua_close(m_L);
-
-  SAFE_DELETE(k);
-  SAFE_DELETE(point);
-  SAFE_DELETE(c);
-  SAFE_DELETE(regGraphics);
-  SAFE_DELETE(regWindow);
-  SAFE_DELETE(regInput);
-  SAFE_DELETE(regMath);
-  SAFE_DELETE(regTimer);
-  SAFE_DELETE(regAudio);
 }

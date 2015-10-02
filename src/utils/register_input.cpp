@@ -101,18 +101,12 @@ int register_input::isKeyUp(lua_State* L)
 
 int register_input::getPointerX(lua_State* L)
 {
-  if(checkArguments(L, 2))
-    LOG("Warning: function getPointerX takes no parameter");
-
   lua_pushnumber(L, getCore()->getWindow()->getPointX());
-
   return 1;
 }
 
 int register_input::getPointerY(lua_State* L)
 {
-  if(checkArguments(L, 2))
-    LOG("Warning: function getPointerY takes no parameter");
   lua_pushnumber(L, getCore()->getWindow()->getPointY());
   return 1;
 }
@@ -181,6 +175,5 @@ int register_input::registerModule(lua_State* L)
   lua_pushvalue(L, -1);
   lua_setfield(L, -1, "__index");
   lua_setglobal(L, "Input");
-
   return 1;
 }

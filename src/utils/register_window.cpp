@@ -73,8 +73,8 @@ int register_window::makeWindow(lua_State* L)
         setDefaultWindow(false);
         luaL_checkstring(L, 2);
         const char* title = lua_tostring(L, 2);
-        checkFloat(L, 3);
-        checkFloat(L, 4);
+        luaL_checknumber(L, 3);
+        luaL_checknumber(L, 4);
         int width = lua_tonumber(L,3);
         int height = lua_tonumber(L, 4);
         bool fullscreen = false;
@@ -123,9 +123,6 @@ int register_window::getWindowHeight(lua_State *L)
 
 int register_window::setWindowVSync(lua_State *L)
 {
-        if(checkArguments(L, 2))
-                LOG("Warning: function makeWindow takes: 1)boolean");
-
         bool v = lua_toboolean(L, 2);
         getCore()->getWindow()->setVSync(v);
         return 1;
@@ -133,8 +130,8 @@ int register_window::setWindowVSync(lua_State *L)
 
 int register_window::setWindowPosition(lua_State* L)
 {
-        checkFloat(L , 2);
-        checkFloat(L , 3);
+        luaL_checknumber(L , 2);
+        luaL_checknumber(L , 3);
         int x = lua_tonumber(L, 2);
         int y = lua_tonumber(L, 3);
         getCore()->getWindow()->setPosition(x, y);
@@ -151,8 +148,6 @@ int register_window::setWindowTitle(lua_State* L)
 
 int register_window::getWindowFocus(lua_State* L)
 {
-        if(checkArguments(L, 2))
-                LOG("Warning: function getWindowFocus takes no parameter");
         bool focused = getCore()->getWindow()->isFocused();
         lua_pushboolean(L, focused);
         return 1;
@@ -160,9 +155,6 @@ int register_window::getWindowFocus(lua_State* L)
 
 int register_window::getWindowTicks(lua_State* L)
 {
-        if(checkArguments(L, 1))
-                LOG("Warning: function getTicks takes no parameter");
-
         lua_pushnumber(L, getCore()->getWindow()->getTicks());
         return 1;
 }

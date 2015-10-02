@@ -30,7 +30,6 @@ namespace simple
     ~file_system();
   private:
     FILE* m_file;
-    int f;
   public:
     void open(const char* path, const char* mode);
     size_t read(void* dest, size_t size, size_t count);

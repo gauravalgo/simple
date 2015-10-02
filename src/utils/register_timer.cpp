@@ -48,16 +48,12 @@ int register_timer::initTimer(lua_State *L)
 }
 int register_timer::getDeltaTime(lua_State* L)
 {
-  if(checkArguments(L, 1))
-    LOG("Warning: function getDeltaTime takes no parameters");
   lua_pushnumber(L, m_core->getWindow()->getDeltaTime());
   return 1;
 }
 
 int register_timer::getFPS(lua_State* L)
 {
-  if(checkArguments(L, 1))
-    LOG("Warning: function getFPS takes no parameters");
   float FPS = m_core->getWindow()->getFPS();
   lua_pushnumber(L, FPS);
   return 1;

@@ -29,6 +29,7 @@ int register_audio::initAudio(lua_State *L)
 
   luaL_getmetatable(L, "luaL_audio");
   lua_setmetatable(L, -2);
+  return 1;
 }
 
 ogg_player* register_audio::checkOGG(lua_State *L, int n)
