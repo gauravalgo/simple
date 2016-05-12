@@ -1,7 +1,7 @@
 #include "glfw_window.h"
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include "../../deps/glew/include/GL/glew.h"
+#include "../../deps/glfw/include/GLFW/glfw3.h"
 
 #include <stdlib.h>
 #include <stdio.h>

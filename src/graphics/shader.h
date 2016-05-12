@@ -19,7 +19,7 @@
 
 #include <string>
 #include <iostream>
-#include <GL/glew.h>
+#include "../../deps/glew/include/GL/glew.h"
 #include "../utils/definitions.h"
 #include "../maths/mat4.h"
 

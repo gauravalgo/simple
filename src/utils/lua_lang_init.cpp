@@ -51,8 +51,8 @@ using namespace simple::sound;
 
 extern "C" {
 #include "../../deps/lua/lua.h"
-#include "../../deps/lua/lualib.h"
 #include "../../deps/lua/lauxlib.h"
+#include "../../deps/lua/lualib.h"
 }
 
 #include <iostream>

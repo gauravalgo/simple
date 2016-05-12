@@ -22,7 +22,7 @@
 #include <cassert>
 #include "../utils/definitions.h"
 
-#include <GL/glew.h>
+#include "../../deps/glew/include/GL/glew.h"
 
 using namespace std;
 

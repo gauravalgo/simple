@@ -29,7 +29,7 @@ int main()
   lua_init = new lua_lang_init();
   lua_init->create();
   lua_init->registerFunctions();
-  lua_init->setMainScript("res/main.lua");
+  lua_init->setMainScript("main.lua");
   lua_getglobal(lua_init->getState(), "simple");
   lua_pushstring(lua_init->getState(), "load");
   lua_rawget(lua_init->getState(), -2);

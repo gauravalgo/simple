@@ -16,8 +16,8 @@
 #ifndef OPENAL_CONTEXT_H
 #define OPENAL_CONTEXT_H
 
-#include <AL/al.h>
-#include <AL/alc.h>
+#include "../../deps/openal/include/AL/al.h"
+#include "../../deps/openal/include/AL/alc.h"
 
 #include "../utils/definitions.h"
 

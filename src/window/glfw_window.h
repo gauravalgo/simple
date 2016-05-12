@@ -1,8 +1,8 @@
 #ifndef GLFW_WINDOW_H
 #define GLFW_WINDOW_H
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include "../../deps/glew/include/GL/glew.h"
+#include "../../deps/glfw/include/GLFW/glfw3.h"
 
 #include "../maths/vec2.h"
 

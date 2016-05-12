@@ -20,7 +20,9 @@
 #include <iostream>
 #include <map>
 #include <string>
-#include <GL/gl.h>
+
+#include "../../deps/glew/include/GL/glew.h"
+
 #include <ft2build.h>
 #include FT_FREETYPE_H
 

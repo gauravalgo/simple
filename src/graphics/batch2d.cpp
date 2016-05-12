@@ -24,7 +24,7 @@
 #include "texture2D.h"
 
 #include <cmath>
-#include <GL/gl.h>
+#include "../../deps/glew/include/GL/glew.h"
 
 using namespace simple;
 using namespace simple::graphics;
