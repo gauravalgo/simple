@@ -27,8 +27,9 @@ namespace simple
       gl_graphics();
       ~gl_graphics();
     public:
-      void clearScreen(float r, float g, float b, float a);
+      void clear_();
       void setViewport(int x, int y, int width, int height);
+      void setBackgroundColor(float r, float g, float b, float a);
     };
   }
 }

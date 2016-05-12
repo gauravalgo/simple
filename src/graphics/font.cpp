@@ -55,7 +55,7 @@ struct Character {
 std::map<GLchar, Character> Characters;
 GLuint vbo;
 
-uint tex;
+uint texture;
 void font::load(FT_Library ft, shader* s, const char* fontPath, float size)
 {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -80,32 +80,38 @@ void font::load(FT_Library ft, shader* s, const char* fontPath, float size)
       std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
       continue;
     }
+    FT_GlyphSlot g = face->glyph;
     // Generate texture
-    GLuint texture;
+    
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
-    glTexImage2D(
-      GL_TEXTURE_2D,
-      0,
-      GL_RED,
-      face->glyph->bitmap.width,
-      face->glyph->bitmap.rows,
-      0,
-      GL_RED,
-      GL_UNSIGNED_BYTE,
-      face->glyph->bitmap.buffer
-      );
+    
     // Set texture options
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    
+
+    glTexImage2D(
+      GL_TEXTURE_2D,
+      0,
+      GL_RED,
+      g->bitmap.width,
+      g->bitmap.rows,
+      0,
+      GL_RED,
+      GL_UNSIGNED_BYTE,
+      g->bitmap.buffer
+      //face->glyph->bitmap.buffer
+      );
+    
     // Now store character for later use
     Character character = {
       texture,
-      vec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-      vec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-      face->glyph->advance.x
+      vec2(g->bitmap.width, g->bitmap.rows),
+      vec2(g->bitmap_left, g->bitmap_top),
+      g->advance.x
     };
     Characters.insert(std::pair<GLchar, Character>(c, character));
   }
@@ -172,7 +178,7 @@ void font::begin()
 {
   glEnable(GL_BLEND);
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, tex);
+  glBindTexture(GL_TEXTURE_2D, texture);
 }
 
 void font::end()

@@ -575,7 +575,7 @@ void batch2d::draw(float x, float y, float width, float height, float* textureco
 void batch2d::renderMesh()
 {
   if(m_numSprite > 0){
-    glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_STATIC_DRAW);
     glDrawElements(GL_TRIANGLES, m_numSprite * 6, GL_UNSIGNED_SHORT, 0);
   }
 }

@@ -13,7 +13,7 @@ string default_shaders::gl_font_fragment =
         "varying vec2 Texcoords;"
         "uniform sampler2D tex;"
         "void main(void) {"
-        "vec4 sampled = vec4(1.0, 1.0, 1.0, texture(tex, Texcoords).r);"
+        "vec4 sampled = vec4(1.0, 1.0, 1.0, texture2D(tex, Texcoords).r);"
         "gl_FragColor = Color * sampled;"
         "}";
 string default_shaders::gl_font_vertex =
@@ -26,7 +26,7 @@ string default_shaders::gl_font_vertex =
         "uniform mat4 proj = mat4(1);"
         "void main(void) {"
         "Color = color;"
-        "gl_Position = proj *  vec4(position, 0.0f, 1.0f);"
+        "gl_Position = proj *  vec4(position, 0.0, 1.0);"
         "Texcoords = texcoords;"
         "}";
 string default_shaders::gl_texture_fragment =
@@ -48,7 +48,7 @@ string default_shaders::gl_texture_vertex =
         "void main(void) {"
         "Color = color;"
         "Texcoords = texcoords;"
-        "gl_Position = proj * vec4(position, 0.0, 1);"
+        "gl_Position = proj * vec4(position, 0.0, 1.0);"
         "}";
 
 string default_shaders::gl_es_texture_fragment =

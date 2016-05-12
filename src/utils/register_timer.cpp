@@ -71,6 +71,6 @@ int register_timer::registerModule(lua_State *L)
   luaL_setfuncs(L, reg, 0);
   lua_pushvalue(L, -1);
   lua_setfield(L, -1, "__index");
-  lua_setglobal(L, "Math");
+  lua_setglobal(L, "Timer");
   return 1;
 }

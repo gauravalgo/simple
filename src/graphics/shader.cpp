@@ -38,6 +38,7 @@ shader::~shader()
   glDeleteProgram(m_program);
   glDeleteShader(m_vertexShaderID);
   glDeleteShader(m_fragmentShaderID);
+  glUseProgram(0);
 }
 
 // Create the shader

@@ -59,7 +59,8 @@ namespace simple
                         static int initFont(lua_State* L);
                         static int initTexture(lua_State* L);
 
-                        static int clearScreen(lua_State* L);
+                        static int clear_(lua_State* L);
+                        static int setBackgroundColor(lua_State* L);
                         static int setViewport(lua_State* L);
                         static int loadTexture(lua_State* L);
                         static int bindTexture(lua_State* L);

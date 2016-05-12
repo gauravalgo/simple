@@ -36,10 +36,14 @@ gl_graphics::~gl_graphics()
   
 }
 
-void gl_graphics::clearScreen(float r, float g, float b, float a)
+void gl_graphics::clear_()
 {
-  glClear(GL_COLOR_BUFFER_BIT); //3D? Not yet. | GL_DEPTH_BUFFER_BIT);
-  glClearColor(r,g,b,a);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void gl_graphics::setBackgroundColor(float r, float g, float b, float a)
+{
+  glClearColor(r,g,b,a);  
 }
 
 void gl_graphics::setViewport(int x, int y, int width, int height)

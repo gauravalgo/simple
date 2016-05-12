@@ -29,6 +29,8 @@ openal_context::openal_context()
 
 openal_context::~openal_context()
 {
+  alcDestroyContext(m_context);
+  alcCloseDevice(m_device); 
   alcMakeContextCurrent(NULL);
 }
 
@@ -51,9 +53,6 @@ void openal_context::create()
   }
   LOG("OpenAL inited");
 }
-
-//piata caius iacob nr 9 - 11 bloul T scara A ap 16
-
 
 void openal_context::makeBuffer(uint* id)
 {

@@ -260,11 +260,11 @@ int register_graphics::drawFont(lua_State *L)
         std::string text = lua_tostring(L, 3);
         float x = lua_tonumber(L, 4);
         float y = lua_tonumber(L, 5);
-        float sx = lua_tonumber(L, 6);
-        float sy = lua_tonumber(L, 7);
-        float r = lua_tonumber(L, 8);
-        float g = lua_tonumber(L, 9);
-        float b = lua_tonumber(L, 10);
+        float sx = lua_tonumber(L, 6) || 1;
+        float sy = lua_tonumber(L, 7) || 1;
+        float r = lua_tonumber(L, 8) || 255;
+        float g = lua_tonumber(L, 9) || 255;
+        float b = lua_tonumber(L, 10) || 255;
 
         f->draw(text.c_str(), s, x, y, sx, sy, r, g, b, a);
         return 1;
@@ -388,7 +388,7 @@ int register_graphics::initGraphics(lua_State *L)
         return 1;
 }
 
-int register_graphics::clearScreen(lua_State* L)
+int register_graphics::setBackgroundColor(lua_State* L)
 {
         luaL_checknumber(L, 2);
         luaL_checknumber(L, 3);
@@ -399,9 +399,15 @@ int register_graphics::clearScreen(lua_State* L)
         float b = lua_tonumber(L, 4);
         float a = lua_tonumber(L, 5);
         float scale = 1.0f / 255.0f;
-        c->getGLGraphics()->clearScreen(scale * r, scale * g, scale * b, scale * a);
+        c->getGLGraphics()->setBackgroundColor(scale * r, scale * g, scale * b, scale * a);
 
         return 1;
+}
+
+int register_graphics::clear_(lua_State* L)
+{
+  c->getGLGraphics()->clear_();
+  return 1;
 }
 
 int register_graphics::setViewport(lua_State *L)
@@ -460,7 +466,8 @@ int register_graphics::registerGraphics(lua_State *L)
 {
         luaL_Reg reg[] = {
                 {"new", initGraphics },
-                {"clear", clearScreen },
+                {"clear", clear_ },
+                {"setBackgroundColor", setBackgroundColor },
                 {"viewPort", setViewport},
                 {NULL, NULL}
         };
@@ -493,12 +500,12 @@ int register_graphics::registerTexture(lua_State *L)
 int register_graphics::registerFont(lua_State* L)
 {
         luaL_Reg regGraphicsFuncs[] = {
-                // {"new", initFont },
-                // {"init", createFont },
-                // {"draw", drawFont},
-                // {"begin", beginFont },
-                // {"stop", endFont },
-                // {"gc", deleteFont },
+                 {"new", initFont },
+                 {"init", createFont },
+                 {"draw", drawFont},
+                 {"bind", beginFont },
+                 {"unbind", endFont },
+                 {"gc", deleteFont },
                 {NULL, NULL}
         };
 

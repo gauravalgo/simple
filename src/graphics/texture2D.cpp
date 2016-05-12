@@ -33,7 +33,6 @@ texture2D::texture2D() : mID(0), mLayer(0), mWidth(0), mHeight(0) {
 }
 
 texture2D::~texture2D() {
-  glDeleteTextures(1,&mID);
   if (mID != 0) {
     glDeleteTextures(1, &mID);
     mID = 0;
@@ -59,7 +58,7 @@ void texture2D::create(int width, int height, void* data)  {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mWidth, mHeight, 0, GL_RGB, GL_FLOAT, data);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mWidth, mHeight, 0, GL_RGBA, GL_FLOAT, data);
 }
 
 // Create the texture from a file
