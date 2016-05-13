@@ -260,11 +260,11 @@ int register_graphics::drawFont(lua_State *L)
         std::string text = lua_tostring(L, 3);
         float x = lua_tonumber(L, 4);
         float y = lua_tonumber(L, 5);
-        float sx = lua_tonumber(L, 6) || 1;
-        float sy = lua_tonumber(L, 7) || 1;
-        float r = lua_tonumber(L, 8) || 255;
-        float g = lua_tonumber(L, 9) || 255;
-        float b = lua_tonumber(L, 10) || 255;
+        float sx = lua_tonumber(L, 6) ;
+        float sy = lua_tonumber(L, 7) ;
+        float r = lua_tonumber(L, 8) ;
+        float g = lua_tonumber(L, 9) ;
+        float b = lua_tonumber(L, 10) ;
 
         f->draw(text.c_str(), s, x, y, sx, sy, r, g, b, a);
         return 1;

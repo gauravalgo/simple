@@ -13,9 +13,8 @@ string default_shaders::gl_font_fragment =
         "varying vec2 Texcoords;"
         "uniform sampler2D tex;"
         "void main(void) {"
-        "vec4 sampled = vec4(1.0, 1.0, 1.0, texture2D(tex, Texcoords).r);"
-        "gl_FragColor = Color * sampled;"
-        "}";
+        "gl_FragColor = texture2D(tex, Texcoords) * Color;"
+       "}";
 string default_shaders::gl_font_vertex =
         "#version 120\n"
         "attribute vec2 position;"
