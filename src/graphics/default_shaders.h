@@ -30,15 +30,11 @@ namespace simple
             {
             public:
                   //OPENGL 2.1
-                  static string gl_font_fragment;
-                  static string gl_font_vertex;
-                  static string gl_texture_fragment;
-                  static string gl_texture_vertex;
+                 static string gl_default_fragment;
+                 static string gl_default_vertex;
                   //OPENGL ES 2.0
-                  static string gl_es_font_fragment;
-                  static string gl_es_font_vertex;
-                  static string gl_es_texture_fragment;
-                  static string gl_es_texture_vertex;
+                  static string gl_es_default_fragment;
+                  static string gl_es_default_vertex;
 
             };
       }

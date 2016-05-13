@@ -148,7 +148,7 @@ int register_graphics::createShader(lua_State *L)
         if(lua_isstring(L, 2))
                 type = lua_tostring(L, 2);
 
-        if(lua_isstring(L, 2) && (type == "texture" || type == "font"))
+        if(lua_isstring(L, 2) && (type == "default"))
                 createDefaultShader(L);
         else if(lua_isstring(L,2) && lua_isstring(L,3)){
                 //custom shader
@@ -170,16 +170,12 @@ int register_graphics::createDefaultShader(lua_State* L)
         std::string type = luaL_checkstring(L, 2);
 
 #ifndef EMSCRIPTEN
-        if (type == "texture")
-                s->create(df.gl_texture_vertex.c_str(), df.gl_texture_fragment.c_str());
-        else if(type == "font")
-                s->create(df.gl_font_vertex.c_str(), df.gl_font_fragment.c_str());
+        if (type == "default")
+                s->create(df.gl_default_vertex.c_str(), df.gl_default_fragment.c_str());
 #endif
 #ifdef EMSCRIPTEN
-        if(type == "texture")
+        if(type == "default")
                 s->create(df.gl_es_texture_vertex.c_str(), df.gl_es_texture_fragment.c_str());
-        else if (type == "font")
-                s->create(df.gl_es_font_vertex.c_str(), df.gl_es_font_fragment.c_str());
 #endif
         return 1;
 }
@@ -244,29 +240,32 @@ int register_graphics::drawFont(lua_State *L)
         shader* s = checkShader(L, 2);
         if(!s->getLinked() && s != NULL)
                 LOG("WARNING: shader:bind must be called before drawFont!");
-        luaL_checkstring(L, 3);
-        luaL_checknumber(L, 4);
-        luaL_checknumber(L, 5);
-        luaL_checknumber(L, 6);
-        luaL_checknumber(L, 7);
-        luaL_checknumber(L, 8);
-        luaL_checknumber(L, 9);
-        luaL_checknumber(L, 10);
-
-        float a = 1;
+        
+        const char* message = "";
+        if(lua_isstring(L, 3))
+                message = lua_tostring(L, 3);
+        float x; float y;
+        if(lua_isnumber(L,4))
+            x = lua_tonumber(L, 4);
+        if(lua_isnumber(L,5))
+            y = lua_tonumber(L, 5);
+        float sx = 1; float sy = 1;
+        if(lua_isnumber(L,6))
+            sx = lua_tonumber(L, 6);
+        if(lua_isnumber(L,7))
+            sy = lua_tonumber(L, 7);
+        float r = 255; float g = 255; float b = 255;
+         if(lua_isnumber(L, 8))
+            r = lua_tonumber(L, 8);
+        if(lua_isnumber(L, 9))
+            g = lua_tonumber(L, 9);
+         if(lua_isnumber(L, 10))
+            b = lua_tonumber(L, 10);
+        float a = 255;
         if(lua_isnumber(L, 11))
-                a = lua_tonumber(L, 11);
+            a = lua_tonumber(L, 11);
 
-        std::string text = lua_tostring(L, 3);
-        float x = lua_tonumber(L, 4);
-        float y = lua_tonumber(L, 5);
-        float sx = lua_tonumber(L, 6) ;
-        float sy = lua_tonumber(L, 7) ;
-        float r = lua_tonumber(L, 8) ;
-        float g = lua_tonumber(L, 9) ;
-        float b = lua_tonumber(L, 10) ;
-
-        f->draw(text.c_str(), s, x, y, sx, sy, r, g, b, a);
+        f->draw(message, s, x, y, sx, sy, r, g, b, a);
         return 1;
 }
 
@@ -448,8 +447,8 @@ int register_graphics::registerBatch(lua_State *L)
                 {"new", initBatch },
                 {"init", createBatch },
                 {"draw", drawBatch },
-                {"begin", beginBatch },
-                {"stop", endBatch },
+                {"bind", beginBatch },
+                {"unbind", endBatch },
                 {"renderMesh", renderMesh },
                 {"gc", deleteBatch },
                 {NULL, NULL }

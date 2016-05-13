@@ -12,10 +12,10 @@ local graphics;
 function simple.load()
   
    window = Window.new()
-   window:init("Simple - A new era", w, h)
+   window:init("Simple playground", w, h)
 
    shader = Shader.new()
-   shader:init("font")
+   shader:init("default")
     
   _math = Math.new()
 
@@ -38,28 +38,28 @@ function simple.draw()
   graphics:clear()
   graphics:setBackgroundColor(124,69,69,255)
   
-  batch:begin()
+  batch:bind()
   texture:bind()
   batch:draw(200,100,12,32,190)
   batch:renderMesh()
   texture:unbind()
-  batch:stop()
+  batch:unbind()
 
 
   shader:bind()
   font:bind()
   _math:setOrtho(shader, 0, w, h, 0, 0, 100)
-  font:draw(shader,"Hello World,ayayayay",100,100,1,1,105,85,155,255)
-  font:draw(shader,"Vlad Boss" .. timer:getFPS(),100,150,1,1,185,85,155,255)
+  font:draw(shader,"Multiple Texts are working",100,100,1,1,105,85,155)
+  font:draw(shader,"Made by Muresan Vlad Mihail aka Murii :)  " .. timer:getFPS(),100,150)
    
   font:unbind()
 
-  batch:begin()
+  batch:bind()
   texture:bind()
   batch:draw(100,100,32,32,90)
   batch:renderMesh()
   texture:unbind()
-  batch:stop()
+  batch:unbind()
 end
 
 function simple.update(delta)
