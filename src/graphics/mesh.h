@@ -40,18 +40,11 @@ namespace simple
       int m_tex_attribute;
       uint m_vbo;
       uint m_ebo;
-      float* m_vertices;
-      int m_sizeV;
-      unsigned short* m_indices;
-      unsigned short m_sizeI;
-    public:
-      void create(shader* a_shader, float vertices[], int sizeV,unsigned short indices[], short sizeI);
-      void allowVerticesChanges(); //TODO find a better name?
-       void allowIndicesChanges(); //TODO find a better name?
-      void setVertices(float* v, int sV){m_vertices = v; m_sizeV = sV;}
-      void setIndices(unsigned short* i, unsigned short sI){m_indices = i; m_sizeI = sI;}
-
-      void begin();
+      
+	   public:
+      void create(shader* a_shader, float* vertices,short* indices);
+     	
+		void begin();
       void end();
       void draw(int count);
     };

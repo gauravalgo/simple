@@ -43,65 +43,43 @@ mesh::~mesh()
   glDeleteBuffers(1, &m_ebo);
 }
 
-void mesh::create(shader* a_shader,float vertices[], int sizeV, unsigned short indices[], short sizeI)
+void mesh::create(shader* a_shader,float* vertices, short* indices)
 {
-  m_vertices = vertices;
-  m_sizeV = sizeV;
-
-  m_indices = indices;
-  m_sizeI = sizeI;
-
   glGenBuffers(1, &m_vbo);
   glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-  glBufferData(GL_ARRAY_BUFFER, m_sizeV, m_vertices, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	
+  glGenBuffers(1, &m_ebo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
   m_position_attribute = glGetAttribLocation(a_shader->getProgram(), "position");
   glEnableVertexAttribArray(m_position_attribute);
-  glVertexAttribPointer(m_position_attribute, 2, GL_FLOAT, GL_FALSE, 7*sizeof(float), 0);
+  glVertexAttribPointer(m_position_attribute, 2, GL_FLOAT, GL_FALSE, 8*sizeof(float), 0);
 
   m_color_attribute = glGetAttribLocation(a_shader->getProgram(), "color");
   glEnableVertexAttribArray(m_color_attribute);
-  glVertexAttribPointer(m_color_attribute, 3, GL_FLOAT, GL_FALSE, 7*sizeof(float), (void*)(2*sizeof(float)));
+  glVertexAttribPointer(m_color_attribute, 4, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(2*sizeof(float)));
 
   m_tex_attribute = glGetAttribLocation(a_shader->getProgram(), "texcoords");
   glEnableVertexAttribArray(m_tex_attribute);
-  glVertexAttribPointer(m_tex_attribute, 2, GL_FLOAT, GL_FALSE, 7*sizeof(float), (void*)(5*sizeof(float)));
-
-  glGenBuffers(1, &m_ebo);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_sizeI, m_indices, GL_STATIC_DRAW);
+  glVertexAttribPointer(m_tex_attribute, 2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(6*sizeof(float)));
 }
 
-void mesh::allowVerticesChanges()
-{
-  //this allows us to change the vertices size/attributes on fly
-  glBufferData(GL_ARRAY_BUFFER, m_sizeV, m_vertices, GL_DYNAMIC_DRAW);
-}
-
-void mesh::allowIndicesChanges()
-{
-  //this allows us to change the indices size/attributes on fly
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_sizeI, m_indices, GL_DYNAMIC_DRAW);
-}
 
 void mesh::draw(int count)
 {
   glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_SHORT, 0);
-  //glDrawArrays(GL_TRIANGLES, 0, count);
 }
 
 void mesh::begin()
 {
-  glEnableVertexAttribArray(m_position_attribute);
-  glEnableVertexAttribArray(m_color_attribute);
-  glEnableVertexAttribArray(m_tex_attribute);
+ 
 }
 
 void mesh::end()
 {
-  glDisableVertexAttribArray(m_tex_attribute);
-  glDisableVertexAttribArray(m_position_attribute);
-  glDisableVertexAttribArray(m_color_attribute);
+ 
 }
 
 

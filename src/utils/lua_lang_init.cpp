@@ -174,6 +174,7 @@ void lua_lang_init::registerFunctions()
   regGraphics->registerTexture(m_L);
   regGraphics->registerBatch(m_L);
   regGraphics->registerGraphics(m_L);
+  regGraphics->registerMesh(m_L);
 
   luaL_requiref(m_L, "simple", initSimple, 1);
 }

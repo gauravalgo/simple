@@ -48,6 +48,24 @@ batch2d* register_graphics::checkBatch(lua_State *L, int n)
         return *(batch2d **)luaL_checkudata(L, n, "luaL_batch");
 }
 
+mesh* register_graphics::checkMesh(lua_State* L, int n)
+{
+	return *(mesh **)luaL_checkudata(L, n, "luaL_mesh");
+}
+
+int register_graphics::deleteMesh(lua_State *L)
+{
+        mesh* f = checkMesh(L, 1);
+        if (f != NULL){
+                SAFE_DELETE(f);
+        }else{
+                LOG("can not delete mesh because it is null!");
+                return 0;
+        }
+        return 1;
+}
+
+
 int register_graphics::deleteFont(lua_State *L)
 {
         font* f = checkFont(L, 1);
@@ -60,6 +78,7 @@ int register_graphics::deleteFont(lua_State *L)
         return 1;
 }
 
+//Delete
 int register_graphics::deleteShader(lua_State *L)
 {
         shader* f = checkShader(L, 1);
@@ -96,6 +115,33 @@ int register_graphics::deleteBatch(lua_State *L)
         return 1;
 }
 
+//Init
+
+int register_graphics::initMesh(lua_State *L)
+{
+        mesh ** f = (mesh **) lua_newuserdata(L, sizeof(mesh *));
+        *f = new mesh();
+
+        luaL_getmetatable(L, MESH_NAME);
+        lua_setmetatable(L, -2);
+        return 1;
+}
+
+int register_graphics::createMesh(lua_State* L)
+{
+	mesh* m = checkMesh(L, 1);
+	shader* s = checkShader(L, 2);
+	//m->create(s, vertices, indices);
+	return 1;
+}
+
+int register_graphics::drawMesh(lua_State* L)
+{
+	mesh* m = checkMesh(L, 1);
+	int count = luaL_checknumber(L, 2);
+	m->draw(count);
+}
+
 int register_graphics::initTexture(lua_State *L)
 {
         texture2D ** f = (texture2D **) lua_newuserdata(L, sizeof(texture2D *));
@@ -103,7 +149,6 @@ int register_graphics::initTexture(lua_State *L)
 
         luaL_getmetatable(L, TEXTURE_NAME);
         lua_setmetatable(L, -2);
-        return 1;
         return 1;
 }
 
@@ -420,6 +465,23 @@ int register_graphics::setViewport(lua_State *L)
         int w = lua_tonumber(L, 4);
         int h = lua_tonumber(L, 5);
         c->getGLGraphics()->setViewport(x, y, w, h);
+        return 1;
+}
+
+int register_graphics::registerMesh(lua_State *L)
+{
+        luaL_Reg reg[] = {
+                {"new", initMesh },
+                {"init", createMesh},
+                {"draw", drawMesh},
+                {"gc", deleteMesh },
+                {NULL, NULL}
+        };
+        luaL_newmetatable(L, MESH_NAME);
+        luaL_setfuncs(L, reg, 0);
+        lua_pushvalue(L, -1);
+        lua_setfield(L, -1, "__index");
+        lua_setglobal(L, "Mesh");
         return 1;
 }
 

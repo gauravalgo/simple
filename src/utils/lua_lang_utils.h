@@ -57,5 +57,6 @@ static const char* FONT_NAME = "luaL_font";
 static const char* SHADER_NAME = "luaL_shader";
 static const char* BATCH_NAME = "luaL_batch";
 static const char* TEXTURE_NAME = "luaL_texture";
+static const char* MESH_NAME = "luaL_mesh";
 
 #endif

@@ -26,6 +26,7 @@ extern "C" {
 #include "../graphics/font.h"
 #include "../graphics/texture2D.h"
 #include "../graphics/batch2d.h"
+#include "../graphics/mesh.h"
 
 namespace simple
 {
@@ -42,23 +43,30 @@ namespace simple
                         static int registerTexture(lua_State* L);
                         static int registerGraphics(lua_State* L);
                         static int registerBatch(lua_State* L);
+								static int registerMesh(lua_State* L);
                 private:
-                        static int deleteBatch(lua_State* L);
+          
+              				static int deleteBatch(lua_State* L);
                         static int deleteShader(lua_State* L);
                         static int deleteFont(lua_State* L);
                         static int deleteTexture(lua_State* L);
+                        static int deleteMesh(lua_State* L);
 
                         static batch2d* checkBatch(lua_State* L, int n);
                         static shader* checkShader(lua_State* L, int n);
                         static font* checkFont(lua_State* L, int n);
                         static texture2D* checkTexture(lua_State* L, int n);
+								static mesh* checkMesh(lua_State* L, int n);
 
                         static int initBatch(lua_State* L);
                         static int initGraphics(lua_State* L);
                         static int initShader(lua_State* L);
                         static int initFont(lua_State* L);
                         static int initTexture(lua_State* L);
-
+								static int initMesh(lua_State* L);
+								
+								static int createMesh(lua_State* L);
+								static int drawMesh(lua_State* L);
                         static int clear_(lua_State* L);
                         static int setBackgroundColor(lua_State* L);
                         static int setViewport(lua_State* L);

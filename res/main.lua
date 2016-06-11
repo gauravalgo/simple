@@ -50,7 +50,7 @@ function simple.draw()
   font:bind()
   _math:setOrtho(shader, 0, w, h, 0, 0, 100)
   font:draw(shader,"Multiple Texts are working",100,100,1,1,105,85,155)
-  font:draw(shader,"Made by Muresan Vlad Mihail aka Murii :)  " .. timer:getFPS(),100,150)
+  font:draw(shader,"Made by Muresan Vlad Mihail akaaa Murii :)  " .. timer:getFPS(),100,150)
    
   font:unbind()
 
